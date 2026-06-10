@@ -227,7 +227,7 @@ function VideosPanel({ videos }: { videos: Video[] }) {
         const isDirectVideo = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(v.video_url);
         return (
           <article key={v.id} className="overflow-hidden rounded-xl border border-ink-200 bg-white">
-            <div className="relative flex aspect-video w-full items-center justify-center bg-ink-900">
+            <div className="relative aspect-video w-full bg-black">
               {isDirectVideo ? (
                 <video
                   src={v.video_url}
@@ -235,7 +235,7 @@ function VideosPanel({ videos }: { videos: Video[] }) {
                   playsInline
                   preload="metadata"
                   poster={v.thumbnail_url ?? undefined}
-                  className="max-h-full max-w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <iframe
