@@ -223,25 +223,39 @@ function VideosPanel({ videos }: { videos: Video[] }) {
   if (videos.length === 0) return <EmptyState label="les vidéos" />;
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {videos.map((v) => (
-        <article key={v.id} className="rounded-xl border border-ink-200 bg-white">
-          <div className="aspect-video w-full bg-ink-900">
-            <iframe
-              src={v.video_url}
-              title={v.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full rounded-t-xl"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="font-semibold text-ink-900">{v.title}</h3>
-            {v.description && (
-              <p className="mt-2 text-sm text-ink-600">{v.description}</p>
-            )}
-          </div>
-        </article>
-      ))}
+      {videos.map((v) => {
+        const isDirectVideo = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(v.video_url);
+        return (
+          <article key={v.id} className="overflow-hidden rounded-xl border border-ink-200 bg-white">
+            <div className="relative flex aspect-video w-full items-center justify-center bg-ink-900">
+              {isDirectVideo ? (
+                <video
+                  src={v.video_url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={v.thumbnail_url ?? undefined}
+                  className="max-h-full max-w-full object-contain"
+                />
+              ) : (
+                <iframe
+                  src={v.video_url}
+                  title={v.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
+              )}
+            </div>
+            <div className="p-4">
+              <h3 className="font-semibold text-ink-900">{v.title}</h3>
+              {v.description && (
+                <p className="mt-2 text-sm text-ink-600">{v.description}</p>
+              )}
+            </div>
+          </article>
+        );
+      })}
     </div>
   );
 }
