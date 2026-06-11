@@ -14,33 +14,123 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Markdown rendering */
+/* ==========================================================
+   PROSE-JURISPREP — Code couleur pour les fiches
+   ========================================================== */
+
+.prose-jurisprep {
+  color: rgb(51, 65, 85);
+  line-height: 1.75;
+}
+
+/* Titres */
 .prose-jurisprep h1 {
-  @apply text-3xl font-bold mt-6 mb-3 text-ink-900;
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgb(49, 46, 129);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgb(199, 210, 254);
 }
+
 .prose-jurisprep h2 {
-  @apply text-2xl font-bold mt-5 mb-2 text-ink-800;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(67, 56, 202);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
 }
+
 .prose-jurisprep h3 {
-  @apply text-xl font-semibold mt-4 mb-2 text-ink-800;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgb(79, 70, 229);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
+
+.prose-jurisprep h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgb(99, 102, 241);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphes */
 .prose-jurisprep p {
-  @apply my-3 text-ink-700 leading-relaxed;
+  margin: 0.75rem 0;
+  color: rgb(51, 65, 85);
 }
-.prose-jurisprep ul {
-  @apply list-disc list-inside my-3 space-y-1 text-ink-700;
-}
-.prose-jurisprep ol {
-  @apply list-decimal list-inside my-3 space-y-1 text-ink-700;
-}
+
+/* Notions importantes (gras) */
 .prose-jurisprep strong {
-  @apply font-semibold text-ink-900;
+  color: rgb(67, 56, 202);
+  font-weight: 700;
 }
+
+/* Jurisprudence et adages (italique) */
+.prose-jurisprep em {
+  color: rgb(5, 150, 105);
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Articles, dates, références (backticks) */
 .prose-jurisprep code {
-  @apply bg-ink-100 px-1.5 py-0.5 rounded text-sm;
+  background-color: rgb(254, 243, 199);
+  color: rgb(146, 64, 14);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9em;
+  font-weight: 600;
 }
+
+/* Définitions (citation) */
 .prose-jurisprep blockquote {
-  @apply border-l-4 border-indigo-400 pl-4 italic my-4 text-ink-600;
+  border-left: 4px solid rgb(99, 102, 241);
+  background-color: rgb(238, 242, 255);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: rgb(67, 56, 202);
+  font-style: normal;
+}
+
+.prose-jurisprep blockquote p {
+  margin: 0;
+  color: rgb(67, 56, 202);
+}
+
+/* Listes */
+.prose-jurisprep ul {
+  list-style: disc;
+  margin: 0.75rem 0;
+  padding-left: 1.75rem;
+}
+
+.prose-jurisprep ol {
+  list-style: decimal;
+  margin: 0.75rem 0;
+  padding-left: 1.75rem;
+}
+
+.prose-jurisprep li {
+  margin: 0.35rem 0;
+  color: rgb(51, 65, 85);
+}
+
+.prose-jurisprep hr {
+  border: 0;
+  border-top: 1px solid rgb(226, 232, 240);
+  margin: 1.5rem 0;
+}
+
+.prose-jurisprep a {
+  color: rgb(79, 70, 229);
+  text-decoration: underline;
 }
 
 /* Flashcard 3D flip */
