@@ -227,15 +227,15 @@ function VideosPanel({ videos }: { videos: Video[] }) {
         const isDirectVideo = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(v.video_url);
         return (
           <article key={v.id} className="overflow-hidden rounded-xl border border-ink-200 bg-white">
-            <div className="relative aspect-video w-full bg-black">
+            <div className="aspect-video w-full overflow-hidden bg-black">
               {isDirectVideo ? (
                 <video
                   src={v.video_url}
                   controls
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   poster={v.thumbnail_url ?? undefined}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="block h-full w-full object-cover"
                 />
               ) : (
                 <iframe
