@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+}
+
+html,
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Markdown rendering */
+.prose-jurisprep h1 {
+  @apply text-3xl font-bold mt-6 mb-3 text-ink-900;
+}
+.prose-jurisprep h2 {
+  @apply text-2xl font-bold mt-5 mb-2 text-ink-800;
+}
+.prose-jurisprep h3 {
+  @apply text-xl font-semibold mt-4 mb-2 text-ink-800;
+}
+.prose-jurisprep p {
+  @apply my-3 text-ink-700 leading-relaxed;
+}
+.prose-jurisprep ul {
+  @apply list-disc list-inside my-3 space-y-1 text-ink-700;
+}
+.prose-jurisprep ol {
+  @apply list-decimal list-inside my-3 space-y-1 text-ink-700;
+}
+.prose-jurisprep strong {
+  @apply font-semibold text-ink-900;
+}
+.prose-jurisprep code {
+  @apply bg-ink-100 px-1.5 py-0.5 rounded text-sm;
+}
+.prose-jurisprep blockquote {
+  @apply border-l-4 border-indigo-400 pl-4 italic my-4 text-ink-600;
+}
+
+/* Flashcard 3D flip */
+.flashcard-perspective {
+  perspective: 1200px;
+  display: block;
+  width: 100%;
+}
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+.flashcard-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(226 232 240);
+  background: #ffffff;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: rgb(240 253 244);
+  border-color: rgb(187 247 208);
+}
