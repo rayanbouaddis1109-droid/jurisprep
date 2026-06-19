@@ -200,7 +200,7 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
             onClick={next}
             className="mt-5 w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-700 transition active:scale-95"
           >
-            {index + 1 >= total ? "Voir mon score 🏆" : "Question suivante →"}
+            {index + 1 >= total ? "Voir mon score" : "Question suivante"}
           </button>
         )}
       </div>

@@ -39,14 +39,15 @@ export function SubjectTabs({
   flashcards: Flashcard[];
   exercises: Exercise[];
 }) {
-  const tabs: { key: TabKey; label: string; icon: React.ReactNode; count: number }[] = [
+  const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: sheets.length },
-    { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: caseLaw.length },
+    { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: caseLaw.length, hideIfEmpty: true },
     { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: videos.length },
     { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: quizzes.length },
     { key: "flashcards", label: "Flashcards", icon: <Layers className="h-4 w-4" />, count: flashcards.length },
     { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: exercises.length },
   ];
+  const tabs = allTabs.filter((t) => !t.hideIfEmpty || t.count > 0);
 
   const firstWithContent = tabs.find((t) => t.count > 0)?.key ?? "fiches";
   const [active, setActive] = useState<TabKey>(firstWithContent);
@@ -136,7 +137,7 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
                 )}
                 {s.estimated_read_time && (
                   <p className="mt-2 text-xs text-ink-500">
-                    ⏱ {s.estimated_read_time} min de lecture
+                    {s.estimated_read_time} min de lecture
                   </p>
                 )}
               </header>
@@ -225,13 +226,13 @@ function VideosPanel({ videos }: { videos: Video[] }) {
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {videos.map((v) => (
         <article key={v.id} className="rounded-xl border border-ink-200 bg-white">
-          <div className="aspect-video w-full bg-ink-900">
+          <div className="aspect-video w-full overflow-hidden rounded-t-xl bg-ink-900">
             <iframe
               src={v.video_url}
               title={v.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="h-full w-full rounded-t-xl"
+              className="h-full w-full object-cover"
             />
           </div>
           <div className="p-4">
@@ -309,7 +310,7 @@ function ExerciseCard({ ex }: { ex: Exercise }) {
           </span>
         )}
         {ex.estimated_time_minutes && (
-          <span className="text-ink-500">⏱ {ex.estimated_time_minutes} min</span>
+          <span className="text-ink-500">{ex.estimated_time_minutes} min</span>
         )}
       </div>
       <h3 className="mt-3 text-lg font-bold text-ink-900">{ex.title}</h3>
@@ -319,7 +320,7 @@ function ExerciseCard({ ex }: { ex: Exercise }) {
       {ex.methodology_tips && (
         <details className="mt-4 rounded-lg bg-indigo-50 p-4">
           <summary className="cursor-pointer text-sm font-semibold text-indigo-700">
-            💡 Méthodologie
+            Methodologie
           </summary>
           <div className="prose-jurisprep mt-2 text-sm">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>

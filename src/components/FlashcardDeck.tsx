@@ -120,7 +120,7 @@ export function FlashcardDeck({
             <div className="flashcard-face flashcard-front rounded-2xl border-2 border-indigo-200 bg-white shadow-sm">
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
                 <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-100">
-                  ✦ Notion à définir
+                  Notion à définir
                 </span>
                 <p className="text-2xl font-extrabold text-ink-900 leading-snug">{card.front}</p>
                 <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>
@@ -130,7 +130,7 @@ export function FlashcardDeck({
             <div className="flashcard-face flashcard-back rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50 shadow-sm">
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
                 <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 border border-violet-200">
-                  ✦ Définition
+                  Définition
                 </span>
                 <p className="text-base font-medium text-ink-800 leading-relaxed">{card.back}</p>
                 <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>
@@ -154,13 +154,13 @@ export function FlashcardDeck({
               onClick={markUnknown}
               className="flex-1 rounded-xl border-2 border-rose-200 bg-rose-50 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
             >
-              😕 À revoir
+              A revoir
             </button>
             <button
               onClick={markKnown}
               className="flex-1 rounded-xl border-2 border-emerald-200 bg-emerald-50 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition"
             >
-              ✅ Maîtrisé
+              Maitrise
             </button>
           </div>
 
@@ -175,7 +175,7 @@ export function FlashcardDeck({
         {/* Indicateur connue */}
         {isKnown && (
           <div className="mt-3 text-center text-xs font-medium text-emerald-600">
-            ✅ Tu as marqué cette carte comme maîtrisée
+            Carte marquée comme maitrisée
           </div>
         )}
       </div>
