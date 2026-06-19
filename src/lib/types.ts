@@ -112,6 +112,7 @@ export interface Exercise {
   title: string;
   type: ExerciseType | null;
   difficulty: Difficulty | null;
+  chapter: string | null;
   statement: string;
   methodology_tips: string | null;
   correction: string | null;

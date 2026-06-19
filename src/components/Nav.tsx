@@ -25,7 +25,8 @@ export async function Nav() {
         {/* Links */}
         <div className="hidden items-center gap-1 text-sm text-slate-600 md:flex">
           {[
-            { href: "/licence/l1", label: "L1" },
+            { href: "/licence/lyceen", label: "Lycéen" },
+          { href: "/licence/l1", label: "L1" },
             { href: "/licence/l2", label: "L2" },
             { href: "/licence/l3", label: "L3" },
             { href: "/transverse/anglais-juridique", label: "Anglais juridique" },

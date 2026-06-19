@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Scale, Send, Bot, User, Sparkles, BookOpen, Gavel, FileText } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   role: "user" | "assistant";
@@ -158,7 +160,13 @@ export default function AssistantPage() {
                     : "rounded-tl-sm bg-white text-slate-800"
                 }`}
               >
-                <p className="whitespace-pre-wrap">{m.content}</p>
+                {m.role === "assistant" ? (
+                  <div className="prose-jurisprep text-sm">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                )}
               </div>
             </div>
           ))}

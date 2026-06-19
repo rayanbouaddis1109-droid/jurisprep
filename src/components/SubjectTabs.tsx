@@ -10,8 +10,6 @@ import {
   PenSquare,
   ChevronDown,
   ChevronRight,
-  FolderOpen,
-  Scale,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -446,7 +444,7 @@ function ExerciseCard({
               : `${color.border} ${color.text} bg-white`
           }`}
         >
-          {showStatement ? "▲ Masquer l'arrêt" : "▼ Lire l'arrêt complet"}
+          {showStatement ? "▲ Masquer le sujet" : "▼ Voir le sujet"}
         </button>
         {ex.methodology_tips && (
           <button

@@ -3,9 +3,11 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { BookOpen, GraduationCap, ArrowLeft } from "lucide-react";
+import { GraduationCap, ArrowLeft } from "lucide-react";
 import type { Subject } from "@/lib/types";
 import { slugToLevel, levelLabel } from "@/lib/utils";
+// Subject type used for filter casts below
+import { SubjectSearch } from "@/components/SubjectSearch";
 
 const LEVEL_META: Record<
   string,
@@ -89,57 +91,14 @@ export default async function LevelPage({
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12">
-        {s1.length > 0 && (
-          <SemesterBlock title="Semestre 1" subjects={s1} iconColor={meta.iconColor} />
-        )}
-        {s2.length > 0 && (
-          <SemesterBlock title="Semestre 2" subjects={s2} iconColor={meta.iconColor} />
-        )}
-        {annuel.length > 0 && (
-          <SemesterBlock title="Annuel" subjects={annuel} iconColor={meta.iconColor} />
-        )}
-        {(subjects?.length ?? 0) === 0 && (
+        {(subjects?.length ?? 0) === 0 ? (
           <div className="rounded-lg border border-dashed border-ink-300 p-8 text-center text-ink-600">
             Aucune matière publiée pour {levelLabel(level)} pour le moment.
           </div>
+        ) : (
+          <SubjectSearch s1={s1} s2={s2} annuel={annuel} iconColor={meta.iconColor} />
         )}
       </section>
-    </div>
-  );
-}
-
-function SemesterBlock({
-  title,
-  subjects,
-  iconColor,
-}: {
-  title: string;
-  subjects: Subject[];
-  iconColor: string;
-}) {
-  return (
-    <div className="mb-12">
-      <h2 className="mb-5 text-xl font-bold text-ink-900">{title}</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {subjects.map((s) => (
-          <Link
-            key={s.id}
-            href={`/matiere/${s.slug}`}
-            className="group rounded-xl border border-ink-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-md"
-          >
-            <BookOpen className={`mb-3 h-7 w-7 ${iconColor}`} />
-            <h3 className="font-semibold text-ink-900 group-hover:text-indigo-700">
-              {s.name}
-            </h3>
-            {s.description && (
-              <p className="mt-2 line-clamp-3 text-sm text-ink-600">{s.description}</p>
-            )}
-            <div className="mt-4 text-sm font-medium text-indigo-600 group-hover:underline">
-              Étudier →
-            </div>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }
