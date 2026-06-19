@@ -226,13 +226,13 @@ function VideosPanel({ videos }: { videos: Video[] }) {
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {videos.map((v) => (
         <article key={v.id} className="rounded-xl border border-ink-200 bg-white">
-          <div className="aspect-video w-full overflow-hidden rounded-t-xl bg-ink-900">
+          <div className="relative w-full rounded-t-xl overflow-hidden" style={{ paddingTop: "56.25%" }}>
             <iframe
               src={v.video_url}
               title={v.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full"
             />
           </div>
           <div className="p-4">
@@ -304,12 +304,7 @@ function ExerciseCard({ ex }: { ex: Exercise }) {
             {typeLabel[ex.type]}
           </span>
         )}
-        {ex.difficulty && (
-          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">
-            {ex.difficulty}
-          </span>
-        )}
-        {ex.estimated_time_minutes && (
+{ex.estimated_time_minutes && (
           <span className="text-ink-500">{ex.estimated_time_minutes} min</span>
         )}
       </div>
