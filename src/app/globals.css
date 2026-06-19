@@ -14,33 +14,54 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Markdown rendering */
+/* Markdown rendering — code couleur JurisPrép */
 .prose-jurisprep h1 {
-  @apply text-3xl font-bold mt-6 mb-3 text-ink-900;
+  @apply text-2xl font-extrabold mt-8 mb-3 text-indigo-700 border-b-2 border-indigo-200 pb-2;
 }
 .prose-jurisprep h2 {
-  @apply text-2xl font-bold mt-5 mb-2 text-ink-800;
+  @apply text-xl font-bold mt-6 mb-2 text-violet-700;
 }
 .prose-jurisprep h3 {
-  @apply text-xl font-semibold mt-4 mb-2 text-ink-800;
+  @apply text-base font-bold mt-4 mb-2 text-indigo-600 uppercase tracking-wide;
+}
+.prose-jurisprep h4 {
+  @apply text-sm font-semibold mt-3 mb-1 text-violet-600;
 }
 .prose-jurisprep p {
-  @apply my-3 text-ink-700 leading-relaxed;
+  @apply my-3 text-slate-700 leading-relaxed text-[15px];
 }
 .prose-jurisprep ul {
-  @apply list-disc list-inside my-3 space-y-1 text-ink-700;
+  @apply my-3 space-y-1 text-slate-700 pl-5;
+  list-style: none;
+}
+.prose-jurisprep ul li {
+  @apply relative pl-4;
+}
+.prose-jurisprep ul li::before {
+  content: "▸";
+  @apply absolute left-0 text-indigo-400 font-bold;
 }
 .prose-jurisprep ol {
-  @apply list-decimal list-inside my-3 space-y-1 text-ink-700;
+  @apply list-decimal pl-6 my-3 space-y-1 text-slate-700;
 }
 .prose-jurisprep strong {
-  @apply font-semibold text-ink-900;
+  @apply font-bold text-indigo-700;
+}
+.prose-jurisprep em {
+  @apply text-violet-600 not-italic font-medium;
 }
 .prose-jurisprep code {
-  @apply bg-ink-100 px-1.5 py-0.5 rounded text-sm;
+  @apply bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono border border-indigo-100;
 }
 .prose-jurisprep blockquote {
-  @apply border-l-4 border-indigo-400 pl-4 italic my-4 text-ink-600;
+  @apply border-l-4 border-indigo-400 pl-5 py-2 my-4 bg-indigo-50 rounded-r-lg text-indigo-900 italic;
+}
+.prose-jurisprep hr {
+  @apply border-indigo-200 my-6;
+}
+/* Mise en évidence des articles de loi en code inline */
+.prose-jurisprep a {
+  @apply text-indigo-600 underline decoration-indigo-300 hover:text-violet-700;
 }
 
 /* Flashcard 3D flip */

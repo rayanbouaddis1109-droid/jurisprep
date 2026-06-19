@@ -237,7 +237,7 @@ function VideosPanel({ videos }: { videos: Video[] }) {
               />
             ) : (
               <video
-                src={v.video_url}
+                src={`${v.video_url}#t=0.001`}
                 controls
                 className="absolute inset-0 h-full w-full object-contain"
                 preload="metadata"
