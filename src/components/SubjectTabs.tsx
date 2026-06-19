@@ -226,14 +226,23 @@ function VideosPanel({ videos }: { videos: Video[] }) {
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {videos.map((v) => (
         <article key={v.id} className="rounded-xl border border-ink-200 bg-white">
-          <div className="relative w-full rounded-t-xl overflow-hidden" style={{ paddingTop: "56.25%" }}>
-            <iframe
-              src={v.video_url}
-              title={v.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
+          <div className="relative w-full rounded-t-xl overflow-hidden bg-black" style={{ paddingTop: "56.25%" }}>
+            {v.video_url.includes("youtube.com") || v.video_url.includes("youtu.be") ? (
+              <iframe
+                src={v.video_url}
+                title={v.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full"
+              />
+            ) : (
+              <video
+                src={v.video_url}
+                controls
+                className="absolute inset-0 h-full w-full object-contain"
+                preload="metadata"
+              />
+            )}
           </div>
           <div className="p-4">
             <h3 className="font-semibold text-ink-900">{v.title}</h3>
