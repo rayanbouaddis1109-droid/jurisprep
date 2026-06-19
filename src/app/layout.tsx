@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Nav } from "@/components/Nav";
-import { Footer } from "@/components/Footer";
+import { Nav, Footer } from "@/components/Nav";
 
 export const metadata: Metadata = {
   title: "JurisPrép — Réussir ses études de droit",

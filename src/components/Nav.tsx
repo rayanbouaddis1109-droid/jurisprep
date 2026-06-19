@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Scale, MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./LogoutButton";
+import { MobileMenu } from "./MobileMenu";
 
 export async function Nav() {
   const supabase = createClient();
@@ -11,7 +12,7 @@ export async function Nav() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 text-slate-900">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
@@ -45,6 +46,7 @@ export async function Nav() {
 
         {/* Right */}
         <div className="flex items-center gap-2 text-sm">
+          <MobileMenu isLoggedIn={!!user} />
           <Link
             href="/assistant"
             className="hidden items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 font-medium text-indigo-700 transition hover:bg-indigo-100 md:flex"
@@ -62,13 +64,13 @@ export async function Nav() {
             <>
               <Link
                 href="/auth/login"
-                className="rounded-lg px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100"
+                className="hidden rounded-lg px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 md:block"
               >
                 Connexion
               </Link>
               <Link
                 href="/auth/signup"
-                className="rounded-lg bg-indigo-600 px-4 py-1.5 font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+                className="hidden rounded-lg bg-indigo-600 px-4 py-1.5 font-semibold text-white shadow-sm transition hover:bg-indigo-700 md:block"
               >
                 Inscription
               </Link>

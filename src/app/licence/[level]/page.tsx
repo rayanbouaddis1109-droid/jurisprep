@@ -103,6 +103,3 @@ export default async function LevelPage({
   );
 }
 
-export function generateStaticParams() {
-  return [{ level: "lyceen" }, { level: "l1" }, { level: "l2" }, { level: "l3" }];
-}
