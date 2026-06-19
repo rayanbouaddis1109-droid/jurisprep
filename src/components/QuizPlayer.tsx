@@ -58,15 +58,10 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
           {quiz.description && (
             <p className="mt-2 text-sm text-indigo-200">{quiz.description}</p>
           )}
-          <div className="mt-6 flex justify-center gap-6 text-sm">
+          <div className="mt-6 flex justify-center">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-3xl font-bold">{total}</span>
+              <span className="text-4xl font-bold">{total}</span>
               <span className="text-indigo-200">questions</span>
-            </div>
-            <div className="w-px bg-white/20" />
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-3xl font-bold">{quiz.difficulty ?? "moyen"}</span>
-              <span className="text-indigo-200">difficulté</span>
             </div>
           </div>
           <button
