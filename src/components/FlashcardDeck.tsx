@@ -127,22 +127,21 @@ export function FlashcardDeck({
           <div className={`flashcard-inner ${flipped ? "is-flipped" : ""}`}>
             {/* Recto */}
             <div
-              className={`flashcard-face flashcard-front rounded-2xl border-2 shadow-sm transition-colors duration-300 ${
-                feedback === "known"
-                  ? "border-emerald-400 bg-emerald-50"
-                  : feedback === "unknown"
-                    ? "border-rose-400 bg-rose-50"
-                    : "border-indigo-200 bg-white"
-              }`}
+              className="flashcard-face flashcard-front rounded-2xl border-2 shadow-sm"
+              style={{
+                borderColor: feedback === "known" ? "#34d399" : feedback === "unknown" ? "#fb7185" : "#c7d2fe",
+                backgroundColor: feedback === "known" ? "#ecfdf5" : feedback === "unknown" ? "#fff1f2" : "#ffffff",
+                transition: "background-color 0.3s, border-color 0.3s",
+              }}
             >
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
                 {feedback === "known" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#d1fae5", color: "#065f46", borderColor: "#6ee7b7" }}>
                     ✓ Maîtrisé !
                   </span>
                 )}
                 {feedback === "unknown" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700 border border-rose-200">
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#ffe4e6", color: "#9f1239", borderColor: "#fda4af" }}>
                     ↩ À revoir
                   </span>
                 )}
@@ -151,30 +150,32 @@ export function FlashcardDeck({
                     Notion à définir
                   </span>
                 )}
-                <p className={`text-2xl font-extrabold leading-snug transition-colors duration-300 ${
-                  feedback === "known" ? "text-emerald-800" : feedback === "unknown" ? "text-rose-800" : "text-ink-900"
-                }`}>{card.front}</p>
+                <p
+                  className="text-2xl font-extrabold leading-snug"
+                  style={{ color: feedback === "known" ? "#065f46" : feedback === "unknown" ? "#9f1239" : "#0f172a", transition: "color 0.3s" }}
+                >
+                  {card.front}
+                </p>
                 {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>}
               </div>
             </div>
             {/* Verso */}
             <div
-              className={`flashcard-face flashcard-back rounded-2xl border-2 shadow-sm transition-colors duration-300 ${
-                feedback === "known"
-                  ? "border-emerald-400 bg-emerald-50"
-                  : feedback === "unknown"
-                    ? "border-rose-400 bg-rose-50"
-                    : "border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50"
-              }`}
+              className="flashcard-face flashcard-back rounded-2xl border-2 shadow-sm"
+              style={{
+                borderColor: feedback === "known" ? "#34d399" : feedback === "unknown" ? "#fb7185" : "#ddd6fe",
+                backgroundColor: feedback === "known" ? "#ecfdf5" : feedback === "unknown" ? "#fff1f2" : "#f5f3ff",
+                transition: "background-color 0.3s, border-color 0.3s",
+              }}
             >
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
                 {feedback === "known" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#d1fae5", color: "#065f46", borderColor: "#6ee7b7" }}>
                     ✓ Maîtrisé !
                   </span>
                 )}
                 {feedback === "unknown" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700 border border-rose-200">
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#ffe4e6", color: "#9f1239", borderColor: "#fda4af" }}>
                     ↩ À revoir
                   </span>
                 )}
@@ -183,9 +184,12 @@ export function FlashcardDeck({
                     Définition
                   </span>
                 )}
-                <p className={`text-base font-medium leading-relaxed transition-colors duration-300 ${
-                  feedback === "known" ? "text-emerald-800" : feedback === "unknown" ? "text-rose-800" : "text-ink-800"
-                }`}>{card.back}</p>
+                <p
+                  className="text-base font-medium leading-relaxed"
+                  style={{ color: feedback === "known" ? "#065f46" : feedback === "unknown" ? "#9f1239" : "#1e293b", transition: "color 0.3s" }}
+                >
+                  {card.back}
+                </p>
                 {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>}
               </div>
             </div>
