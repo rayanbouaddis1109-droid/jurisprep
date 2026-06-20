@@ -118,79 +118,53 @@ export function FlashcardDeck({
       </div>
 
       {/* Zone de la carte */}
-      <div className="bg-slate-50 px-6 py-6">
+      <div className="bg-slate-50 px-6 py-6" style={{ position: "relative" }}>
+        {/* Overlay feedback */}
+        {feedback && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 50,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "1rem",
+              backgroundColor: feedback === "known" ? "rgba(16,185,129,0.85)" : "rgba(244,63,94,0.85)",
+              pointerEvents: "none",
+            }}
+          >
+            <span style={{ fontSize: "3rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
+            <span style={{ color: "#fff", fontWeight: 800, fontSize: "1.25rem", marginTop: "0.5rem" }}>
+              {feedback === "known" ? "Maîtrisé !" : "À revoir"}
+            </span>
+          </div>
+        )}
         <button
           onClick={() => !feedback && setFlipped((f) => !f)}
           className="flashcard-perspective w-full"
-          style={{ minHeight: 220 }}
+          style={{ minHeight: 220, position: "relative" }}
         >
           <div className={`flashcard-inner ${flipped ? "is-flipped" : ""}`}>
             {/* Recto */}
-            <div
-              className="flashcard-face flashcard-front rounded-2xl border-2 shadow-sm"
-              style={{
-                borderColor: feedback === "known" ? "#34d399" : feedback === "unknown" ? "#fb7185" : "#c7d2fe",
-                backgroundColor: feedback === "known" ? "#ecfdf5" : feedback === "unknown" ? "#fff1f2" : "#ffffff",
-                transition: "background-color 0.3s, border-color 0.3s",
-              }}
-            >
+            <div className="flashcard-face flashcard-front rounded-2xl border-2 border-indigo-200 bg-white shadow-sm">
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
-                {feedback === "known" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#d1fae5", color: "#065f46", borderColor: "#6ee7b7" }}>
-                    ✓ Maîtrisé !
-                  </span>
-                )}
-                {feedback === "unknown" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#ffe4e6", color: "#9f1239", borderColor: "#fda4af" }}>
-                    ↩ À revoir
-                  </span>
-                )}
-                {!feedback && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-100">
-                    Notion à définir
-                  </span>
-                )}
-                <p
-                  className="text-2xl font-extrabold leading-snug"
-                  style={{ color: feedback === "known" ? "#065f46" : feedback === "unknown" ? "#9f1239" : "#0f172a", transition: "color 0.3s" }}
-                >
-                  {card.front}
-                </p>
-                {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>}
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-100">
+                  Notion à définir
+                </span>
+                <p className="text-2xl font-extrabold text-ink-900 leading-snug">{card.front}</p>
+                <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>
               </div>
             </div>
             {/* Verso */}
-            <div
-              className="flashcard-face flashcard-back rounded-2xl border-2 shadow-sm"
-              style={{
-                borderColor: feedback === "known" ? "#34d399" : feedback === "unknown" ? "#fb7185" : "#ddd6fe",
-                backgroundColor: feedback === "known" ? "#ecfdf5" : feedback === "unknown" ? "#fff1f2" : "#f5f3ff",
-                transition: "background-color 0.3s, border-color 0.3s",
-              }}
-            >
+            <div className="flashcard-face flashcard-back rounded-2xl border-2 border-violet-200 shadow-sm">
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
-                {feedback === "known" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#d1fae5", color: "#065f46", borderColor: "#6ee7b7" }}>
-                    ✓ Maîtrisé !
-                  </span>
-                )}
-                {feedback === "unknown" && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ backgroundColor: "#ffe4e6", color: "#9f1239", borderColor: "#fda4af" }}>
-                    ↩ À revoir
-                  </span>
-                )}
-                {!feedback && (
-                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 border border-violet-200">
-                    Définition
-                  </span>
-                )}
-                <p
-                  className="text-base font-medium leading-relaxed"
-                  style={{ color: feedback === "known" ? "#065f46" : feedback === "unknown" ? "#9f1239" : "#1e293b", transition: "color 0.3s" }}
-                >
-                  {card.back}
-                </p>
-                {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>}
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 border border-violet-200">
+                  Définition
+                </span>
+                <p className="text-base font-medium text-ink-800 leading-relaxed">{card.back}</p>
+                <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>
               </div>
             </div>
           </div>
