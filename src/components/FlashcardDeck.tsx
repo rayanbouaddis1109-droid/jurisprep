@@ -15,6 +15,7 @@ export function FlashcardDeck({
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState<Set<number>>(new Set());
+  const [feedback, setFeedback] = useState<"known" | "unknown" | null>(null);
 
   if (cards.length === 0) return null;
 
@@ -53,7 +54,11 @@ export function FlashcardDeck({
       s.add(cardId);
       return s;
     });
-    next();
+    setFeedback("known");
+    setTimeout(() => {
+      setFeedback(null);
+      next();
+    }, 500);
   }
 
   function markUnknown() {
@@ -62,7 +67,11 @@ export function FlashcardDeck({
       s.delete(cardId);
       return s;
     });
-    next();
+    setFeedback("unknown");
+    setTimeout(() => {
+      setFeedback(null);
+      next();
+    }, 500);
   }
 
   return (
@@ -111,29 +120,73 @@ export function FlashcardDeck({
       {/* Zone de la carte */}
       <div className="bg-slate-50 px-6 py-6">
         <button
-          onClick={() => setFlipped((f) => !f)}
+          onClick={() => !feedback && setFlipped((f) => !f)}
           className="flashcard-perspective w-full"
           style={{ minHeight: 220 }}
         >
           <div className={`flashcard-inner ${flipped ? "is-flipped" : ""}`}>
             {/* Recto */}
-            <div className="flashcard-face flashcard-front rounded-2xl border-2 border-indigo-200 bg-white shadow-sm">
+            <div
+              className={`flashcard-face flashcard-front rounded-2xl border-2 shadow-sm transition-colors duration-300 ${
+                feedback === "known"
+                  ? "border-emerald-400 bg-emerald-50"
+                  : feedback === "unknown"
+                    ? "border-rose-400 bg-rose-50"
+                    : "border-indigo-200 bg-white"
+              }`}
+            >
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-100">
-                  Notion à définir
-                </span>
-                <p className="text-2xl font-extrabold text-ink-900 leading-snug">{card.front}</p>
-                <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>
+                {feedback === "known" && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                    ✓ Maîtrisé !
+                  </span>
+                )}
+                {feedback === "unknown" && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700 border border-rose-200">
+                    ↩ À revoir
+                  </span>
+                )}
+                {!feedback && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-100">
+                    Notion à définir
+                  </span>
+                )}
+                <p className={`text-2xl font-extrabold leading-snug transition-colors duration-300 ${
+                  feedback === "known" ? "text-emerald-800" : feedback === "unknown" ? "text-rose-800" : "text-ink-900"
+                }`}>{card.front}</p>
+                {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour voir la définition</p>}
               </div>
             </div>
             {/* Verso */}
-            <div className="flashcard-face flashcard-back rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50 shadow-sm">
+            <div
+              className={`flashcard-face flashcard-back rounded-2xl border-2 shadow-sm transition-colors duration-300 ${
+                feedback === "known"
+                  ? "border-emerald-400 bg-emerald-50"
+                  : feedback === "unknown"
+                    ? "border-rose-400 bg-rose-50"
+                    : "border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50"
+              }`}
+            >
               <div className="flex flex-col items-center justify-center h-full px-8 py-8 text-center">
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 border border-violet-200">
-                  Définition
-                </span>
-                <p className="text-base font-medium text-ink-800 leading-relaxed">{card.back}</p>
-                <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>
+                {feedback === "known" && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                    ✓ Maîtrisé !
+                  </span>
+                )}
+                {feedback === "unknown" && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700 border border-rose-200">
+                    ↩ À revoir
+                  </span>
+                )}
+                {!feedback && (
+                  <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 border border-violet-200">
+                    Définition
+                  </span>
+                )}
+                <p className={`text-base font-medium leading-relaxed transition-colors duration-300 ${
+                  feedback === "known" ? "text-emerald-800" : feedback === "unknown" ? "text-rose-800" : "text-ink-800"
+                }`}>{card.back}</p>
+                {!feedback && <p className="mt-5 text-xs text-ink-400">Clique pour retourner</p>}
               </div>
             </div>
           </div>
