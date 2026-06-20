@@ -118,19 +118,33 @@ export function FlashcardDeck({
       </div>
 
       {/* Zone de la carte */}
-      <div className="bg-slate-50 px-6 py-6" style={{ position: "relative" }}>
+      <div
+        style={{
+          padding: "1.5rem",
+          position: "relative",
+          backgroundColor: feedback === "known"
+            ? "rgba(16,185,129,0.15)"
+            : feedback === "unknown"
+            ? "rgba(244,63,94,0.15)"
+            : "#f8fafc",
+          transition: "background-color 0.2s ease",
+        }}
+      >
         {/* Overlay feedback */}
         {feedback && (
           <div
             style={{
               position: "absolute",
-              inset: 0,
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
               zIndex: 50,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: "1rem",
+              borderRadius: "0",
               backgroundColor: feedback === "known" ? "rgba(16,185,129,0.85)" : "rgba(244,63,94,0.85)",
               pointerEvents: "none",
             }}
