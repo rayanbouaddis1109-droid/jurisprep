@@ -130,32 +130,26 @@ export function FlashcardDeck({
           transition: "background-color 0.2s ease",
         }}
       >
-        {/* Overlay feedback */}
-        {feedback && (
+        {feedback ? (
           <div
             style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 9999,
+              minHeight: 220,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: feedback === "known" ? "rgba(16,185,129,0.90)" : "rgba(244,63,94,0.90)",
-              pointerEvents: "none",
+              borderRadius: "1rem",
+              backgroundColor: feedback === "known" ? "#10b981" : "#f43f5e",
             }}
           >
-            <span style={{ fontSize: "5rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
-            <span style={{ color: "#fff", fontWeight: 900, fontSize: "2rem", marginTop: "1rem" }}>
+            <span style={{ fontSize: "4rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
+            <span style={{ color: "#fff", fontWeight: 900, fontSize: "1.75rem", marginTop: "0.75rem" }}>
               {feedback === "known" ? "Maîtrisé !" : "À revoir"}
             </span>
           </div>
-        )}
+        ) : (
         <button
-          onClick={() => !feedback && setFlipped((f) => !f)}
+          onClick={() => setFlipped((f) => !f)}
           className="flashcard-perspective w-full"
           style={{ minHeight: 220, position: "relative" }}
         >
@@ -182,6 +176,7 @@ export function FlashcardDeck({
             </div>
           </div>
         </button>
+        )}
 
         {/* Navigation */}
         <div className="mt-4 flex items-center justify-between gap-3">
