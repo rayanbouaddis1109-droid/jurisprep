@@ -134,23 +134,22 @@ export function FlashcardDeck({
         {feedback && (
           <div
             style={{
-              position: "absolute",
+              position: "fixed",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 50,
+              zIndex: 9999,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: "0",
-              backgroundColor: feedback === "known" ? "rgba(16,185,129,0.85)" : "rgba(244,63,94,0.85)",
+              backgroundColor: feedback === "known" ? "rgba(16,185,129,0.90)" : "rgba(244,63,94,0.90)",
               pointerEvents: "none",
             }}
           >
-            <span style={{ fontSize: "3rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
-            <span style={{ color: "#fff", fontWeight: 800, fontSize: "1.25rem", marginTop: "0.5rem" }}>
+            <span style={{ fontSize: "5rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
+            <span style={{ color: "#fff", fontWeight: 900, fontSize: "2rem", marginTop: "1rem" }}>
               {feedback === "known" ? "Maîtrisé !" : "À revoir"}
             </span>
           </div>
