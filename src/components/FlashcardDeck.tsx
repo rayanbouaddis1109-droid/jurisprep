@@ -58,7 +58,7 @@ export function FlashcardDeck({
     setTimeout(() => {
       setFeedback(null);
       next();
-    }, 500);
+    }, 1500);
   }
 
   function markUnknown() {
@@ -71,7 +71,7 @@ export function FlashcardDeck({
     setTimeout(() => {
       setFeedback(null);
       next();
-    }, 500);
+    }, 1500);
   }
 
   return (
