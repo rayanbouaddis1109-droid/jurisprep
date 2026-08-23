@@ -79,30 +79,31 @@ export default async function SubjectPage({ params }: { params: { slug: string }
       : `/licence/${levelSlug(s.level)}`;
 
   return (
-    <div>
-      <section className="bg-gradient-to-b from-indigo-50 to-white">
+    <div style={{ background: "#FFF8EE", minHeight: "100vh", color: "#2C1810" }}>
+      <section style={{ background: "#FFF8EE" }}>
         <div className="mx-auto max-w-6xl px-4 py-10">
           <Link
             href={backHref}
-            className="inline-flex items-center gap-1 text-sm text-ink-600 hover:text-indigo-600"
+            className="inline-flex items-center gap-1 text-sm transition hover:opacity-70"
+            style={{ color: "#7A5C4A" }}
           >
             <ArrowLeft className="h-4 w-4" /> Retour
           </Link>
           <div className="mt-4 flex items-start gap-3">
-            <BookOpen className="mt-1 h-8 w-8 text-indigo-600" />
+            <BookOpen className="mt-1 h-8 w-8" style={{ color: "#E07B39" }} />
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-indigo-700">
+                <span className="rounded-full px-2 py-0.5 font-semibold" style={{ background: "#FFF0E6", color: "#E07B39" }}>
                   {levelLabel(s.level)}
                 </span>
                 {s.semester && (
-                  <span className="rounded-full bg-ink-100 px-2 py-0.5 text-ink-700">
+                  <span className="rounded-full px-2 py-0.5" style={{ background: "#EDE0CC", color: "#7A5C4A" }}>
                     {s.semester}
                   </span>
                 )}
               </div>
-              <h1 className="mt-2 text-3xl font-bold text-ink-900">{s.name}</h1>
-              {s.description && <p className="mt-2 text-ink-600">{s.description}</p>}
+              <h1 className="mt-2 text-3xl font-bold" style={{ color: "#2C1810" }}>{s.name}</h1>
+              {s.description && <p className="mt-2" style={{ color: "#7A5C4A" }}>{s.description}</p>}
             </div>
           </div>
         </div>

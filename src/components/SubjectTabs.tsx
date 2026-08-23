@@ -61,15 +61,14 @@ export function SubjectTabs({
           <button
             key={t.key}
             onClick={() => setActive(t.key)}
-            className={`flex items-center gap-2 rounded-t-md px-4 py-2 text-sm transition ${
-              active === t.key
-                ? "border-b-2 border-indigo-600 text-indigo-700"
-                : "text-ink-600 hover:text-indigo-600"
-            }`}
+            className={`flex items-center gap-2 rounded-t-md px-4 py-2 text-sm transition`}
+            style={active === t.key
+              ? { borderBottom: "2px solid #E07B39", color: "#E07B39" }
+              : { color: "#7A5C4A" }}
           >
             {t.icon}
             {t.label}
-            <span className="rounded-full bg-ink-100 px-2 py-0.5 text-xs text-ink-700">
+            <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: "#EDE0CC", color: "#7A5C4A" }}>
               {t.count}
             </span>
           </button>
@@ -90,7 +89,7 @@ export function SubjectTabs({
 
 function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-ink-300 p-8 text-center text-ink-600">
+    <div className="rounded-lg p-8 text-center text-sm" style={{ border: "1.5px dashed #EDE0CC", color: "#7A5C4A" }}>
       Aucun contenu publié pour {label} pour le moment.
     </div>
   );
@@ -106,31 +105,31 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
           <button
             key={s.id}
             onClick={() => setOpenId(s.id)}
-            className={`block w-full rounded-md border px-3 py-2 text-left text-sm transition ${
-              openId === s.id
-                ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                : "border-ink-200 bg-white hover:border-indigo-200"
-            }`}
+            className="block w-full rounded-md border px-3 py-2 text-left text-sm transition"
+            style={openId === s.id
+              ? { borderColor: "#E07B39", background: "#FFF0E6", color: "#E07B39" }
+              : { borderColor: "#EDE0CC", background: "#FFFDF8", color: "#2C1810" }}
           >
             <div className="font-medium">{s.title}</div>
-            {s.chapter && <div className="text-xs text-ink-500">{s.chapter}</div>}
+            {s.chapter && <div className="text-xs" style={{ color: "#7A5C4A" }}>{s.chapter}</div>}
           </button>
         ))}
       </aside>
-      <article className="rounded-xl border border-ink-200 bg-white p-6">
+      <article className="rounded-xl p-6" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
         {sheets
           .filter((s) => s.id === openId)
           .map((s) => (
             <div key={s.id}>
-              <header className="mb-4 border-b border-ink-100 pb-4">
-                <h2 className="text-2xl font-bold text-ink-900">{s.title}</h2>
-                {s.summary && <p className="mt-2 text-ink-600">{s.summary}</p>}
+              <header className="mb-4 pb-4" style={{ borderBottom: "1px solid #EDE0CC" }}>
+                <h2 className="text-2xl font-bold" style={{ color: "#2C1810" }}>{s.title}</h2>
+                {s.summary && <p className="mt-2" style={{ color: "#7A5C4A" }}>{s.summary}</p>}
                 {s.key_concepts && s.key_concepts.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {s.key_concepts.map((c) => (
                       <span
                         key={c}
-                        className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700"
+                        className="rounded-full px-2 py-0.5 text-xs font-semibold"
+                        style={{ background: "#FFF0E6", color: "#E07B39" }}
                       >
                         {c}
                       </span>
@@ -138,7 +137,7 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
                   </div>
                 )}
                 {s.estimated_read_time && (
-                  <p className="mt-2 text-xs text-ink-500">
+                  <p className="mt-2 text-xs" style={{ color: "#7A5C4A" }}>
                     {s.estimated_read_time} min de lecture
                   </p>
                 )}
@@ -168,10 +167,11 @@ function ArretsPanel({ items }: { items: CaseLawSheet[] }) {
       {items.map((a) => (
         <article
           key={a.id}
-          className="rounded-xl border border-ink-200 bg-white p-5 transition hover:shadow-md"
+          className="rounded-xl p-5 transition hover:shadow-md"
+          style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
         >
-          <h3 className="text-lg font-bold text-ink-900">{a.title}</h3>
-          <p className="mt-1 text-xs text-ink-500">
+          <h3 className="text-lg font-bold" style={{ color: "#2C1810" }}>{a.title}</h3>
+          <p className="mt-1 text-xs" style={{ color: "#7A5C4A" }}>
             {a.jurisdiction} · {a.reference}
           </p>
           <div className="mt-4 space-y-3 text-sm">
@@ -222,10 +222,10 @@ function ArretsPanel({ items }: { items: CaseLawSheet[] }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#E07B39" }}>
         {title}
       </div>
-      <div className="mt-1 text-ink-700">{children}</div>
+      <div className="mt-1" style={{ color: "#2C1810" }}>{children}</div>
     </div>
   );
 }
@@ -235,7 +235,7 @@ function VideosPanel({ videos }: { videos: Video[] }) {
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {videos.map((v) => (
-        <article key={v.id} className="rounded-xl border border-ink-200 bg-white">
+        <article key={v.id} className="rounded-xl" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
           <div className="relative w-full rounded-t-xl overflow-hidden bg-black" style={{ paddingTop: "56.25%" }}>
             {v.video_url.includes("youtube.com") || v.video_url.includes("youtu.be") ? (
               <iframe
@@ -363,7 +363,7 @@ function ExerciseDossier({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={`overflow-hidden rounded-2xl border-2 ${color.border} bg-white shadow-sm`}>
+    <div className={`overflow-hidden rounded-2xl border-2 ${color.border} shadow-sm`} style={{ background: "#FFFDF8" }}>
       <button
         onClick={() => setOpen((o) => !o)}
         className={`flex w-full items-center gap-4 px-5 py-4 text-left transition hover:brightness-95 ${color.light}`}
@@ -415,7 +415,7 @@ function ExerciseCard({
   };
 
   return (
-    <article className="bg-white px-6 py-5">
+    <article className="px-6 py-5" style={{ background: "#FFFDF8" }}>
       <div className="flex items-start gap-3">
         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${color.bg} text-white text-sm font-bold`}>
           {index}
@@ -441,7 +441,7 @@ function ExerciseCard({
           className={`rounded-lg border-2 px-3 py-1.5 text-xs font-bold transition ${
             showStatement
               ? `${color.bg} text-white border-transparent`
-              : `${color.border} ${color.text} bg-white`
+              : `${color.border} ${color.text} bg-[#FFFDF8]`
           }`}
         >
           {showStatement ? "▲ Masquer le sujet" : "▼ Voir le sujet"}
