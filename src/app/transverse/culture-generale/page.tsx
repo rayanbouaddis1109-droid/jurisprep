@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CultureGeneralePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: subject } = await supabase
     .from("subjects")
     .select("*")

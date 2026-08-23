@@ -49,7 +49,7 @@ const FEATURES = [
 ];
 
 export default async function HomePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { count: subjectsCount } = await supabase
     .from("subjects")
     .select("*", { count: "exact", head: true })

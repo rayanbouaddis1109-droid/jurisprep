@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AnglaisJuridiquePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: subject } = await supabase
     .from("subjects")
     .select("*")

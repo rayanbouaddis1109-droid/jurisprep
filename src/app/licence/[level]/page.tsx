@@ -38,9 +38,10 @@ const LEVEL_META: Record<
 export async function generateMetadata({
   params,
 }: {
-  params: { level: string };
+  params: Promise<{ level: string }>;
 }): Promise<Metadata> {
-  const meta = LEVEL_META[params.level];
+  const { level } = await params;
+  const meta = LEVEL_META[level];
   if (!meta) return {};
   return {
     title: meta.title,
@@ -51,13 +52,14 @@ export async function generateMetadata({
 export default async function LevelPage({
   params,
 }: {
-  params: { level: string };
+  params: Promise<{ level: string }>;
 }) {
-  const meta = LEVEL_META[params.level];
+  const { level: levelParam } = await params;
+  const meta = LEVEL_META[levelParam];
   if (!meta) notFound();
 
-  const level = slugToLevel(params.level);
-  const supabase = createClient();
+  const level = slugToLevel(levelParam);
+  const supabase = await createClient();
   const { data: subjects } = await supabase
     .from("subjects")
     .select("*")
@@ -93,6 +95,7 @@ export default async function LevelPage({
             </div>
           </div>
           <p className="mt-4 max-w-2xl" style={{ color: "#7A5C4A" }}>
+
             Retrouve les matières organisées par semestre. Chaque matière contient des
             fiches de révision, des fiches d&apos;arrêts, des quiz, des flashcards et des exercices
             corrigés.

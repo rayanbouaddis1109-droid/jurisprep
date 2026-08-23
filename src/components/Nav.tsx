@@ -5,7 +5,7 @@ import { LogoutButton } from "./LogoutButton";
 import { MobileMenu } from "./MobileMenu";
 
 export async function Nav() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

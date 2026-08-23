@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jurisprep-nextjs.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: subjects } = await supabase
     .from("subjects")
     .select("slug, created_at")

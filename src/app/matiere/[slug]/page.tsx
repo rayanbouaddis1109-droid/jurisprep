@@ -4,25 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
-  const supabase = createClient();
-  const { data: subject } = await supabase
-    .from("subjects")
-    .select("name, description")
-    .eq("slug", params.slug)
-    .eq("is_published", true)
-    .maybeSingle();
-  if (!subject) return {};
-  return {
-    title: subject.name,
-    description: subject.description ?? `Fiches, quiz, flashcards et exercices corrigés — ${subject.name}.`,
-  };
-}
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
@@ -36,13 +17,34 @@ import type {
   Video,
 } from "@/lib/types";
 
-export default async function SubjectPage({ params }: { params: { slug: string } }) {
-  const supabase = createClient();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: subject } = await supabase
+    .from("subjects")
+    .select("name, description")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!subject) return {};
+  return {
+    title: subject.name,
+    description: subject.description ?? `Fiches, quiz, flashcards et exercices corrigés — ${subject.name}.`,
+  };
+}
+
+export default async function SubjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
 
   const { data: subject } = await supabase
     .from("subjects")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
 
@@ -50,42 +52,12 @@ export default async function SubjectPage({ params }: { params: { slug: string }
 
   const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] =
     await Promise.all([
-      supabase
-        .from("revision_sheets")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("order", { ascending: true }),
-      supabase
-        .from("case_law_sheets")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("decision_date", { ascending: false }),
-      supabase
-        .from("videos")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("order", { ascending: true }),
-      supabase
-        .from("quizzes")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("created_at", { ascending: true }),
-      supabase
-        .from("flashcards")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("created_at", { ascending: true }),
-      supabase
-        .from("exercises")
-        .select("*")
-        .eq("subject_id", subject.id)
-        .eq("is_published", true)
-        .order("created_at", { ascending: true }),
+      supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+      supabase.from("case_law_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
+      supabase.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+      supabase.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+      supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+      supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
     ]);
 
   const s: Subject = subject;
