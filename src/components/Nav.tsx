@@ -11,34 +11,31 @@ export async function Nav() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50" style={{ background: "rgba(255,248,238,0.9)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1.5px solid #EDE0CC" }}>
       <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 text-slate-900">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-            <Scale className="h-4 w-4 text-white" />
+        <Link href="/" className="flex items-center gap-2.5" style={{ color: "#2C1810", textDecoration: "none" }}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg font-extrabold text-sm text-white"
+            style={{ background: "#E07B39", letterSpacing: "-0.02em" }}>
+            JP
           </div>
-          <span className="text-xl font-extrabold tracking-tight">
-            Juris<span className="text-indigo-600">Prép</span>
+          <span className="text-lg font-extrabold tracking-tight" style={{ letterSpacing: "-0.02em" }}>
+            Juris<span style={{ color: "#E07B39" }}>Prép</span>
           </span>
         </Link>
 
         {/* Links */}
-        <div className="hidden items-center gap-1 text-sm text-slate-600 md:flex">
+        <div className="hidden items-center gap-1 text-sm md:flex" style={{ color: "#7A5C4A" }}>
           {[
             { href: "/licence/lyceen", label: "Lycéen" },
-          { href: "/licence/l1", label: "L1" },
+            { href: "/licence/l1", label: "L1" },
             { href: "/licence/l2", label: "L2" },
             { href: "/licence/l3", label: "L3" },
-            { href: "/transverse/anglais-juridique", label: "Anglais juridique" },
-            { href: "/transverse/culture-generale", label: "Culture générale" },
             { href: "/tarifs", label: "Tarifs" },
           ].map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded-lg px-3 py-1.5 font-medium transition hover:bg-slate-100 hover:text-slate-900"
-            >
+            <Link key={href} href={href}
+              className="rounded-lg px-3 py-1.5 font-medium transition hover:text-[#2C1810]"
+              style={{ color: "#7A5C4A" }}>
               {label}
             </Link>
           ))}
@@ -47,31 +44,28 @@ export async function Nav() {
         {/* Right */}
         <div className="flex items-center gap-2 text-sm">
           <MobileMenu isLoggedIn={!!user} />
-          <Link
-            href="/assistant"
-            className="hidden items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 font-medium text-indigo-700 transition hover:bg-indigo-100 md:flex"
-          >
+          <Link href="/assistant"
+            className="hidden items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition md:flex"
+            style={{ background: "#FFF0E6", color: "#E07B39" }}>
             <MessageSquare className="h-4 w-4" /> Assistant IA
           </Link>
           {user ? (
             <>
-              <span className="hidden truncate max-w-[140px] text-slate-500 md:inline">
+              <span className="hidden truncate max-w-[140px] md:inline" style={{ color: "#7A5C4A" }}>
                 {user.email}
               </span>
               <LogoutButton />
             </>
           ) : (
             <>
-              <Link
-                href="/auth/login"
-                className="hidden rounded-lg px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 md:block"
-              >
+              <Link href="/auth/login"
+                className="hidden rounded-lg px-3 py-1.5 font-medium transition hover:bg-[#EDE0CC] md:block"
+                style={{ color: "#2C1810" }}>
                 Connexion
               </Link>
-              <Link
-                href="/auth/signup"
-                className="hidden rounded-lg bg-indigo-600 px-4 py-1.5 font-semibold text-white shadow-sm transition hover:bg-indigo-700 md:block"
-              >
+              <Link href="/auth/signup"
+                className="hidden rounded-full px-4 py-1.5 font-bold text-white transition hover:opacity-90 md:block"
+                style={{ background: "#2C1810" }}>
                 Inscription
               </Link>
             </>
@@ -84,7 +78,7 @@ export async function Nav() {
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-900 text-slate-400">
+    <footer style={{ borderTop: "1.5px solid #EDE0CC", background: "#2C1810", color: "rgba(255,248,238,0.5)" }}>
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand */}
