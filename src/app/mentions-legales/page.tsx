@@ -91,6 +91,34 @@ export default function MentionsLegalesPage() {
         </p>
       </section>
 
+      <section className="mb-10">
+        <h2 className="text-xl font-bold mb-3">Conditions générales d&apos;utilisation</h2>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          L&apos;accès au service est réservé aux personnes majeures ou, pour les mineurs, sous
+          responsabilité parentale. En créant un compte, tu acceptes les présentes conditions.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          L&apos;utilisation du contenu est strictement personnelle et non commerciale. Il est interdit
+          de reproduire, redistribuer, revendre ou exploiter de quelque façon que ce soit les
+          ressources de la plateforme (fiches, quiz, flashcards, exercices) sans autorisation
+          écrite préalable.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          JurisPrép se réserve le droit de suspendre ou supprimer tout compte en cas d&apos;utilisation
+          abusive, de tentative de contournement des mesures techniques, ou de violation des
+          présentes conditions.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          Les abonnements payants (lorsqu&apos;ils seront activés) sont sans engagement et résiliables
+          à tout moment depuis les paramètres du compte. Aucun prélèvement automatique ne sera
+          effectué sans notification préalable.
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          JurisPrép se réserve le droit de modifier ces conditions à tout moment. Les
+          utilisateurs seront informés par email en cas de modification substantielle.
+        </p>
+      </section>
+
       <section>
         <h2 className="text-xl font-bold mb-3">Contact</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>

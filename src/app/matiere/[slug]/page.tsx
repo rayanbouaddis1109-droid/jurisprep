@@ -3,6 +3,26 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const supabase = createClient();
+  const { data: subject } = await supabase
+    .from("subjects")
+    .select("name, description")
+    .eq("slug", params.slug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!subject) return {};
+  return {
+    title: subject.name,
+    description: subject.description ?? `Fiches, quiz, flashcards et exercices corrigés — ${subject.name}.`,
+  };
+}
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
