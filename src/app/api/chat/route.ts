@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const MAX_MESSAGES = 20;
+const MAX_MESSAGE_LENGTH = 2000;
+
+// In-memory rate limiter — 10 requêtes par minute par IP
+// Note : réinitialisé à chaque redémarrage de l'instance serverless.
+// Pour une protection cross-instance, utiliser Upstash Redis.
+const ipRequests = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const windowMs = 60_000;
+  const limit = 10;
+  const record = ipRequests.get(ip);
+  if (!record || now > record.resetAt) {
+    ipRequests.set(ip, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+  if (record.count >= limit) return false;
+  record.count++;
+  return true;
+}
 
 const SYSTEM_PROMPT = `Tu es le Professeur Legrand, un éminent professeur de droit français reconnu pour la clarté et la rigueur de ses explications. Tu as enseigné pendant 30 ans dans les meilleures facultés de droit françaises (Paris I Panthéon-Sorbonne, Paris II Panthéon-Assas).
 
@@ -20,11 +41,42 @@ DOMAINES : Droit civil, constitutionnel, pénal, administratif, européen, inter
 REFUS : finance personnelle, médecine, technologie, divertissement, etc.`;
 
 export async function POST(req: NextRequest) {
-  try {
-    const { messages } = await req.json();
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-    if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: "Messages invalides" }, { status: 400 });
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Trop de requêtes. Réessaie dans une minute." },
+      { status: 429 }
+    );
+  }
+
+  try {
+    const body = await req.json().catch(() => null);
+
+    if (!body || !Array.isArray(body.messages)) {
+      return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
+    }
+
+    const { messages } = body;
+
+    if (messages.length > MAX_MESSAGES) {
+      return NextResponse.json(
+        { error: "Historique trop long." },
+        { status: 400 }
+      );
+    }
+
+    for (const m of messages) {
+      if (!m || typeof m.content !== "string" || m.content.length > MAX_MESSAGE_LENGTH) {
+        return NextResponse.json(
+          { error: "Message trop long ou invalide." },
+          { status: 400 }
+        );
+      }
+      if (!["user", "assistant"].includes(m.role)) {
+        return NextResponse.json({ error: "Rôle invalide." }, { status: 400 });
+      }
     }
 
     const response = await fetch(GROQ_API_URL, {

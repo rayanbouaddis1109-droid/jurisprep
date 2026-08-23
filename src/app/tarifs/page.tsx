@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Tarifs",
+  description:
+    "Accède gratuitement à JurisPrép. Découvre nos formules pour lycéens, L1, L2 et L3 — sans engagement.",
+};
 
 const PLANS = [
   {
@@ -36,10 +43,10 @@ const PLANS = [
     name: "Cursus complet",
     price: "19,90 €",
     period: "/ mois",
-    desc: "Tout JurisPrép, du lycée à la L3 — idéal pour anticiper.",
+    desc: "Tout JurisPrép, du lycée à la L3.",
     cta: { label: "S'abonner", href: "/auth/signup" },
     features: [
-      "Accès à TOUS les niveaux (Lycéen, L1, L2, L3)",
+      "Accès à tous les niveaux (Lycéen, L1, L2, L3)",
       "Tous les modules transverses",
       "Toutes les fiches, quiz, exercices, vidéos",
       "Téléchargement PDF des fiches",
@@ -51,58 +58,90 @@ const PLANS = [
 
 export default function TarifsPage() {
   return (
-    <div>
-      <section className="bg-gradient-to-b from-indigo-50 to-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-700">
-            <Sparkles className="h-4 w-4" />
-            Sans engagement, résiliable à tout moment
-          </div>
-          <h1 className="mt-6 text-4xl font-bold text-ink-900 sm:text-5xl">Nos formules</h1>
-          <p className="mt-3 text-ink-600">
-            Choisis l&apos;abonnement qui correspond à ton parcours. Tu peux essayer gratuitement avant
-            de t&apos;engager.
-          </p>
-        </div>
+    <div style={{ background: "#FFF8EE", color: "#2C1810" }}>
+      <section className="px-5 pt-14 pb-10 text-center" style={{ maxWidth: 680, margin: "0 auto" }}>
+        <span
+          className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest mb-6"
+          style={{ background: "#FFF0E6", color: "#E07B39" }}
+        >
+          Sans engagement, résiliable à tout moment
+        </span>
+        <h1
+          className="font-extrabold tracking-tight mb-4"
+          style={{ fontSize: "clamp(2rem, 7vw, 3rem)", letterSpacing: "-0.03em" }}
+        >
+          Nos formules
+        </h1>
+        <p style={{ color: "#7A5C4A", fontSize: "1rem", lineHeight: 1.65 }}>
+          Commence gratuitement. Passe à un abonnement si tu veux accéder à tout le contenu.
+        </p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="grid gap-6 lg:grid-cols-3">
+      <section className="px-5 pb-16" style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div className="grid gap-5 lg:grid-cols-3">
           {PLANS.map((p) => (
             <div
               key={p.name}
-              className={`flex flex-col rounded-xl border-2 p-6 transition ${
-                p.highlight
-                  ? "border-indigo-600 bg-white shadow-lg"
-                  : "border-ink-200 bg-white"
-              }`}
+              className="flex flex-col rounded-2xl p-6"
+              style={{
+                background: p.highlight ? "#2C1810" : "#FFFDF8",
+                border: p.highlight ? "none" : "1.5px solid #EDE0CC",
+              }}
             >
               {p.highlight && (
-                <div className="mb-3 inline-flex w-fit items-center gap-1 rounded-full bg-indigo-600 px-3 py-0.5 text-xs font-medium text-white">
+                <div
+                  className="mb-3 inline-flex w-fit items-center gap-1 rounded-full px-3 py-0.5 text-xs font-bold"
+                  style={{ background: "#E07B39", color: "white" }}
+                >
                   Le plus populaire
                 </div>
               )}
-              <h2 className="text-2xl font-bold text-ink-900">{p.name}</h2>
-              <p className="mt-1 text-sm text-ink-600">{p.desc}</p>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-ink-900">{p.price}</span>
-                <span className="text-sm text-ink-500">{p.period}</span>
+              <h2
+                className="text-2xl font-bold mb-1"
+                style={{ color: p.highlight ? "#FFF8EE" : "#2C1810" }}
+              >
+                {p.name}
+              </h2>
+              <p
+                className="text-sm mb-4"
+                style={{ color: p.highlight ? "rgba(255,248,238,0.6)" : "#7A5C4A" }}
+              >
+                {p.desc}
+              </p>
+              <div className="flex items-baseline gap-1 mb-6">
+                <span
+                  className="text-4xl font-extrabold"
+                  style={{ color: p.highlight ? "#FFF8EE" : "#2C1810", letterSpacing: "-0.04em" }}
+                >
+                  {p.price}
+                </span>
+                <span style={{ color: p.highlight ? "rgba(255,248,238,0.5)" : "#7A5C4A", fontSize: 13 }}>
+                  {p.period}
+                </span>
               </div>
-              <ul className="mt-6 flex-1 space-y-3">
+              <ul className="flex-1 space-y-3 mb-6">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-ink-700">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" />
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-sm"
+                    style={{ color: p.highlight ? "rgba(255,248,238,0.8)" : "#7A5C4A" }}
+                  >
+                    <CheckCircle2
+                      className="mt-0.5 h-4 w-4 flex-shrink-0"
+                      style={{ color: p.highlight ? "#0DB37A" : "#0DB37A" }}
+                    />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 href={p.cta.href}
-                className={`mt-6 inline-block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition ${
-                  p.highlight
-                    ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                    : "border border-ink-300 bg-white text-ink-800 hover:border-indigo-400"
-                }`}
+                className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90"
+                style={{
+                  background: p.highlight ? "#E07B39" : "#2C1810",
+                  color: "white",
+                  padding: "12px 20px",
+                }}
               >
                 {p.cta.label}
               </Link>
@@ -110,12 +149,15 @@ export default function TarifsPage() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-xl border border-ink-200 bg-ink-50 p-6 text-sm text-ink-700">
-          <p className="font-semibold text-ink-900">À noter</p>
-          <p className="mt-2">
-            JurisPrép est actuellement en accès gratuit pendant la phase de lancement. Les abonnements
-            payants seront activés progressivement — tu seras notifié(e) avant tout passage à un plan
-            payant. Aucun prélèvement automatique.
+        <div
+          className="mt-10 rounded-2xl p-6 text-sm"
+          style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC", color: "#7A5C4A" }}
+        >
+          <p className="font-bold mb-2" style={{ color: "#2C1810" }}>Phase de lancement</p>
+          <p>
+            JurisPrép est actuellement en accès gratuit. Les abonnements payants seront activés
+            progressivement — tu seras notifié avant tout passage à un plan payant. Aucun
+            prélèvement automatique.
           </p>
         </div>
       </section>

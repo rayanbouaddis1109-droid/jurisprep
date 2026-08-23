@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Scale, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./LogoutButton";
 import { MobileMenu } from "./MobileMenu";
@@ -83,22 +83,34 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 text-white">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-                <Scale className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-2">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-lg font-extrabold text-sm text-white"
+                style={{ background: "#E07B39", letterSpacing: "-0.02em" }}
+              >
+                JP
               </div>
-              <span className="text-lg font-extrabold">
-                Juris<span className="text-indigo-400">Prép</span>
+              <span className="text-lg font-extrabold text-white">
+                Juris<span style={{ color: "#E07B39" }}>Prép</span>
               </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed">
               La plateforme tout-en-un pour réussir ses études de droit, du lycée à la L3.
             </p>
+            <p className="mt-3 text-sm">
+              <a
+                href="mailto:contact@jurisprep.fr"
+                className="transition hover:text-white"
+                style={{ color: "rgba(255,248,238,0.5)" }}
+              >
+                contact@jurisprep.fr
+              </a>
+            </p>
           </div>
 
           {/* Niveaux */}
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,248,238,0.3)" }}>
               Niveaux
             </p>
             {["Lycéen", "L1", "L2", "L3"].map((l) => (
@@ -114,7 +126,7 @@ export function Footer() {
 
           {/* Outils */}
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,248,238,0.3)" }}>
               Outils
             </p>
             {[
@@ -133,14 +145,15 @@ export function Footer() {
             ))}
           </div>
 
-          {/* Compte */}
+          {/* Légal */}
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
-              Compte
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,248,238,0.3)" }}>
+              Légal
             </p>
             {[
               { label: "Connexion", href: "/auth/login" },
               { label: "Inscription", href: "/auth/signup" },
+              { label: "Mentions légales", href: "/mentions-legales" },
             ].map(({ label, href }) => (
               <Link
                 key={href}
@@ -153,8 +166,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-slate-800 pt-6 text-center text-xs text-slate-600">
-          © {new Date().getFullYear()} JurisPrép — Contenu pédagogique original. Tous droits réservés.
+        <div
+          className="mt-10 pt-6 text-center text-xs"
+          style={{ borderTop: "1px solid rgba(255,248,238,0.08)", color: "rgba(255,248,238,0.25)" }}
+        >
+          © {new Date().getFullYear()} JurisPrép. Contenu pédagogique original. Tous droits réservés.
         </div>
       </div>
     </footer>
