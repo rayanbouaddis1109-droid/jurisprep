@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
+import { getUserPlan, hasFullAccess } from "@/lib/subscription";
 import type {
   CaseLawSheet,
   Exercise,
@@ -60,6 +61,9 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
     ]);
 
+  const plan = await getUserPlan();
+  const canAccess = hasFullAccess(plan);
+
   const s: Subject = subject;
   const backHref =
     s.level === "Transverse"
@@ -109,6 +113,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           quizzes={(quizzesRes.data ?? []) as Quiz[]}
           flashcards={(flashcardsRes.data ?? []) as Flashcard[]}
           exercises={(exercisesRes.data ?? []) as Exercise[]}
+          hasAccess={canAccess}
         />
       </section>
     </div>

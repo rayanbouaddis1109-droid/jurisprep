@@ -23,6 +23,7 @@ import type {
 } from "@/lib/types";
 import { QuizPlayer } from "./QuizPlayer";
 import { FlashcardDeck } from "./FlashcardDeck";
+import { PaywallBanner } from "./PaywallBanner";
 
 type TabKey = "fiches" | "arrets" | "videos" | "quiz" | "flashcards" | "exercices";
 
@@ -33,6 +34,7 @@ export function SubjectTabs({
   quizzes,
   flashcards,
   exercises,
+  hasAccess = false,
 }: {
   sheets: RevisionSheet[];
   caseLaw: CaseLawSheet[];
@@ -40,6 +42,7 @@ export function SubjectTabs({
   quizzes: Quiz[];
   flashcards: Flashcard[];
   exercises: Exercise[];
+  hasAccess?: boolean;
 }) {
   const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: sheets.length },
@@ -76,12 +79,18 @@ export function SubjectTabs({
       </div>
 
       <div className="mt-6">
-        {active === "fiches" && <FichesPanel sheets={sheets} />}
-        {active === "arrets" && <ArretsPanel items={caseLaw} />}
-        {active === "videos" && <VideosPanel videos={videos} />}
-        {active === "quiz" && <QuizzesPanel quizzes={quizzes} />}
-        {active === "flashcards" && <FlashcardsPanel flashcards={flashcards} />}
-        {active === "exercices" && <ExercisesPanel exercises={exercises} />}
+        {!hasAccess ? (
+          <PaywallBanner />
+        ) : (
+          <>
+            {active === "fiches" && <FichesPanel sheets={sheets} />}
+            {active === "arrets" && <ArretsPanel items={caseLaw} />}
+            {active === "videos" && <VideosPanel videos={videos} />}
+            {active === "quiz" && <QuizzesPanel quizzes={quizzes} />}
+            {active === "flashcards" && <FlashcardsPanel flashcards={flashcards} />}
+            {active === "exercices" && <ExercisesPanel exercises={exercises} />}
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
+import { SubscribeButton } from "@/components/SubscribeButton";
 
 export const metadata: Metadata = {
   title: "Tarifs",
@@ -14,7 +15,9 @@ const PLANS = [
     price: "0 €",
     period: "/ toujours",
     desc: "Découvre la plateforme et accède à un échantillon de contenu.",
-    cta: { label: "Commencer", href: "/auth/signup" },
+    priceId: null,
+    ctaLabel: "Commencer",
+    ctaHref: "/auth/signup",
     features: [
       "Accès à 1 matière par niveau",
       "3 quiz et 1 deck de flashcards",
@@ -28,7 +31,9 @@ const PLANS = [
     price: "9,90 €",
     period: "/ mois",
     desc: "L'accès complet pour réussir ton année. Sans engagement.",
-    cta: { label: "S'abonner", href: "/auth/signup" },
+    priceId: process.env.STRIPE_ETUDIANT_PRICE_ID ?? "",
+    ctaLabel: "S'abonner",
+    ctaHref: null,
     features: [
       "Toutes les matières de ton niveau (Lycéen, L1, L2 ou L3)",
       "Tous les quiz, flashcards et exercices corrigés",
@@ -44,7 +49,9 @@ const PLANS = [
     price: "19,90 €",
     period: "/ mois",
     desc: "Tout JurisPrép, du lycée à la L3.",
-    cta: { label: "S'abonner", href: "/auth/signup" },
+    priceId: process.env.STRIPE_CURSUS_PRICE_ID ?? "",
+    ctaLabel: "S'abonner",
+    ctaHref: null,
     features: [
       "Accès à tous les niveaux (Lycéen, L1, L2, L3)",
       "Tous les modules transverses",
@@ -128,37 +135,40 @@ export default function TarifsPage() {
                   >
                     <CheckCircle2
                       className="mt-0.5 h-4 w-4 flex-shrink-0"
-                      style={{ color: p.highlight ? "#0DB37A" : "#0DB37A" }}
+                      style={{ color: "#0DB37A" }}
                     />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
-              <Link
-                href={p.cta.href}
-                className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90"
-                style={{
-                  background: p.highlight ? "#E07B39" : "#2C1810",
-                  color: "white",
-                  padding: "12px 20px",
-                }}
-              >
-                {p.cta.label}
-              </Link>
+
+              {p.priceId ? (
+                <SubscribeButton
+                  priceId={p.priceId}
+                  className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+                  style={{
+                    background: p.highlight ? "#E07B39" : "#2C1810",
+                    color: "white",
+                    padding: "12px 20px",
+                  }}
+                >
+                  {p.ctaLabel}
+                </SubscribeButton>
+              ) : (
+                <Link
+                  href={p.ctaHref!}
+                  className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90"
+                  style={{
+                    background: p.highlight ? "#E07B39" : "#2C1810",
+                    color: "white",
+                    padding: "12px 20px",
+                  }}
+                >
+                  {p.ctaLabel}
+                </Link>
+              )}
             </div>
           ))}
-        </div>
-
-        <div
-          className="mt-10 rounded-2xl p-6 text-sm"
-          style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC", color: "#7A5C4A" }}
-        >
-          <p className="font-bold mb-2" style={{ color: "#2C1810" }}>Phase de lancement</p>
-          <p>
-            JurisPrép est actuellement en accès gratuit. Les abonnements payants seront activés
-            progressivement — tu seras notifié avant tout passage à un plan payant. Aucun
-            prélèvement automatique.
-          </p>
         </div>
       </section>
     </div>

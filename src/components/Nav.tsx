@@ -51,9 +51,11 @@ export async function Nav() {
           </Link>
           {user ? (
             <>
-              <span className="hidden truncate max-w-[140px] md:inline" style={{ color: "#7A5C4A" }}>
-                {user.email}
-              </span>
+              <Link href="/compte"
+                className="hidden rounded-lg px-3 py-1.5 font-medium transition hover:bg-[#EDE0CC] md:block"
+                style={{ color: "#2C1810" }}>
+                Mon compte
+              </Link>
               <LogoutButton />
             </>
           ) : (
