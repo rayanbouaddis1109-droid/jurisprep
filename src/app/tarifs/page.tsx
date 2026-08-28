@@ -170,6 +170,15 @@ export default function TarifsPage() {
             </div>
           ))}
         </div>
+
+        <p className="mt-6 text-center text-xs" style={{ color: "#7A5C4A" }}>
+          En t&apos;abonnant, tu acceptes les{" "}
+          <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
+            conditions générales de vente
+          </Link>
+          , notamment l&apos;accès immédiat au contenu et la renonciation au droit de rétractation.
+          Abonnement sans engagement, résiliable à tout moment.
+        </p>
       </section>
     </div>
   );

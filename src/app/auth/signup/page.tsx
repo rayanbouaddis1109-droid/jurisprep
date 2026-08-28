@@ -189,6 +189,14 @@ export default function SignupPage() {
           >
             {loading ? "Création…" : "Créer mon compte"}
           </button>
+
+          <p className="text-center text-xs" style={{ color: "#7A5C4A" }}>
+            En créant un compte, tu acceptes les{" "}
+            <Link href="/mentions-legales" className="underline" style={{ color: "#E07B39" }}>
+              conditions d&apos;utilisation
+            </Link>{" "}
+            et la politique de confidentialité.
+          </p>
         </form>
 
         <p className="mt-6 text-center text-sm" style={{ color: "#7A5C4A" }}>

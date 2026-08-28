@@ -51,18 +51,37 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
   if (!subject) notFound();
 
-  const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] =
-    await Promise.all([
-      supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-      supabase.from("case_law_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
-      supabase.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-      supabase.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
-      supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
-      supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
-    ]);
-
   const plan = await getUserPlan();
   const canAccess = hasFullAccess(plan);
+
+  // Un non-abonné ne reçoit que les compteurs : le contenu lui-même ne doit
+  // jamais quitter le serveur sans abonnement actif.
+  const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = canAccess
+    ? await Promise.all([
+        supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+        supabase.from("case_law_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
+        supabase.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+        supabase.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+        supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+        supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+      ])
+    : await Promise.all([
+        supabase.from("revision_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        supabase.from("case_law_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        supabase.from("videos").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        supabase.from("flashcards").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        supabase.from("exercises").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+      ]);
+
+  const counts = {
+    fiches: sheetsRes.count ?? sheetsRes.data?.length ?? 0,
+    arrets: caseLawRes.count ?? caseLawRes.data?.length ?? 0,
+    videos: videosRes.count ?? videosRes.data?.length ?? 0,
+    quiz: quizzesRes.count ?? quizzesRes.data?.length ?? 0,
+    flashcards: flashcardsRes.count ?? flashcardsRes.data?.length ?? 0,
+    exercices: exercisesRes.count ?? exercisesRes.data?.length ?? 0,
+  };
 
   const s: Subject = subject;
   const backHref =
@@ -114,6 +133,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           flashcards={(flashcardsRes.data ?? []) as Flashcard[]}
           exercises={(exercisesRes.data ?? []) as Exercise[]}
           hasAccess={canAccess}
+          counts={counts}
         />
       </section>
     </div>

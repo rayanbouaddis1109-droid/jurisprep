@@ -35,6 +35,7 @@ export function SubjectTabs({
   flashcards,
   exercises,
   hasAccess = false,
+  counts,
 }: {
   sheets: RevisionSheet[];
   caseLaw: CaseLawSheet[];
@@ -43,14 +44,15 @@ export function SubjectTabs({
   flashcards: Flashcard[];
   exercises: Exercise[];
   hasAccess?: boolean;
+  counts?: Record<TabKey, number>;
 }) {
   const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
-    { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: sheets.length },
-    { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: caseLaw.length, hideIfEmpty: true },
-    { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: videos.length },
-    { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: quizzes.length },
-    { key: "flashcards", label: "Flashcards", icon: <Layers className="h-4 w-4" />, count: flashcards.length },
-    { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: exercises.length },
+    { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
+    { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: counts?.arrets ?? caseLaw.length, hideIfEmpty: true },
+    { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: counts?.videos ?? videos.length },
+    { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: counts?.quiz ?? quizzes.length },
+    { key: "flashcards", label: "Flashcards", icon: <Layers className="h-4 w-4" />, count: counts?.flashcards ?? flashcards.length },
+    { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: counts?.exercices ?? exercises.length },
   ];
   const tabs = allTabs.filter((t) => !t.hideIfEmpty || t.count > 0);
 
