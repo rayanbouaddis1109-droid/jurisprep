@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, RefreshCcw, Trophy, BookOpen } from "lucide-react";
 import type { Quiz } from "@/lib/types";
 
@@ -14,6 +14,21 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
   const questions = quiz.questions ?? [];
   const total = questions.length;
   const current = questions[index];
+
+  // Enregistre le score une fois le quiz terminé (silencieux : un échec réseau
+  // ne doit pas gâcher l'écran de résultat)
+  useEffect(() => {
+    if (!done || total === 0) return;
+    fetch("/api/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        itemType: "quiz",
+        itemId: quiz.id,
+        score: Math.round((score / total) * 100),
+      }),
+    }).catch(() => {});
+  }, [done, quiz.id, score, total]);
 
   if (total === 0) {
     return (

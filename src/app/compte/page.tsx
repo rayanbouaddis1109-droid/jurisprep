@@ -39,6 +39,20 @@ export default async function ComptePage({
   const plan = await getUserPlan();
   const isPaid = plan === "etudiant" || plan === "cursus";
 
+  const { data: progressRows } = await supabase
+    .from("user_progress")
+    .select("score, status")
+    .eq("item_type", "quiz");
+
+  const quizzesDone = progressRows?.length ?? 0;
+  const scores = (progressRows ?? [])
+    .map((r) => r.score)
+    .filter((s): s is number => typeof s === "number");
+  const averageScore = scores.length
+    ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+    : null;
+  const mastered = (progressRows ?? []).filter((r) => r.status === "mastered").length;
+
   const endDate = profile?.subscription_end
     ? new Date(profile.subscription_end).toLocaleDateString("fr-FR", {
         day: "numeric",
@@ -104,6 +118,61 @@ export default async function ComptePage({
               Passer à un abonnement
             </Link>
           )}
+        </div>
+
+        <div
+          className="rounded-2xl p-6 mb-6"
+          style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
+        >
+          <h2 className="text-lg font-bold mb-4">Ma progression</h2>
+          {quizzesDone === 0 ? (
+            <p className="text-sm" style={{ color: "#7A5C4A" }}>
+              Tu n&apos;as pas encore terminé de quiz. Tes scores apparaîtront ici au fur et à
+              mesure.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { value: String(quizzesDone), label: quizzesDone > 1 ? "quiz terminés" : "quiz terminé" },
+                { value: averageScore !== null ? `${averageScore}%` : "—", label: "score moyen" },
+                { value: String(mastered), label: mastered > 1 ? "quiz maîtrisés" : "quiz maîtrisé" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <div
+                    className="text-2xl font-extrabold"
+                    style={{ color: "#E07B39", letterSpacing: "-0.02em" }}
+                  >
+                    {s.value}
+                  </div>
+                  <div className="text-xs" style={{ color: "#7A5C4A" }}>
+                    {s.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div
+          className="rounded-2xl p-6"
+          style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
+        >
+          <h2 className="text-lg font-bold mb-2">Suivi personnalisé</h2>
+          <p className="text-sm mb-5" style={{ color: "#7A5C4A" }}>
+            {plan === "cursus"
+              ? "Pose tes questions de droit, tu reçois une réponse écrite personnalisée."
+              : "Inclus dans la formule Cursus complet : pose tes questions, reçois une réponse écrite personnalisée."}
+          </p>
+          <Link
+            href="/suivi"
+            className="inline-block rounded-full text-sm font-bold px-6 py-3 transition hover:opacity-90"
+            style={{
+              background: plan === "cursus" ? "#E07B39" : "#2C1810",
+              color: "white",
+            }}
+          >
+            {plan === "cursus" ? "Accéder à mon suivi" : "En savoir plus"}
+          </Link>
         </div>
       </div>
     </div>
