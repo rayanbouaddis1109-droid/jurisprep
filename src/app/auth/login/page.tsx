@@ -80,9 +80,18 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
-              Mot de passe
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
+                Mot de passe
+              </label>
+              <Link
+                href="/auth/mot-de-passe-oublie"
+                className="text-xs font-semibold hover:underline"
+                style={{ color: "#E07B39" }}
+              >
+                Mot de passe oublié ?
+              </Link>
+            </div>
             <input
               type="password"
               required

@@ -2,16 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SignupPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const supabase = createClient();
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,35 +15,18 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     setInfo(null);
-    if (password !== confirmPassword) {
-      setError("Les deux mots de passe ne sont pas identiques.");
-      return;
-    }
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo:
-          typeof window !== "undefined"
-            ? `${window.location.origin}/auth/callback`
-            : undefined,
-      },
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/auth/reinitialiser`,
     });
     setLoading(false);
     if (error) {
       setError(error.message);
       return;
     }
-    if (data.user && !data.session) {
-      setInfo(
-        "Compte créé. Un email de confirmation vient de t'être envoyé — clique sur le lien pour activer ton accès."
-      );
-    } else {
-      router.refresh();
-      router.push("/");
-    }
+    setInfo(
+      "Si un compte existe avec cet email, tu vas recevoir un lien pour choisir un nouveau mot de passe."
+    );
   }
 
   return (
@@ -77,32 +55,13 @@ export default function SignupPage() {
         style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}
       >
         <h1 className="text-2xl font-extrabold mb-1" style={{ letterSpacing: "-0.03em" }}>
-          Créer un compte
+          Mot de passe oublié
         </h1>
         <p className="text-sm mb-6" style={{ color: "#7A5C4A" }}>
-          Gratuit. 30 secondes.
+          Entre ton email, on t&apos;envoie un lien pour en choisir un nouveau.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
-              Nom complet
-            </label>
-            <input
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm outline-none transition"
-              style={{
-                border: "1.5px solid #EDE0CC",
-                background: "#FFF8EE",
-                color: "#2C1810",
-              }}
-              placeholder="Prénom Nom"
-            />
-          </div>
-
           <div>
             <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
               Email
@@ -119,47 +78,6 @@ export default function SignupPage() {
                 color: "#2C1810",
               }}
               placeholder="ton.email@exemple.fr"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
-              Mot de passe
-              <span className="ml-1 font-normal" style={{ color: "#7A5C4A" }}>
-                (8 caractères minimum)
-              </span>
-            </label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm outline-none transition"
-              style={{
-                border: "1.5px solid #EDE0CC",
-                background: "#FFF8EE",
-                color: "#2C1810",
-              }}
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
-              Confirme ton mot de passe
-            </label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm outline-none transition"
-              style={{
-                border: "1.5px solid #EDE0CC",
-                background: "#FFF8EE",
-                color: "#2C1810",
-              }}
             />
           </div>
 
@@ -187,18 +105,17 @@ export default function SignupPage() {
             className="w-full rounded-full py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: "#E07B39" }}
           >
-            {loading ? "Création…" : "Créer mon compte"}
+            {loading ? "Envoi…" : "Envoyer le lien"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm" style={{ color: "#7A5C4A" }}>
-          Déjà inscrit ?{" "}
           <Link
             href="/auth/login"
             className="font-semibold hover:underline"
             style={{ color: "#E07B39" }}
           >
-            Connexion
+            Retour à la connexion
           </Link>
         </p>
       </div>
