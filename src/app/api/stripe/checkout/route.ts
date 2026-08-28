@@ -20,9 +20,30 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("stripe_customer_id")
+    .select("stripe_customer_id, plan, subscription_status")
     .eq("id", user.id)
     .maybeSingle();
+
+  const origin =
+    req.headers.get("origin") ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://jurisprep.fr";
+
+  // Déjà abonné : renvoyer vers le portail de gestion au lieu de créer un
+  // second abonnement
+  const alreadySubscribed =
+    profile?.stripe_customer_id &&
+    profile.plan !== "free" &&
+    (profile.subscription_status === "active" ||
+      profile.subscription_status === "trialing");
+
+  if (alreadySubscribed) {
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: profile.stripe_customer_id!,
+      return_url: `${origin}/compte`,
+    });
+    return NextResponse.json({ url: portal.url });
+  }
 
   let customerId: string | undefined = profile?.stripe_customer_id ?? undefined;
 
@@ -38,11 +59,6 @@ export async function POST(req: NextRequest) {
       plan: "free",
     });
   }
-
-  const origin =
-    req.headers.get("origin") ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://jurisprep.fr";
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
