@@ -41,19 +41,31 @@ const YEARS = [
   },
 ];
 
-const FEATURES = [
-  { num: "80+", label: "Fiches de cours", desc: "Résumés clairs, par chapitre et par matière" },
-  { num: "150+", label: "Arrêts commentés", desc: "Les décisions fondamentales, analysées pas à pas" },
-  { num: "1 440", label: "Flashcards", desc: "Mémorisation active, organisée par matière et chapitre" },
-  { num: "IA", label: "Assistant juridique", desc: "Pose tes questions de droit 24h/24, 7j/7" },
-];
+function formatCount(n: number | null): string {
+  if (!n) return "—";
+  if (n >= 100) return `${Math.floor(n / 10) * 10}+`;
+  return String(n);
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { count: subjectsCount } = await supabase
-    .from("subjects")
-    .select("*", { count: "exact", head: true })
-    .eq("is_published", true);
+  const [subjectsRes, sheetsRes, flashcardsRes, quizzesRes] = await Promise.all([
+    supabase.from("subjects").select("*", { count: "exact", head: true }).eq("is_published", true),
+    supabase.from("revision_sheets").select("id", { count: "exact", head: true }).eq("is_published", true),
+    supabase.from("flashcards").select("id", { count: "exact", head: true }),
+    supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("is_published", true),
+  ]);
+  const subjectsCount = subjectsRes.count;
+  const sheetsCount = formatCount(sheetsRes.count);
+  const flashcardsCount = formatCount(flashcardsRes.count);
+  const quizzesCount = formatCount(quizzesRes.count);
+
+  const FEATURES = [
+    { num: sheetsCount, label: "Fiches de cours", desc: "Résumés clairs, par chapitre et par matière" },
+    { num: quizzesCount, label: "Quiz corrigés", desc: "Teste-toi chapitre par chapitre, réponses expliquées" },
+    { num: flashcardsCount, label: "Flashcards", desc: "Mémorisation active, organisée par matière et chapitre" },
+    { num: "IA", label: "Assistant juridique", desc: "Pose tes questions de droit 24h/24, 7j/7" },
+  ];
 
   return (
     <div style={{ background: "#FFF8EE", color: "#2C1810" }}>
@@ -73,7 +85,7 @@ export default async function HomePage() {
         </h1>
 
         <p className="text-base leading-relaxed mb-8" style={{ color: "#7A5C4A", maxWidth: 480 }}>
-          Fiches, arrêts commentés, 1&nbsp;440 flashcards et assistant IA — tout ce qu&apos;il te faut pour comprendre le droit, pas juste survivre aux partiels.
+          Fiches, quiz corrigés, {flashcardsCount} flashcards et assistant IA — tout ce qu&apos;il te faut pour comprendre le droit, pas juste survivre aux partiels.
         </p>
 
         <div className="flex flex-col gap-3 mb-10" style={{ maxWidth: 400 }}>
@@ -91,10 +103,10 @@ export default async function HomePage() {
         {/* Stats chips */}
         <div className="flex flex-wrap gap-2 pt-7" style={{ borderTop: "1.5px solid #EDE0CC" }}>
           {[
-            { num: "1 440", label: "flashcards" },
-            { num: "150+", label: "arrêts" },
-            { num: "80+", label: "fiches" },
-            { num: subjectsCount ?? "31", label: "matières" },
+            { num: flashcardsCount, label: "flashcards" },
+            { num: quizzesCount, label: "quiz" },
+            { num: sheetsCount, label: "fiches" },
+            { num: subjectsCount ?? "—", label: "matières" },
           ].map((s) => (
             <span key={s.label}
               className="flex items-baseline gap-1.5 rounded-full px-3.5 py-1.5"
@@ -204,26 +216,6 @@ export default async function HomePage() {
               </div>
             </Link>
           ))}
-        </div>
-      </section>
-
-      {/* ── TÉMOIGNAGE ── */}
-      <section className="px-5 pb-12">
-        <div className="rounded-2xl p-6" style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}>
-          <div className="text-xl mb-3" style={{ color: "#F5B700" }}>★★★★★</div>
-          <p className="text-base leading-relaxed mb-5 italic" style={{ color: "#2C1810" }}>
-            &ldquo;JurisPrep m&apos;a permis de passer mes partiels de L2 sereinement. Les flashcards sont exactement ce qu&apos;il me fallait pour mémoriser sans stresser.&rdquo;
-          </p>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-              style={{ background: "#EEEEFF", border: "2px solid #5B5FE8", color: "#5B5FE8" }}>
-              SL
-            </div>
-            <div>
-              <div className="font-bold text-sm" style={{ color: "#2C1810" }}>Sofia L.</div>
-              <div className="text-xs" style={{ color: "#7A5C4A" }}>Étudiante L2 Droit — Paris II</div>
-            </div>
-          </div>
         </div>
       </section>
 
