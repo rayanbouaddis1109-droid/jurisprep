@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GraduationCap, ArrowLeft } from "lucide-react";
+import { getUserPlan, hasFullAccess } from "@/lib/subscription";
 import type { Subject } from "@/lib/types";
 import { slugToLevel, levelLabel } from "@/lib/utils";
 import { SubjectSearch } from "@/components/SubjectSearch";
@@ -68,6 +69,8 @@ export default async function LevelPage({
     .order("semester", { ascending: true })
     .order("name", { ascending: true });
 
+  const isSubscriber = hasFullAccess(await getUserPlan());
+
   const s1 = (subjects ?? []).filter((s: Subject) => s.semester === "S1");
   const s2 = (subjects ?? []).filter((s: Subject) => s.semester === "S2");
   const annuel = (subjects ?? []).filter(
@@ -98,8 +101,7 @@ export default async function LevelPage({
 
             Retrouve les matières organisées par semestre. Chaque matière contient des
             fiches de révision, des fiches d&apos;arrêts, des quiz, des flashcards et des exercices
-            corrigés. Le premier chapitre de chaque matière est en accès gratuit avec un simple
-            compte.
+            corrigés.{!isSubscriber && " Le premier chapitre de chaque matière est en accès gratuit avec un simple compte."}
           </p>
         </div>
       </section>
@@ -110,7 +112,7 @@ export default async function LevelPage({
             Aucune matière publiée pour {levelLabel(level)} pour le moment.
           </div>
         ) : (
-          <SubjectSearch s1={s1} s2={s2} annuel={annuel} />
+          <SubjectSearch s1={s1} s2={s2} annuel={annuel} showFreeBadge={!isSubscriber} />
         )}
       </section>
     </div>

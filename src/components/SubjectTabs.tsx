@@ -23,9 +23,27 @@ import type {
 } from "@/lib/types";
 import { QuizPlayer } from "./QuizPlayer";
 import { FlashcardDeck } from "./FlashcardDeck";
-import { PaywallBanner } from "./PaywallBanner";
+import { LockedGrid, type LockedItem } from "./LockedPreview";
 
 type TabKey = "fiches" | "arrets" | "videos" | "quiz" | "flashcards" | "exercices";
+
+const LOCKED_LABELS: Record<TabKey, string> = {
+  fiches: "chapitres",
+  arrets: "arrêts",
+  videos: "vidéos",
+  quiz: "quiz",
+  flashcards: "paquets",
+  exercices: "exercices",
+};
+
+const EMPTY_LABELS: Record<TabKey, string> = {
+  fiches: "les fiches",
+  arrets: "les arrêts",
+  videos: "les vidéos",
+  quiz: "les quiz",
+  flashcards: "les flashcards",
+  exercices: "les exercices",
+};
 
 export function SubjectTabs({
   sheets,
@@ -34,10 +52,9 @@ export function SubjectTabs({
   quizzes,
   flashcards,
   exercises,
-  hasAccess = false,
-  partial = false,
   counts,
-  lockVariant = "subscribe",
+  locked = null,
+  isLoggedIn = false,
 }: {
   sheets: RevisionSheet[];
   caseLaw: CaseLawSheet[];
@@ -45,10 +62,9 @@ export function SubjectTabs({
   quizzes: Quiz[];
   flashcards: Flashcard[];
   exercises: Exercise[];
-  hasAccess?: boolean;
-  partial?: boolean;
   counts?: Record<TabKey, number>;
-  lockVariant?: "subscribe" | "signup";
+  locked?: Record<TabKey, LockedItem[]> | null;
+  isLoggedIn?: boolean;
 }) {
   const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
@@ -85,23 +101,26 @@ export function SubjectTabs({
       </div>
 
       <div className="mt-6">
-        {!hasAccess ? (
-          <PaywallBanner variant={lockVariant} />
-        ) : (
-          <>
-            {active === "fiches" && <FichesPanel sheets={sheets} />}
-            {active === "arrets" && <ArretsPanel items={caseLaw} />}
-            {active === "videos" && <VideosPanel videos={videos} />}
-            {active === "quiz" && <QuizzesPanel quizzes={quizzes} />}
-            {active === "flashcards" && <FlashcardsPanel flashcards={flashcards} />}
-            {active === "exercices" && <ExercisesPanel exercises={exercises} />}
-            {partial && (
-              <div className="mt-8">
-                <PaywallBanner variant="subscribe" />
-              </div>
-            )}
-          </>
+        {active === "fiches" && sheets.length > 0 && <FichesPanel sheets={sheets} />}
+        {active === "arrets" && caseLaw.length > 0 && <ArretsPanel items={caseLaw} />}
+        {active === "videos" && videos.length > 0 && <VideosPanel videos={videos} />}
+        {active === "quiz" && quizzes.length > 0 && <QuizzesPanel quizzes={quizzes} />}
+        {active === "flashcards" && flashcards.length > 0 && (
+          <FlashcardsPanel flashcards={flashcards} />
         )}
+        {active === "exercices" && exercises.length > 0 && (
+          <ExercisesPanel exercises={exercises} />
+        )}
+
+        {locked && (
+          <LockedGrid
+            items={locked[active]}
+            label={LOCKED_LABELS[active]}
+            isLoggedIn={isLoggedIn}
+          />
+        )}
+
+        {counts?.[active] === 0 && <EmptyState label={EMPTY_LABELS[active]} />}
       </div>
     </div>
   );

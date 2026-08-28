@@ -9,10 +9,12 @@ export function SubjectSearch({
   s1,
   s2,
   annuel,
+  showFreeBadge = true,
 }: {
   s1: Subject[];
   s2: Subject[];
   annuel: Subject[];
+  showFreeBadge?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const q = query.toLowerCase().trim();
@@ -55,9 +57,9 @@ export function SubjectSearch({
         </div>
       )}
 
-      {fs1.length > 0 && <SemesterBlock title="Semestre 1" subjects={fs1} />}
-      {fs2.length > 0 && <SemesterBlock title="Semestre 2" subjects={fs2} />}
-      {fannuel.length > 0 && <SemesterBlock title="Annuel" subjects={fannuel} />}
+      {fs1.length > 0 && <SemesterBlock title="Semestre 1" subjects={fs1} showFreeBadge={showFreeBadge} />}
+      {fs2.length > 0 && <SemesterBlock title="Semestre 2" subjects={fs2} showFreeBadge={showFreeBadge} />}
+      {fannuel.length > 0 && <SemesterBlock title="Annuel" subjects={fannuel} showFreeBadge={showFreeBadge} />}
     </div>
   );
 }
@@ -65,9 +67,11 @@ export function SubjectSearch({
 function SemesterBlock({
   title,
   subjects,
+  showFreeBadge,
 }: {
   title: string;
   subjects: Subject[];
+  showFreeBadge: boolean;
 }) {
   return (
     <div className="mb-12">
@@ -82,12 +86,14 @@ function SemesterBlock({
           >
             <div className="mb-3 flex items-start justify-between">
               <BookOpen className="h-7 w-7" style={{ color: "#E07B39" }} />
-              <span
-                className="rounded-full px-2.5 py-0.5 text-xs font-bold"
-                style={{ background: "#E8FBF4", color: "#065E3F" }}
-              >
-                Chapitre 1 gratuit
-              </span>
+              {showFreeBadge && (
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+                  style={{ background: "#E8FBF4", color: "#065E3F" }}
+                >
+                  Chapitre 1 gratuit
+                </span>
+              )}
             </div>
             <h3 className="font-semibold" style={{ color: "#2C1810" }}>
               {s.name}

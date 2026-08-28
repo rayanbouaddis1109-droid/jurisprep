@@ -4,7 +4,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { LockedItem } from "@/components/LockedPreview";
 import type { Metadata } from "next";
+
+type LockedSet = Record<
+  "fiches" | "arrets" | "videos" | "quiz" | "flashcards" | "exercices",
+  LockedItem[]
+>;
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
@@ -58,11 +64,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   const plan = await getUserPlan();
   const isAuthed = Boolean(user);
   const canAccessAll = hasFullAccess(plan);
-  // Connecté sans abonnement : la RLS ne renvoie que le chapitre gratuit,
-  // on l'affiche avec une bannière d'abonnement en dessous. Visiteur non
-  // connecté : rien ne quitte le serveur, bannière "crée un compte".
-  const partial = isAuthed && !canAccessAll;
-  const lockVariant: "subscribe" | "signup" = isAuthed ? "subscribe" : "signup";
 
   const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = isAuthed
     ? await Promise.all([
@@ -75,28 +76,66 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       ])
     : [null, null, null, null, null, null];
 
-  // Totaux réels via le client admin pour les badges des onglets
-  const admin = createAdminClient();
-  const [sheetsCount, caseLawCount, videosCount, quizzesCount, flashcardsCount, exercisesCount] =
-    canAccessAll
-      ? [null, null, null, null, null, null]
-      : await Promise.all([
-          admin.from("revision_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-          admin.from("case_law_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-          admin.from("videos").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-          admin.from("quizzes").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-          admin.from("flashcards").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-          admin.from("exercises").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        ]).then((r) => r.map((x) => x.count));
-
-  const counts = {
-    fiches: sheetsCount ?? sheetsRes?.data?.length ?? 0,
-    arrets: caseLawCount ?? caseLawRes?.data?.length ?? 0,
-    videos: videosCount ?? videosRes?.data?.length ?? 0,
-    quiz: quizzesCount ?? quizzesRes?.data?.length ?? 0,
-    flashcards: flashcardsCount ?? flashcardsRes?.data?.length ?? 0,
-    exercices: exercisesCount ?? exercisesRes?.data?.length ?? 0,
+  // Titres du contenu verrouillé (métadonnées seulement, jamais le contenu) :
+  // ils sont affichés floutés pour montrer ce que débloque l'abonnement.
+  let counts = {
+    fiches: sheetsRes?.data?.length ?? 0,
+    arrets: caseLawRes?.data?.length ?? 0,
+    videos: videosRes?.data?.length ?? 0,
+    quiz: quizzesRes?.data?.length ?? 0,
+    flashcards: flashcardsRes?.data?.length ?? 0,
+    exercices: exercisesRes?.data?.length ?? 0,
   };
+  let locked: LockedSet | null = null;
+
+  if (!canAccessAll) {
+    const admin = createAdminClient();
+    const [aSheets, aCase, aVideos, aQuizzes, aCards, aExos] = await Promise.all([
+      admin.from("revision_sheets").select("id, title, chapter, order").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+      admin.from("case_law_sheets").select("id, title").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
+      admin.from("videos").select("id, title, chapter, order").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+      admin.from("quizzes").select("id, title, chapter").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+      admin.from("flashcards").select("id, deck_name").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+      admin.from("exercises").select("id, title").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+    ]);
+
+    const openIds = (rows: { id: string }[] | null | undefined) =>
+      new Set((rows ?? []).map((r) => r.id));
+
+    const openSheets = openIds(sheetsRes?.data);
+    const openCase = openIds(caseLawRes?.data);
+    const openVideos = openIds(videosRes?.data);
+    const openQuizzes = openIds(quizzesRes?.data);
+    const openExos = openIds(exercisesRes?.data);
+    const openDecks = new Set(
+      (flashcardsRes?.data ?? []).map((f: { deck_name: string | null }) => f.deck_name ?? "Général")
+    );
+
+    // Les flashcards se comptent par paquet, pas par carte
+    const allDecks: string[] = [];
+    for (const c of (aCards.data ?? []) as { deck_name: string | null }[]) {
+      const name = c.deck_name ?? "Général";
+      if (!allDecks.includes(name)) allDecks.push(name);
+    }
+
+    counts = {
+      fiches: aSheets.data?.length ?? 0,
+      arrets: aCase.data?.length ?? 0,
+      videos: aVideos.data?.length ?? 0,
+      quiz: aQuizzes.data?.length ?? 0,
+      flashcards: allDecks.length,
+      exercices: aExos.data?.length ?? 0,
+    };
+
+    locked = {
+      fiches: (aSheets.data ?? []).filter((r) => !openSheets.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
+      arrets: (aCase.data ?? []).filter((r) => !openCase.has(r.id)).map((r) => ({ id: r.id, title: r.title })),
+      videos: (aVideos.data ?? []).filter((r) => !openVideos.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
+      quiz: (aQuizzes.data ?? []).filter((r) => !openQuizzes.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
+      flashcards: allDecks.filter((d) => !openDecks.has(d)).map((d) => ({ id: d, title: `Paquet ${d}` })),
+      exercices: (aExos.data ?? []).filter((r) => !openExos.has(r.id)).map((r) => ({ id: r.id, title: r.title })),
+    };
+  }
 
   const s: Subject = subject;
   const backHref =
@@ -147,10 +186,9 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           quizzes={(quizzesRes?.data ?? []) as Quiz[]}
           flashcards={(flashcardsRes?.data ?? []) as Flashcard[]}
           exercises={(exercisesRes?.data ?? []) as Exercise[]}
-          hasAccess={isAuthed}
-          partial={partial}
           counts={counts}
-          lockVariant={lockVariant}
+          locked={locked}
+          isLoggedIn={isAuthed}
         />
       </section>
     </div>
