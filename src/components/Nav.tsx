@@ -156,6 +156,7 @@ export function Footer() {
               { label: "Connexion", href: "/auth/login" },
               { label: "Inscription", href: "/auth/signup" },
               { label: "Mentions légales", href: "/mentions-legales" },
+              { label: "CGV", href: "/cgv" },
             ].map(({ label, href }) => (
               <Link
                 key={href}

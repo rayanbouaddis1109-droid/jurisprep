@@ -54,10 +54,22 @@ export default function MentionsLegalesPage() {
           </a>
           . Délai de réponse maximal : 30 jours.
         </p>
-        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Les mots de passe sont hachés et ne sont jamais stockés en clair. Les données sont
           conservées tant que le compte est actif et supprimées dans les 90 jours suivant une demande
           de fermeture de compte.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          <strong>Paiements :</strong> les paiements sont traités par Stripe, Inc. (prestataire de
+          paiement certifié). Les données de carte bancaire sont saisies directement sur les pages
+          sécurisées de Stripe et ne transitent jamais par nos serveurs. Stripe traite ces données
+          en qualité de sous-traitant, conformément à sa politique de confidentialité.
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          <strong>Assistant IA :</strong> les questions posées à l&apos;assistant sont transmises à
+          notre prestataire d&apos;intelligence artificielle (Groq, Inc., États-Unis) pour générer
+          les réponses. N&apos;y saisis pas de données personnelles sensibles. Ces échanges ne sont
+          pas utilisés à des fins publicitaires.
         </p>
       </section>
 
@@ -109,9 +121,13 @@ export default function MentionsLegalesPage() {
           présentes conditions.
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
-          Les abonnements payants (lorsqu&apos;ils seront activés) sont sans engagement et résiliables
-          à tout moment depuis les paramètres du compte. Aucun prélèvement automatique ne sera
-          effectué sans notification préalable.
+          Les abonnements payants sont sans engagement et résiliables à tout moment depuis la page
+          Mon compte. Les conditions de vente détaillées (prix, renouvellement, résiliation,
+          rétractation) figurent dans les{" "}
+          <a href="/cgv" style={{ color: "#E07B39" }}>
+            conditions générales de vente
+          </a>
+          .
         </p>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           JurisPrép se réserve le droit de modifier ces conditions à tout moment. Les
