@@ -23,12 +23,12 @@ export function PaywallBanner({
         )}
       </div>
       <h3 className="text-lg font-bold mb-2" style={{ color: "#2C1810" }}>
-        {isSignup ? "Cette matière est gratuite" : "Contenu réservé aux abonnés"}
+        {isSignup ? "Le premier chapitre est gratuit" : "La suite est réservée aux abonnés"}
       </h3>
       <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "#7A5C4A" }}>
         {isSignup
-          ? "Crée un compte gratuit pour accéder à toutes les fiches, quiz et flashcards de cette matière. Aucune carte bancaire demandée."
-          : "Accède à l'intégralité des fiches, quiz, flashcards et exercices corrigés avec un abonnement JurisPrép."}
+          ? "Crée un compte gratuit pour consulter le premier chapitre de cette matière : cours, quiz et flashcards. Aucune carte bancaire demandée."
+          : "Débloque tous les chapitres, quiz, flashcards et exercices corrigés avec un abonnement JurisPrép."}
       </p>
       <Link
         href={isSignup ? "/auth/signup" : "/tarifs"}

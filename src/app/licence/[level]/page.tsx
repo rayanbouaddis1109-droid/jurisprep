@@ -98,7 +98,8 @@ export default async function LevelPage({
 
             Retrouve les matières organisées par semestre. Chaque matière contient des
             fiches de révision, des fiches d&apos;arrêts, des quiz, des flashcards et des exercices
-            corrigés.
+            corrigés. Le premier chapitre de chaque matière est en accès gratuit avec un simple
+            compte.
           </p>
         </div>
       </section>

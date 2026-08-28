@@ -82,14 +82,12 @@ function SemesterBlock({
           >
             <div className="mb-3 flex items-start justify-between">
               <BookOpen className="h-7 w-7" style={{ color: "#E07B39" }} />
-              {s.is_free && (
-                <span
-                  className="rounded-full px-2.5 py-0.5 text-xs font-bold"
-                  style={{ background: "#E8FBF4", color: "#065E3F" }}
-                >
-                  Gratuit
-                </span>
-              )}
+              <span
+                className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+                style={{ background: "#E8FBF4", color: "#065E3F" }}
+              >
+                Chapitre 1 gratuit
+              </span>
             </div>
             <h3 className="font-semibold" style={{ color: "#2C1810" }}>
               {s.name}

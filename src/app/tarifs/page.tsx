@@ -19,7 +19,7 @@ const PLANS = [
     ctaLabel: "Commencer",
     ctaHref: "/auth/signup",
     features: [
-      "Des matières complètes en accès gratuit (fiches, quiz, flashcards)",
+      "Le premier chapitre de chaque matière : cours, quiz, flashcards",
       "Accès à l'assistant IA",
       "Suivi de progression",
       "Aucune carte bancaire demandée",

@@ -35,6 +35,7 @@ export function SubjectTabs({
   flashcards,
   exercises,
   hasAccess = false,
+  partial = false,
   counts,
   lockVariant = "subscribe",
 }: {
@@ -45,6 +46,7 @@ export function SubjectTabs({
   flashcards: Flashcard[];
   exercises: Exercise[];
   hasAccess?: boolean;
+  partial?: boolean;
   counts?: Record<TabKey, number>;
   lockVariant?: "subscribe" | "signup";
 }) {
@@ -93,6 +95,11 @@ export function SubjectTabs({
             {active === "quiz" && <QuizzesPanel quizzes={quizzes} />}
             {active === "flashcards" && <FlashcardsPanel flashcards={flashcards} />}
             {active === "exercices" && <ExercisesPanel exercises={exercises} />}
+            {partial && (
+              <div className="mt-8">
+                <PaywallBanner variant="subscribe" />
+              </div>
+            )}
           </>
         )}
       </div>

@@ -56,15 +56,15 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
     data: { user },
   } = await supabase.auth.getUser();
   const plan = await getUserPlan();
-  const isFreeSubject = Boolean(subject.is_free);
-  const canAccess = hasFullAccess(plan) || (isFreeSubject && Boolean(user));
-  // Matière gratuite mais visiteur non connecté : inviter à créer un compte
-  const lockVariant: "subscribe" | "signup" =
-    isFreeSubject && !user ? "signup" : "subscribe";
+  const isAuthed = Boolean(user);
+  const canAccessAll = hasFullAccess(plan);
+  // Connecté sans abonnement : la RLS ne renvoie que le chapitre gratuit,
+  // on l'affiche avec une bannière d'abonnement en dessous. Visiteur non
+  // connecté : rien ne quitte le serveur, bannière "crée un compte".
+  const partial = isAuthed && !canAccessAll;
+  const lockVariant: "subscribe" | "signup" = isAuthed ? "subscribe" : "signup";
 
-  // Un non-abonné ne reçoit que les compteurs : le contenu lui-même ne doit
-  // jamais quitter le serveur sans abonnement actif.
-  const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = canAccess
+  const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = isAuthed
     ? await Promise.all([
         supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
         supabase.from("case_law_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
@@ -73,27 +73,29 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
         supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
         supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
       ])
-    : await (async () => {
-        // Compteurs via le client admin : la RLS cache le contenu aux
-        // non-abonnés, mais les badges des onglets doivent rester exacts.
-        const admin = createAdminClient();
-        return Promise.all([
+    : [null, null, null, null, null, null];
+
+  // Totaux réels via le client admin pour les badges des onglets
+  const admin = createAdminClient();
+  const [sheetsCount, caseLawCount, videosCount, quizzesCount, flashcardsCount, exercisesCount] =
+    canAccessAll
+      ? [null, null, null, null, null, null]
+      : await Promise.all([
           admin.from("revision_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
           admin.from("case_law_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
           admin.from("videos").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
           admin.from("quizzes").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
           admin.from("flashcards").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
           admin.from("exercises").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        ]);
-      })();
+        ]).then((r) => r.map((x) => x.count));
 
   const counts = {
-    fiches: sheetsRes.count ?? sheetsRes.data?.length ?? 0,
-    arrets: caseLawRes.count ?? caseLawRes.data?.length ?? 0,
-    videos: videosRes.count ?? videosRes.data?.length ?? 0,
-    quiz: quizzesRes.count ?? quizzesRes.data?.length ?? 0,
-    flashcards: flashcardsRes.count ?? flashcardsRes.data?.length ?? 0,
-    exercices: exercisesRes.count ?? exercisesRes.data?.length ?? 0,
+    fiches: sheetsCount ?? sheetsRes?.data?.length ?? 0,
+    arrets: caseLawCount ?? caseLawRes?.data?.length ?? 0,
+    videos: videosCount ?? videosRes?.data?.length ?? 0,
+    quiz: quizzesCount ?? quizzesRes?.data?.length ?? 0,
+    flashcards: flashcardsCount ?? flashcardsRes?.data?.length ?? 0,
+    exercices: exercisesCount ?? exercisesRes?.data?.length ?? 0,
   };
 
   const s: Subject = subject;
@@ -139,13 +141,14 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SubjectTabs
-          sheets={(sheetsRes.data ?? []) as RevisionSheet[]}
-          caseLaw={(caseLawRes.data ?? []) as CaseLawSheet[]}
-          videos={(videosRes.data ?? []) as Video[]}
-          quizzes={(quizzesRes.data ?? []) as Quiz[]}
-          flashcards={(flashcardsRes.data ?? []) as Flashcard[]}
-          exercises={(exercisesRes.data ?? []) as Exercise[]}
-          hasAccess={canAccess}
+          sheets={(sheetsRes?.data ?? []) as RevisionSheet[]}
+          caseLaw={(caseLawRes?.data ?? []) as CaseLawSheet[]}
+          videos={(videosRes?.data ?? []) as Video[]}
+          quizzes={(quizzesRes?.data ?? []) as Quiz[]}
+          flashcards={(flashcardsRes?.data ?? []) as Flashcard[]}
+          exercises={(exercisesRes?.data ?? []) as Exercise[]}
+          hasAccess={isAuthed}
+          partial={partial}
           counts={counts}
           lockVariant={lockVariant}
         />
