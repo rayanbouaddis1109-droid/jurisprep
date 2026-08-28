@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Metadata } from "next";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
@@ -65,14 +66,19 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
         supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
         supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
       ])
-    : await Promise.all([
-        supabase.from("revision_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        supabase.from("case_law_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        supabase.from("videos").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        supabase.from("flashcards").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-        supabase.from("exercises").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
-      ]);
+    : await (async () => {
+        // Compteurs via le client admin : la RLS cache le contenu aux
+        // non-abonnés, mais les badges des onglets doivent rester exacts.
+        const admin = createAdminClient();
+        return Promise.all([
+          admin.from("revision_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+          admin.from("case_law_sheets").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+          admin.from("videos").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+          admin.from("quizzes").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+          admin.from("flashcards").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+          admin.from("exercises").select("id", { count: "exact", head: true }).eq("subject_id", subject.id).eq("is_published", true),
+        ]);
+      })();
 
   const counts = {
     fiches: sheetsRes.count ?? sheetsRes.data?.length ?? 0,

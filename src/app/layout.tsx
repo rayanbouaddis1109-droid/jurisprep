@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s — JurisPrép",
   },
   description:
-    "Plateforme tout-en-un pour lycéens et étudiants en Licence de droit : fiches, fiches d'arrêts, 1 440 flashcards et assistant IA.",
+    "Plateforme tout-en-un pour lycéens et étudiants en Licence de droit : fiches de cours, quiz corrigés, flashcards et assistant IA.",
   openGraph: {
     siteName: "JurisPrép",
     type: "website",
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     url: BASE_URL,
     title: "JurisPrép — Réussir ses études de droit",
     description:
-      "Fiches, arrêts commentés, 1 440 flashcards et assistant IA pour réussir ses études de droit du lycée à la L3.",
+      "Fiches de cours, quiz corrigés, flashcards et assistant IA pour réussir ses études de droit du lycée à la L3.",
   },
   twitter: {
     card: "summary_large_image",
     title: "JurisPrép — Réussir ses études de droit",
     description:
-      "Fiches, arrêts commentés, 1 440 flashcards et assistant IA pour réussir ses études de droit.",
+      "Fiches de cours, quiz corrigés, flashcards et assistant IA pour réussir ses études de droit.",
   },
   icons: {
     icon: [

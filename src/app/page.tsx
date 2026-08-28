@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 const YEARS = [
@@ -48,11 +48,13 @@ function formatCount(n: number | null): string {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient();
+  // Compteurs via le client admin (serveur) : la RLS réserve désormais le
+  // contenu aux abonnés, mais les totaux restent affichables publiquement.
+  const supabase = createAdminClient();
   const [subjectsRes, sheetsRes, flashcardsRes, quizzesRes] = await Promise.all([
     supabase.from("subjects").select("*", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("revision_sheets").select("id", { count: "exact", head: true }).eq("is_published", true),
-    supabase.from("flashcards").select("id", { count: "exact", head: true }),
+    supabase.from("flashcards").select("id", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("is_published", true),
   ]);
   const subjectsCount = subjectsRes.count;

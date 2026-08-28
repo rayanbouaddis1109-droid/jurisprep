@@ -56,7 +56,7 @@ export default function Image() {
       </div>
 
       <div style={{ display: "flex", gap: "16px" }}>
-        {["1 440 flashcards", "80+ fiches", "150+ arrêts", "Assistant IA"].map((s) => (
+        {["Fiches de cours", "Quiz corrigés", "Flashcards", "Assistant IA"].map((s) => (
           <div
             key={s}
             style={{
