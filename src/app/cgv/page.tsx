@@ -29,8 +29,8 @@ export default function CgvPage() {
             mentions légales
           </Link>
           . Contact :{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>
           .
         </p>
@@ -120,8 +120,8 @@ export default function CgvPage() {
           garantir une disponibilité absolue (maintenance, panne d&apos;un hébergeur, cas de force
           majeure). En cas d&apos;interruption prolongée imputable à JurisPrép, tu peux demander un
           geste commercial en écrivant à{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>
           .
         </p>
@@ -131,8 +131,8 @@ export default function CgvPage() {
         <h2 className="text-xl font-bold mb-3">9. Réclamations et médiation</h2>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Pour toute réclamation, écris d&apos;abord à{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>{" "}
           — une réponse est apportée sous 30 jours au maximum.
         </p>

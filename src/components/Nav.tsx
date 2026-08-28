@@ -101,11 +101,11 @@ export function Footer() {
             </p>
             <p className="mt-3 text-sm">
               <a
-                href="mailto:contact@jurisprep.fr"
+                href="mailto:jurisprep1@gmail.com"
                 className="transition hover:text-white"
                 style={{ color: "rgba(255,248,238,0.5)" }}
               >
-                contact@jurisprep.fr
+                jurisprep1@gmail.com
               </a>
             </p>
           </div>

@@ -25,8 +25,8 @@ export default function MentionsLegalesPage() {
         <h2 className="text-xl font-bold mb-3">Éditeur</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           JurisPrép est un service en ligne édité à titre personnel. Contact :{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>
         </p>
       </section>
@@ -49,8 +49,8 @@ export default function MentionsLegalesPage() {
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Conformément au Règlement (UE) 2016/679 (RGPD), tu peux à tout moment demander l&apos;accès,
           la rectification ou la suppression de tes données en écrivant à{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>
           . Délai de réponse maximal : 30 jours.
         </p>
@@ -139,8 +139,8 @@ export default function MentionsLegalesPage() {
         <h2 className="text-xl font-bold mb-3">Contact</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           Pour toute question relative à ces mentions légales ou à tes données personnelles :{" "}
-          <a href="mailto:contact@jurisprep.fr" style={{ color: "#E07B39" }}>
-            contact@jurisprep.fr
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
           </a>
         </p>
       </section>
