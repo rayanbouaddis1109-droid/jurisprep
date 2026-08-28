@@ -80,7 +80,17 @@ function SemesterBlock({
             className="group rounded-xl p-5 transition hover:shadow-md"
             style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
           >
-            <BookOpen className="mb-3 h-7 w-7" style={{ color: "#E07B39" }} />
+            <div className="mb-3 flex items-start justify-between">
+              <BookOpen className="h-7 w-7" style={{ color: "#E07B39" }} />
+              {s.is_free && (
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+                  style={{ background: "#E8FBF4", color: "#065E3F" }}
+                >
+                  Gratuit
+                </span>
+              )}
+            </div>
             <h3 className="font-semibold" style={{ color: "#2C1810" }}>
               {s.name}
             </h3>

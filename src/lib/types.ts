@@ -25,6 +25,7 @@ export interface Subject {
   icon: string | null;
   order: number | null;
   is_published: boolean;
+  is_free: boolean;
   created_at: string;
 }
 

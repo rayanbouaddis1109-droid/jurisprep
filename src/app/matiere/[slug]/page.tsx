@@ -52,8 +52,15 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
   if (!subject) notFound();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const plan = await getUserPlan();
-  const canAccess = hasFullAccess(plan);
+  const isFreeSubject = Boolean(subject.is_free);
+  const canAccess = hasFullAccess(plan) || (isFreeSubject && Boolean(user));
+  // Matière gratuite mais visiteur non connecté : inviter à créer un compte
+  const lockVariant: "subscribe" | "signup" =
+    isFreeSubject && !user ? "signup" : "subscribe";
 
   // Un non-abonné ne reçoit que les compteurs : le contenu lui-même ne doit
   // jamais quitter le serveur sans abonnement actif.
@@ -140,6 +147,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           exercises={(exercisesRes.data ?? []) as Exercise[]}
           hasAccess={canAccess}
           counts={counts}
+          lockVariant={lockVariant}
         />
       </section>
     </div>

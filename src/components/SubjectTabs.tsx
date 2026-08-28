@@ -36,6 +36,7 @@ export function SubjectTabs({
   exercises,
   hasAccess = false,
   counts,
+  lockVariant = "subscribe",
 }: {
   sheets: RevisionSheet[];
   caseLaw: CaseLawSheet[];
@@ -45,6 +46,7 @@ export function SubjectTabs({
   exercises: Exercise[];
   hasAccess?: boolean;
   counts?: Record<TabKey, number>;
+  lockVariant?: "subscribe" | "signup";
 }) {
   const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
@@ -82,7 +84,7 @@ export function SubjectTabs({
 
       <div className="mt-6">
         {!hasAccess ? (
-          <PaywallBanner />
+          <PaywallBanner variant={lockVariant} />
         ) : (
           <>
             {active === "fiches" && <FichesPanel sheets={sheets} />}

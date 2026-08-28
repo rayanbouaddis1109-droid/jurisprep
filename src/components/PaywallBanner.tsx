@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, Gift } from "lucide-react";
 
-export function PaywallBanner() {
+export function PaywallBanner({
+  variant = "subscribe",
+}: {
+  variant?: "subscribe" | "signup";
+}) {
+  const isSignup = variant === "signup";
   return (
     <div
       className="rounded-2xl p-10 text-center"
@@ -11,21 +16,26 @@ export function PaywallBanner() {
         className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
         style={{ background: "#FFF0E6" }}
       >
-        <Lock className="h-6 w-6" style={{ color: "#E07B39" }} />
+        {isSignup ? (
+          <Gift className="h-6 w-6" style={{ color: "#E07B39" }} />
+        ) : (
+          <Lock className="h-6 w-6" style={{ color: "#E07B39" }} />
+        )}
       </div>
       <h3 className="text-lg font-bold mb-2" style={{ color: "#2C1810" }}>
-        Contenu réservé aux abonnés
+        {isSignup ? "Cette matière est gratuite" : "Contenu réservé aux abonnés"}
       </h3>
       <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "#7A5C4A" }}>
-        Accède à l&apos;intégralité des fiches, quiz, flashcards et exercices
-        corrigés avec un abonnement JurisPrép.
+        {isSignup
+          ? "Crée un compte gratuit pour accéder à toutes les fiches, quiz et flashcards de cette matière. Aucune carte bancaire demandée."
+          : "Accède à l'intégralité des fiches, quiz, flashcards et exercices corrigés avec un abonnement JurisPrép."}
       </p>
       <Link
-        href="/tarifs"
+        href={isSignup ? "/auth/signup" : "/tarifs"}
         className="inline-block rounded-full text-sm font-bold px-6 py-3 transition hover:opacity-90"
         style={{ background: "#E07B39", color: "white" }}
       >
-        Voir les formules
+        {isSignup ? "Créer mon compte gratuit" : "Voir les formules"}
       </Link>
     </div>
   );
