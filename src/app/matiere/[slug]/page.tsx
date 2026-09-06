@@ -189,6 +189,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           counts={counts}
           locked={locked}
           isLoggedIn={isAuthed}
+          level={subject.level}
         />
       </section>
     </div>

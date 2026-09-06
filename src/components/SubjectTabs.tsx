@@ -19,6 +19,7 @@ import type {
   Flashcard,
   Quiz,
   RevisionSheet,
+  Subject,
   Video,
 } from "@/lib/types";
 import { QuizPlayer } from "./QuizPlayer";
@@ -55,6 +56,7 @@ export function SubjectTabs({
   counts,
   locked = null,
   isLoggedIn = false,
+  level,
 }: {
   sheets: RevisionSheet[];
   caseLaw: CaseLawSheet[];
@@ -65,16 +67,20 @@ export function SubjectTabs({
   counts?: Record<TabKey, number>;
   locked?: Record<TabKey, LockedItem[]> | null;
   isLoggedIn?: boolean;
+  level?: Subject["level"];
 }) {
-  const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean }[] = [
+  const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean; hideForLyceen?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
     { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: counts?.arrets ?? caseLaw.length, hideIfEmpty: true },
-    { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: counts?.videos ?? videos.length },
+    { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: counts?.videos ?? videos.length, hideForLyceen: true },
     { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: counts?.quiz ?? quizzes.length },
     { key: "flashcards", label: "Flashcards", icon: <Layers className="h-4 w-4" />, count: counts?.flashcards ?? flashcards.length },
-    { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: counts?.exercices ?? exercises.length },
+    { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: counts?.exercices ?? exercises.length, hideForLyceen: true },
   ];
-  const tabs = allTabs.filter((t) => !t.hideIfEmpty || t.count > 0);
+  // La section lycéen se limite aux fiches, aux quiz et aux flashcards.
+  const tabs = allTabs.filter(
+    (t) => (!t.hideIfEmpty || t.count > 0) && !(t.hideForLyceen && level === "Lycéen"),
+  );
 
   const firstWithContent = tabs.find((t) => t.count > 0)?.key ?? "fiches";
   const [active, setActive] = useState<TabKey>(firstWithContent);
