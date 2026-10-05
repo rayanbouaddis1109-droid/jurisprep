@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 export const alt = "JurisPrép — Réussir ses études de droit";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -42,6 +41,8 @@ export default function Image() {
 
       <div
         style={{
+          display: "flex",
+          flexDirection: "column",
           fontSize: "68px",
           fontWeight: 800,
           color: "#2C1810",
@@ -50,8 +51,7 @@ export default function Image() {
           marginBottom: "36px",
         }}
       >
-        Réussir ses études
-        <br />
+        <span>Réussir ses études</span>
         <span style={{ color: "#E07B39" }}>de droit, vraiment.</span>
       </div>
 
