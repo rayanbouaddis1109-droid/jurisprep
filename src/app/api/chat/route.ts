@@ -166,7 +166,9 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        // llama-3.3-70b-versatile retiré par Groq le 2026-08-16, remplacé par gpt-oss-120b
+        model: "openai/gpt-oss-120b",
+        reasoning_effort: "low",
         messages: [
           { role: "system", content: system },
           ...messages.map((m: { role: string; content: string }) => ({
@@ -174,7 +176,7 @@ export async function POST(req: NextRequest) {
             content: m.content,
           })),
         ],
-        max_tokens: 1500,
+        max_completion_tokens: 3000,
         temperature: 0.3,
       }),
     });
