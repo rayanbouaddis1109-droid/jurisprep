@@ -89,10 +89,10 @@ async function findCourseExcerpts(
       return { r, score };
     })
     .sort((x, y) => y.score - x.score)
-    .slice(0, 3);
+    .slice(0, 2);
 
   return scored
-    .map(({ r }) => `### ${r.title} (${r.chapter ?? ""})\n${String(r.content).slice(0, 3500)}`)
+    .map(({ r }) => `### ${r.title} (${r.chapter ?? ""})\n${String(r.content).slice(0, 2500)}`)
     .join("\n\n");
 }
 
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
             content: m.content,
           })),
         ],
-        max_completion_tokens: 3000,
+        max_completion_tokens: 1500,
         temperature: 0.3,
       }),
     });
