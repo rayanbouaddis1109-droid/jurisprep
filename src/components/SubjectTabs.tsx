@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   FileText,
-  Gavel,
   Play,
   HelpCircle,
   Layers,
@@ -14,7 +13,6 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type {
-  CaseLawSheet,
   Exercise,
   Flashcard,
   Quiz,
@@ -26,11 +24,10 @@ import { QuizPlayer } from "./QuizPlayer";
 import { FlashcardDeck } from "./FlashcardDeck";
 import { LockedGrid, type LockedItem } from "./LockedPreview";
 
-type TabKey = "fiches" | "arrets" | "videos" | "quiz" | "flashcards" | "exercices";
+type TabKey = "fiches" | "videos" | "quiz" | "flashcards" | "exercices";
 
 const LOCKED_LABELS: Record<TabKey, string> = {
   fiches: "chapitres",
-  arrets: "arrêts",
   videos: "vidéos",
   quiz: "quiz",
   flashcards: "paquets",
@@ -39,7 +36,6 @@ const LOCKED_LABELS: Record<TabKey, string> = {
 
 const EMPTY_LABELS: Record<TabKey, string> = {
   fiches: "les fiches",
-  arrets: "les arrêts",
   videos: "les vidéos",
   quiz: "les quiz",
   flashcards: "les flashcards",
@@ -48,7 +44,6 @@ const EMPTY_LABELS: Record<TabKey, string> = {
 
 export function SubjectTabs({
   sheets,
-  caseLaw,
   videos,
   quizzes,
   flashcards,
@@ -59,7 +54,6 @@ export function SubjectTabs({
   level,
 }: {
   sheets: RevisionSheet[];
-  caseLaw: CaseLawSheet[];
   videos: Video[];
   quizzes: Quiz[];
   flashcards: Flashcard[];
@@ -71,7 +65,6 @@ export function SubjectTabs({
 }) {
   const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean; hideForLyceen?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
-    { key: "arrets", label: "Arrêts", icon: <Gavel className="h-4 w-4" />, count: counts?.arrets ?? caseLaw.length, hideIfEmpty: true },
     { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: counts?.videos ?? videos.length, hideForLyceen: true },
     { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: counts?.quiz ?? quizzes.length },
     { key: "flashcards", label: "Flashcards", icon: <Layers className="h-4 w-4" />, count: counts?.flashcards ?? flashcards.length },
@@ -108,7 +101,6 @@ export function SubjectTabs({
 
       <div className="mt-6">
         {active === "fiches" && sheets.length > 0 && <FichesPanel sheets={sheets} />}
-        {active === "arrets" && caseLaw.length > 0 && <ArretsPanel items={caseLaw} />}
         {active === "videos" && videos.length > 0 && <VideosPanel videos={videos} />}
         {active === "quiz" && quizzes.length > 0 && <QuizzesPanel quizzes={quizzes} />}
         {active === "flashcards" && flashcards.length > 0 && (
@@ -201,76 +193,6 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
             </div>
           ))}
       </article>
-    </div>
-  );
-}
-
-function ArretsPanel({ items }: { items: CaseLawSheet[] }) {
-  if (items.length === 0) return <EmptyState label="les arrêts" />;
-  return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {items.map((a) => (
-        <article
-          key={a.id}
-          className="rounded-xl p-5 transition hover:shadow-md"
-          style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
-        >
-          <h3 className="text-lg font-bold" style={{ color: "#2C1810" }}>{a.title}</h3>
-          <p className="mt-1 text-xs" style={{ color: "#7A5C4A" }}>
-            {a.jurisdiction} · {a.reference}
-          </p>
-          <div className="mt-4 space-y-3 text-sm">
-            {a.facts && (
-              <Section title="Faits">
-                <p>{a.facts}</p>
-              </Section>
-            )}
-            {a.procedure && (
-              <Section title="Procédure">
-                <p>{a.procedure}</p>
-              </Section>
-            )}
-            {a.legal_question && (
-              <Section title="Problème de droit">
-                <p>{a.legal_question}</p>
-              </Section>
-            )}
-            {a.solution && (
-              <Section title="Solution">
-                <p>{a.solution}</p>
-              </Section>
-            )}
-            {a.portee && (
-              <Section title="Portée">
-                <p>{a.portee}</p>
-              </Section>
-            )}
-            {a.related_articles && a.related_articles.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-2">
-                {a.related_articles.map((r) => (
-                  <span
-                    key={r}
-                    className="rounded-full bg-ink-100 px-2 py-0.5 text-xs text-ink-700"
-                  >
-                    {r}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#E07B39" }}>
-        {title}
-      </div>
-      <div className="mt-1" style={{ color: "#2C1810" }}>{children}</div>
     </div>
   );
 }

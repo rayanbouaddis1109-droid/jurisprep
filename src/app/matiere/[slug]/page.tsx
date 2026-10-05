@@ -8,7 +8,7 @@ import type { LockedItem } from "@/components/LockedPreview";
 import type { Metadata } from "next";
 
 type LockedSet = Record<
-  "fiches" | "arrets" | "videos" | "quiz" | "flashcards" | "exercices",
+  "fiches" | "videos" | "quiz" | "flashcards" | "exercices",
   LockedItem[]
 >;
 import { ArrowLeft, BookOpen } from "lucide-react";
@@ -16,7 +16,6 @@ import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
 import { getUserPlan, hasFullAccess } from "@/lib/subscription";
 import type {
-  CaseLawSheet,
   Exercise,
   Flashcard,
   Quiz,
@@ -65,22 +64,20 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   const isAuthed = Boolean(user);
   const canAccessAll = hasFullAccess(plan);
 
-  const [sheetsRes, caseLawRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = isAuthed
+  const [sheetsRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = isAuthed
     ? await Promise.all([
         supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-        supabase.from("case_law_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
         supabase.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
         supabase.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
         supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
         supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
       ])
-    : [null, null, null, null, null, null];
+    : [null, null, null, null, null];
 
   // Titres du contenu verrouillé (métadonnées seulement, jamais le contenu) :
   // ils sont affichés floutés pour montrer ce que débloque l'abonnement.
   let counts = {
     fiches: sheetsRes?.data?.length ?? 0,
-    arrets: caseLawRes?.data?.length ?? 0,
     videos: videosRes?.data?.length ?? 0,
     quiz: quizzesRes?.data?.length ?? 0,
     flashcards: flashcardsRes?.data?.length ?? 0,
@@ -90,9 +87,8 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
   if (!canAccessAll) {
     const admin = createAdminClient();
-    const [aSheets, aCase, aVideos, aQuizzes, aCards, aExos] = await Promise.all([
+    const [aSheets, aVideos, aQuizzes, aCards, aExos] = await Promise.all([
       admin.from("revision_sheets").select("id, title, chapter, order").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-      admin.from("case_law_sheets").select("id, title").eq("subject_id", subject.id).eq("is_published", true).order("decision_date", { ascending: false }),
       admin.from("videos").select("id, title, chapter, order").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
       admin.from("quizzes").select("id, title, chapter").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
       admin.from("flashcards").select("id, deck_name").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
@@ -103,7 +99,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       new Set((rows ?? []).map((r) => r.id));
 
     const openSheets = openIds(sheetsRes?.data);
-    const openCase = openIds(caseLawRes?.data);
     const openVideos = openIds(videosRes?.data);
     const openQuizzes = openIds(quizzesRes?.data);
     const openExos = openIds(exercisesRes?.data);
@@ -120,7 +115,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
     counts = {
       fiches: aSheets.data?.length ?? 0,
-      arrets: aCase.data?.length ?? 0,
       videos: aVideos.data?.length ?? 0,
       quiz: aQuizzes.data?.length ?? 0,
       flashcards: allDecks.length,
@@ -129,7 +123,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
     locked = {
       fiches: (aSheets.data ?? []).filter((r) => !openSheets.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
-      arrets: (aCase.data ?? []).filter((r) => !openCase.has(r.id)).map((r) => ({ id: r.id, title: r.title })),
       videos: (aVideos.data ?? []).filter((r) => !openVideos.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
       quiz: (aQuizzes.data ?? []).filter((r) => !openQuizzes.has(r.id)).map((r) => ({ id: r.id, title: r.title, chapter: r.chapter })),
       flashcards: allDecks.filter((d) => !openDecks.has(d)).map((d) => ({ id: d, title: `Paquet ${d}` })),
@@ -181,7 +174,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SubjectTabs
           sheets={(sheetsRes?.data ?? []) as RevisionSheet[]}
-          caseLaw={(caseLawRes?.data ?? []) as CaseLawSheet[]}
           videos={(videosRes?.data ?? []) as Video[]}
           quizzes={(quizzesRes?.data ?? []) as Quiz[]}
           flashcards={(flashcardsRes?.data ?? []) as Flashcard[]}
