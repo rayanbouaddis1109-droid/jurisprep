@@ -152,6 +152,13 @@ export async function POST(req: NextRequest) {
       ? `${SYSTEM_PROMPT}\n\nEXTRAITS DES FICHES DE COURS JURISPRÉP :\n\n${excerpts}`
       : SYSTEM_PROMPT;
 
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json(
+        { error: "L'assistant n'est pas configuré (clé GROQ_API_KEY absente sur le serveur)." },
+        { status: 503 }
+      );
+    }
+
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
@@ -175,8 +182,10 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     if (!response.ok) {
       console.error("Groq error:", response.status, data?.error?.message);
+      // Code d'erreur Groq affiché (jamais la clé) pour diagnostiquer sans accès aux logs
+      const code = data?.error?.code ?? data?.error?.type ?? "inconnu";
       return NextResponse.json(
-        { error: "L'assistant est momentanément indisponible. Réessaie plus tard." },
+        { error: `L'assistant est momentanément indisponible (Groq ${response.status}, ${code}). Réessaie plus tard.` },
         { status: 502 }
       );
     }
