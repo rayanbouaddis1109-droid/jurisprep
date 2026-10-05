@@ -169,6 +169,7 @@ export async function POST(req: NextRequest) {
         // llama-3.3-70b-versatile retiré par Groq le 2026-08-16, remplacé par gpt-oss-120b
         model: "openai/gpt-oss-120b",
         reasoning_effort: "low",
+        include_reasoning: false,
         messages: [
           { role: "system", content: system },
           ...messages.map((m: { role: string; content: string }) => ({
@@ -176,7 +177,7 @@ export async function POST(req: NextRequest) {
             content: m.content,
           })),
         ],
-        max_completion_tokens: 1500,
+        max_completion_tokens: 2500,
         temperature: 0.3,
       }),
     });
@@ -191,7 +192,15 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       );
     }
-    const reply = data.choices?.[0]?.message?.content ?? "Erreur inconnue.";
+    const choice = data.choices?.[0];
+    const reply = typeof choice?.message?.content === "string" ? choice.message.content.trim() : "";
+    if (!reply) {
+      // Réponse vide : le plus souvent le modèle a épuisé sa limite de longueur en raisonnant
+      return NextResponse.json(
+        { error: `L'assistant n'a pas produit de réponse (fin : ${choice?.finish_reason ?? "inconnue"}). Reformule ta question plus simplement.` },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ reply });
   } catch (err) {
