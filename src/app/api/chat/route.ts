@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MAX_MESSAGES = 20;
@@ -23,22 +24,77 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-const SYSTEM_PROMPT = `Tu es le Professeur Legrand, un éminent professeur de droit français reconnu pour la clarté et la rigueur de ses explications. Tu as enseigné pendant 30 ans dans les meilleures facultés de droit françaises (Paris I Panthéon-Sorbonne, Paris II Panthéon-Assas).
+const SYSTEM_PROMPT = `Tu es l'assistant de révision de JurisPrép, destiné aux étudiants en droit français (licence).
 
-MISSION : Tu réponds UNIQUEMENT aux questions juridiques des étudiants en droit. Si une question n'est pas liée au droit, tu déclines poliment et rappelles ta mission.
+MISSION : tu réponds uniquement aux questions juridiques. Si une question n'est pas liée au droit, tu le dis poliment et rappelles ta mission.
 
-STYLE DE RÉPONSE :
-- Recontextualise brièvement la question dans son cadre juridique
-- Structure ta réponse avec des parties claires
-- Cite les textes de référence (articles du Code civil, jurisprudence importante)
-- Donne des exemples concrets et des arrêts emblématiques quand c'est pertinent
-- Termine par un "Point essentiel à retenir" qui résume la règle principale
-- Utilise un vocabulaire juridique précis mais accessible pour des étudiants de licence
-- Ton ton est bienveillant, pédagogique et exigeant
+SOURCES : quand des extraits de fiches de cours JurisPrép sont fournis plus bas, appuie-toi d'abord sur eux. N'invente jamais un arrêt, une date, un numéro d'article ou un chiffre. Si tu n'es pas certain d'une référence, dis-le clairement plutôt que de la deviner.
 
-DOMAINES : Droit civil, constitutionnel, pénal, administratif, européen, international privé, procédure civile et pénale, droit commercial, anglais juridique.
+STYLE :
+- Situe la question dans son cadre juridique
+- Structure la réponse en parties claires
+- Cite les textes et la jurisprudence pertinents quand tu en es sûr
+- Termine par "Point essentiel à retenir" qui résume la règle
+- Vocabulaire juridique précis mais accessible, ton pédagogique et exigeant`;
 
-REFUS : finance personnelle, médecine, technologie, divertissement, etc.`;
+const STOPWORDS = new Set(["quelle","quelles","quel","quels","est","sont","dans","pour","avec","comment","pourquoi","quoi","entre","cette","celui","celle","plus","fait","faire","peut","doit","arret","arrêt","droit","solution","date","regle","règle","principe","explique","expliquer","quoi","quest"]);
+
+// Recherche plein texte dans les fiches de cours publiées (lecture sous RLS, avec la session de l'utilisateur)
+async function findCourseExcerpts(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  question: string
+): Promise<string> {
+  const words = Array.from(
+    new Set(
+      question
+        .toLowerCase()
+        .replace(/[^a-zà-ÿ0-9 ]/gi, " ")
+        .split(/\s+/)
+        .filter((w) => w.length > 3 && !STOPWORDS.has(w))
+    )
+  ).slice(0, 8);
+  if (words.length === 0) return "";
+
+  const search = async (op: string) => {
+    const { data } = await supabase
+      .from("revision_sheets")
+      .select("title, chapter, content")
+      .eq("is_published", true)
+      .textSearch("content", words.join(op), { type: "websearch", config: "french" })
+      .limit(40);
+    return data ?? [];
+  };
+
+  // Fiches contenant tous les mots, complétées si besoin par celles qui en contiennent au moins un
+  let rows = await search(" ");
+  if (rows.length < 3) {
+    const seen = new Set(rows.map((r) => r.title));
+    rows = rows.concat((await search(" or ")).filter((r) => !seen.has(r.title)));
+  }
+  if (rows.length === 0) return "";
+
+  // Classement : occurrences des mots, pondérées par leur rareté, bonus si le titre les contient
+  const norm = (t: string) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const keys = words.map(norm);
+  const bodies = rows.map((r) => norm(String(r.content)));
+  const weights = keys.map((k) => 1 / (bodies.filter((b) => b.includes(k)).length || 1));
+  const scored = rows
+    .map((r, i) => {
+      const title = norm(String(r.title));
+      let score = 0;
+      keys.forEach((k, j) => {
+        score += weights[j] * Math.min(bodies[i].split(k).length - 1, 10);
+        if (title.includes(k)) score += 5 * weights[j];
+      });
+      return { r, score };
+    })
+    .sort((x, y) => y.score - x.score)
+    .slice(0, 3);
+
+  return scored
+    .map(({ r }) => `### ${r.title} (${r.chapter ?? ""})\n${String(r.content).slice(0, 3500)}`)
+    .join("\n\n");
+}
 
 export async function POST(req: NextRequest) {
   const ip =
@@ -48,6 +104,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Trop de requêtes. Réessaie dans une minute." },
       { status: 429 }
+    );
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: "Connecte-toi pour utiliser l'assistant." },
+      { status: 401 }
     );
   }
 
@@ -79,6 +146,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const lastUser = [...messages].reverse().find((m: { role: string }) => m.role === "user");
+    const excerpts = lastUser ? await findCourseExcerpts(supabase, lastUser.content) : "";
+    const system = excerpts
+      ? `${SYSTEM_PROMPT}\n\nEXTRAITS DES FICHES DE COURS JURISPRÉP :\n\n${excerpts}`
+      : SYSTEM_PROMPT;
+
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
@@ -88,18 +161,25 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: system },
           ...messages.map((m: { role: string; content: string }) => ({
             role: m.role,
             content: m.content,
           })),
         ],
         max_tokens: 1500,
-        temperature: 0.7,
+        temperature: 0.3,
       }),
     });
 
     const data = await response.json();
+    if (!response.ok) {
+      console.error("Groq error:", response.status, data?.error?.message);
+      return NextResponse.json(
+        { error: "L'assistant est momentanément indisponible. Réessaie plus tard." },
+        { status: 502 }
+      );
+    }
     const reply = data.choices?.[0]?.message?.content ?? "Erreur inconnue.";
 
     return NextResponse.json({ reply });
