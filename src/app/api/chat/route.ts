@@ -135,9 +135,10 @@ export async function POST(req: NextRequest) {
     }
 
     for (const m of messages) {
-      if (!m || typeof m.content !== "string" || m.content.length > MAX_MESSAGE_LENGTH) {
+      // La limite de longueur ne vise que les messages de l'étudiant : les réponses de l'assistant sont souvent plus longues
+      if (!m || typeof m.content !== "string" || (m.role === "user" && m.content.length > MAX_MESSAGE_LENGTH)) {
         return NextResponse.json(
-          { error: "Message trop long ou invalide." },
+          { error: "Message trop long (2000 caractères maximum) ou invalide." },
           { status: 400 }
         );
       }
@@ -172,9 +173,10 @@ export async function POST(req: NextRequest) {
         include_reasoning: false,
         messages: [
           { role: "system", content: system },
-          ...messages.map((m: { role: string; content: string }) => ({
+          // Seuls les 6 derniers messages sont renvoyés, réponses tronquées, pour rester sous la limite du plan gratuit Groq
+          ...messages.slice(-6).map((m: { role: string; content: string }) => ({
             role: m.role,
-            content: m.content,
+            content: m.role === "assistant" ? m.content.slice(0, 1500) : m.content,
           })),
         ],
         max_completion_tokens: 2500,
