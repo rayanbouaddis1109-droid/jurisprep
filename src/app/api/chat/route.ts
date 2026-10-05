@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MAX_MESSAGES = 20;
+const MAX_MESSAGES = 100; // l'historique envoyé à Groq est de toute façon réduit aux 6 derniers messages
 const MAX_MESSAGE_LENGTH = 2000;
 
 // In-memory rate limiter — 10 requêtes par minute par IP
