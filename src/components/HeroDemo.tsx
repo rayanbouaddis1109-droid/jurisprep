@@ -11,7 +11,7 @@ const CHAT_Q = "C'est quoi le principe de légalité des délits et des peines ?
 const CHAT_A =
   "Nul ne peut être puni pour un fait qui n'était pas défini comme une infraction par la loi au moment où il a été commis, ni d'une peine qui n'était pas prévue par la loi.";
 
-const SCENE_MS = [6200, 5600, 5200, 5200, 7600, 8200];
+const SCENE_MS = [4800, 4200, 3800, 3800, 6200, 6800];
 
 export function HeroDemo() {
   const [scene, setScene] = useState(0);
@@ -40,21 +40,21 @@ export function HeroDemo() {
   const progress = Math.min(100, (ms / SCENE_MS[scene]) * 100);
 
   // Quiz : la bonne réponse se sélectionne après 1,8 s
-  const picked = reduced || ms > 1800;
+  const picked = reduced || ms > 1300;
   // Flashcard : la carte se retourne après 2,2 s
-  const flipped = reduced || ms > 2200;
+  const flipped = reduced || ms > 1500;
   // Assistant : la question puis la réponse s'écrivent lettre par lettre
   const qChars = reduced ? CHAT_Q.length : Math.min(CHAT_Q.length, Math.floor(ms / 28));
-  const aStart = 1300;
+  const aStart = 1900;
   const aChars = reduced ? CHAT_A.length : Math.max(0, Math.min(CHAT_A.length, Math.floor((ms - aStart) / 22)));
 
   // Fiche : les lignes apparaissent l'une après l'autre
-  const fLines = reduced ? 4 : Math.min(4, Math.floor(ms / 900));
+  const fLines = reduced ? 4 : Math.min(4, Math.floor(ms / 700));
   // Vidéo : lecture simulée
-  const vPlaying = reduced ? false : ms > 700;
-  const vPct = reduced ? 35 : Math.min(100, Math.max(0, ((ms - 700) / 4800) * 100));
+  const vPlaying = reduced ? false : ms > 600;
+  const vPct = reduced ? 35 : Math.min(100, Math.max(0, ((ms - 600) / 3400) * 100));
   // Exercice : l'énoncé, puis les étapes du corrigé
-  const eSteps = reduced ? 4 : Math.max(0, Math.min(4, Math.floor((ms - 2200) / 1200)));
+  const eSteps = reduced ? 4 : Math.max(0, Math.min(4, Math.floor((ms - 1500) / 950)));
 
   const shownScene = reduced ? 2 : scene;
 
@@ -133,23 +133,25 @@ export function HeroDemo() {
             <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
               Vidéo explicative
             </p>
-            <div className="relative mx-auto flex items-center justify-center overflow-hidden rounded-xl"
-              style={{ background: "#2C1810", maxWidth: 520, height: 210 }}>
-              {!vPlaying ? (
-                <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: "#E07B39" }}>
+            <div
+              className="relative mx-auto flex items-center justify-center overflow-hidden rounded-xl"
+              style={{
+                maxWidth: 520,
+                aspectRatio: "16 / 9",
+                background: "#2C1810 url(/video-apercu.jpg) center / cover no-repeat",
+              }}
+            >
+              {!vPlaying && (
+                <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: "#E07B39", boxShadow: "0 6px 20px rgba(44,24,16,0.35)" }}>
                   <span className="ml-1 border-y-[10px] border-l-[16px] border-y-transparent border-l-white" />
                 </div>
-              ) : (
-                <p className="px-8 text-center text-base font-bold leading-snug" style={{ color: "#FFF8EE" }}>
-                  Les notions clés expliquées pas à pas, à ton rythme
-                </p>
               )}
-              <div className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: "rgba(255,248,238,0.2)" }}>
+              <div className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: "rgba(255,255,255,0.55)" }}>
                 <div className="h-full" style={{ width: `${vPct}%`, background: "#E07B39", transition: "width 0.1s linear" }} />
               </div>
             </div>
             <p className="mt-4 text-xs" style={{ color: "#7A5C4A" }}>
-              Un cours en vidéo pour comprendre avant de réviser.
+              Introduction au droit des finances publiques : un cours en vidéo pour comprendre avant de réviser.
             </p>
           </div>
         )}
