@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 // Démonstration animée en boucle : un quiz, une flashcard, puis l'assistant IA.
-const SCENES = ["Quiz", "Flashcard", "Assistant IA"] as const;
+const SCENES = ["Fiche", "Vidéo", "Quiz", "Flashcard", "Exercice", "Assistant IA"] as const;
 const QUESTION =
   "Quel article de la Constitution de 1958 permet au Président de la République de prendre les mesures exigées par des circonstances exceptionnelles ?";
 const CHOICES = ["Article 5", "Article 16", "Article 49", "Article 89"];
@@ -11,7 +11,7 @@ const CHAT_Q = "C'est quoi le principe de légalité des délits et des peines ?
 const CHAT_A =
   "Nul ne peut être puni pour un fait qui n'était pas défini comme une infraction par la loi au moment où il a été commis, ni d'une peine qui n'était pas prévue par la loi.";
 
-const SCENE_MS = [5200, 5200, 8200];
+const SCENE_MS = [6200, 5600, 5200, 5200, 7600, 8200];
 
 export function HeroDemo() {
   const [scene, setScene] = useState(0);
@@ -48,7 +48,15 @@ export function HeroDemo() {
   const aStart = 1300;
   const aChars = reduced ? CHAT_A.length : Math.max(0, Math.min(CHAT_A.length, Math.floor((ms - aStart) / 22)));
 
-  const shownScene = reduced ? 0 : scene;
+  // Fiche : les lignes apparaissent l'une après l'autre
+  const fLines = reduced ? 4 : Math.min(4, Math.floor(ms / 900));
+  // Vidéo : lecture simulée
+  const vPlaying = reduced ? false : ms > 700;
+  const vPct = reduced ? 35 : Math.min(100, Math.max(0, ((ms - 700) / 4800) * 100));
+  // Exercice : l'énoncé, puis les étapes du corrigé
+  const eSteps = reduced ? 4 : Math.max(0, Math.min(4, Math.floor((ms - 2200) / 1200)));
+
+  const shownScene = reduced ? 2 : scene;
 
   return (
     <div
@@ -68,11 +76,11 @@ export function HeroDemo() {
           <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#F5B700" }} />
           <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#0DB37A" }} />
         </div>
-        <div className="flex flex-1 justify-center gap-1.5">
+        <div className="flex flex-1 flex-wrap justify-center gap-1">
           {SCENES.map((name, i) => (
             <span
               key={name}
-              className="rounded-full px-3 py-1 text-xs font-bold transition"
+              className="rounded-full px-2.5 py-1 text-xs font-bold transition"
               style={
                 i === shownScene
                   ? { background: "#E07B39", color: "white" }
@@ -87,8 +95,100 @@ export function HeroDemo() {
       </div>
 
       {/* Scène */}
-      <div className="px-5 py-6 sm:px-8" style={{ minHeight: 330 }}>
+      <div className="px-5 py-6 sm:px-8" style={{ minHeight: 360 }}>
         {shownScene === 0 && (
+          <div key="fiche" className="jp-scene text-left">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+              Fiche de cours
+            </p>
+            <h3 className="mb-3 text-lg font-extrabold" style={{ color: "#2C1810", letterSpacing: "-0.02em" }}>
+              Le contrat : définition et conditions de validité
+            </h3>
+            <div className="space-y-2.5 text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+              {[
+                "Le contrat est un accord de volontés entre deux ou plusieurs personnes destiné à créer, modifier, transmettre ou éteindre des obligations (art. 1101 du Code civil).",
+                "Il faut un consentement des parties, leur capacité de contracter, et un contenu licite et certain (art. 1128 du Code civil).",
+                "À retenir : sans l'une de ces conditions, le contrat peut être annulé.",
+                "Chaque chapitre se termine par un résumé « À retenir ».",
+              ].map((t, i) => (
+                <p
+                  key={i}
+                  className="rounded-lg px-3 py-2 transition-all duration-500"
+                  style={{
+                    background: i === 2 ? "#FFF0E6" : "#FFF8EE",
+                    border: "1.5px solid #EDE0CC",
+                    opacity: i < fLines ? 1 : 0,
+                    transform: i < fLines ? "translateY(0)" : "translateY(8px)",
+                  }}
+                >
+                  {t}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {shownScene === 1 && (
+          <div key="video" className="jp-scene">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+              Vidéo explicative
+            </p>
+            <div className="relative mx-auto flex items-center justify-center overflow-hidden rounded-xl"
+              style={{ background: "#2C1810", maxWidth: 520, height: 210 }}>
+              {!vPlaying ? (
+                <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: "#E07B39" }}>
+                  <span className="ml-1 border-y-[10px] border-l-[16px] border-y-transparent border-l-white" />
+                </div>
+              ) : (
+                <p className="px-8 text-center text-base font-bold leading-snug" style={{ color: "#FFF8EE" }}>
+                  Les notions clés expliquées pas à pas, à ton rythme
+                </p>
+              )}
+              <div className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: "rgba(255,248,238,0.2)" }}>
+                <div className="h-full" style={{ width: `${vPct}%`, background: "#E07B39", transition: "width 0.1s linear" }} />
+              </div>
+            </div>
+            <p className="mt-4 text-xs" style={{ color: "#7A5C4A" }}>
+              Un cours en vidéo pour comprendre avant de réviser.
+            </p>
+          </div>
+        )}
+
+        {shownScene === 4 && (
+          <div key="exo" className="jp-scene text-left text-sm">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+              Exercice corrigé · cas pratique
+            </p>
+            <p className="mb-4 rounded-xl px-4 py-3 leading-relaxed" style={{ background: "#FFF8EE", border: "1.5px solid #EDE0CC", color: "#2C1810" }}>
+              Paul vend sa voiture à Marie, mais Marie a signé alors qu&apos;elle ignorait un défaut grave que Paul connaissait et lui avait caché. Marie peut-elle remettre en cause le contrat ?
+            </p>
+            <div className="space-y-2">
+              {[
+                ["Problème de droit", "Le consentement de Marie était-il vicié ?"],
+                ["Règle", "Les vices du consentement du Code civil."],
+                ["Application", "Paul a caché une information déterminante."],
+                ["Conclusion", "Marie peut demander l'annulation du contrat."],
+              ].map(([k, v], i) => (
+                <div
+                  key={k}
+                  className="flex gap-3 rounded-lg px-3 py-2 transition-all duration-500"
+                  style={{
+                    background: "#E8FBF4",
+                    border: "1.5px solid #0DB37A",
+                    color: "#065E3F",
+                    opacity: i < eSteps ? 1 : 0,
+                    transform: i < eSteps ? "translateY(0)" : "translateY(8px)",
+                  }}
+                >
+                  <span className="w-32 shrink-0 font-bold">{k}</span>
+                  <span>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {shownScene === 2 && (
           <div key="quiz" className="jp-scene">
             <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
               Quiz corrigé
@@ -124,7 +224,7 @@ export function HeroDemo() {
           </div>
         )}
 
-        {shownScene === 1 && (
+        {shownScene === 3 && (
           <div key="card" className="jp-scene flex flex-col items-center">
             <p className="mb-4 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
               Flashcard
@@ -167,7 +267,7 @@ export function HeroDemo() {
           </div>
         )}
 
-        {shownScene === 2 && (
+        {shownScene === 5 && (
           <div key="chat" className="jp-scene space-y-3 text-left text-sm">
             <p className="mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
               Assistant IA
