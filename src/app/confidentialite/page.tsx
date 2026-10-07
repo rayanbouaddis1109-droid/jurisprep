@@ -73,6 +73,7 @@ export default function ConfidentialitePage() {
           <li>Vercel Inc. : hébergement du site (États-Unis).</li>
           <li>Stripe, Inc. : paiement des abonnements.</li>
           <li>Groq, Inc. : génération des réponses de l&apos;assistant IA (États-Unis).</li>
+          <li>Resend, Inc. : envoi des e-mails de confirmation d&apos;inscription et de réinitialisation du mot de passe (serveurs en Europe, en Irlande).</li>
         </ul>
         <p className="mt-3 text-sm leading-relaxed" style={text}>
           Plusieurs de ces prestataires sont établis aux États-Unis. Les transferts de données hors de
