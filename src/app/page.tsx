@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { HeroDemo } from "@/components/HeroDemo";
 
 const YEARS = [
   {
@@ -121,41 +122,9 @@ export default async function HomePage() {
       </section>
 
 
-      {/* ── APERÇU DU PRODUIT ── */}
-      <section className="mx-auto max-w-5xl px-5 pb-16">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="jp-rise jp-d6 rounded-2xl p-6" style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>Quiz corrigé</p>
-            <p className="mb-4 font-bold" style={{ color: "#2C1810" }}>
-              Quel article de la Constitution de 1958 permet au Président de la République de prendre les mesures exigées par des circonstances exceptionnelles&nbsp;?
-            </p>
-            <div className="space-y-2 text-sm">
-              {["Article 5", "Article 16", "Article 49", "Article 89"].map((c, i) => (
-                <div key={c} className={`rounded-xl px-4 py-2.5 font-medium ${i === 1 ? "jp-answer" : ""}`}
-                  style={{ background: "#FFF8EE", border: "1.5px solid #EDE0CC", color: "#7A5C4A" }}>
-                  {c}
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-xs leading-relaxed" style={{ color: "#7A5C4A" }}>
-              Chaque réponse est expliquée : tu comprends pourquoi, pas seulement quoi.
-            </p>
-          </div>
-
-          <div className="jp-rise jp-d7 rounded-2xl p-6" style={{ background: "#2C1810" }}>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>Flashcard</p>
-            <p className="mb-6 text-xl font-extrabold" style={{ color: "#FFF8EE", letterSpacing: "-0.02em" }}>
-              Que signifie l&apos;adage «&nbsp;Pacta sunt servanda&nbsp;»&nbsp;?
-            </p>
-            <div className="jp-flip-answer rounded-xl p-4 text-sm leading-relaxed"
-              style={{ background: "rgba(255,248,238,0.08)", color: "rgba(255,248,238,0.8)" }}>
-              Les conventions doivent être respectées : un contrat légalement formé tient lieu de loi à ceux qui l&apos;ont fait.
-            </div>
-            <p className="mt-4 text-xs leading-relaxed" style={{ color: "rgba(255,248,238,0.5)" }}>
-              Retourne la carte, vérifie, recommence jusqu&apos;à ce que ce soit acquis.
-            </p>
-          </div>
-        </div>
+      {/* ── APERÇU DU PRODUIT (démo animée) ── */}
+      <section className="jp-rise jp-d6 mx-auto max-w-5xl px-5 pb-16">
+        <HeroDemo />
       </section>
 
       {/* ── COMMENT ÇA MARCHE ── */}
