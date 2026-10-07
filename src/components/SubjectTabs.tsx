@@ -80,7 +80,12 @@ export function SubjectTabs({
   // Anglais juridique et culture générale : ni fiches ni vidéos, mais les mots du jour.
   const vocabTabs: typeof allTabs = [
     { key: "jour", label: "Mots du jour", icon: <FileText className="h-4 w-4" />, count: jourCount },
-    ...allTabs.filter((t) => t.key !== "fiches" && t.key !== "videos"),
+    ...allTabs.filter(
+      (t) =>
+        t.key !== "fiches" &&
+        t.key !== "videos" &&
+        !(t.key === "exercices" && category === "anglais_juridique"),
+    ),
   ];
   const tabs = (isVocab ? vocabTabs : allTabs).filter(
     (t) => (!t.hideIfEmpty || t.count > 0) && !(t.hideForLyceen && level === "Lycéen"),
