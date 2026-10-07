@@ -73,7 +73,7 @@ export default async function HomePage() {
     <div style={{ background: "#FFF8EE", color: "#2C1810" }}>
 
       {/* ── HERO ── */}
-      <section className="px-5 pt-14 pb-10" style={{ maxWidth: 680 }}>
+      <section className="mx-auto px-5 pt-16 pb-12 text-center sm:pt-24" style={{ maxWidth: 820 }}>
 
         <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest mb-6"
           style={{ background: "#FFF0E6", color: "#E07B39" }}>
@@ -86,24 +86,24 @@ export default async function HomePage() {
           <em style={{ color: "#E07B39", fontStyle: "italic" }}>vraiment.</em>
         </h1>
 
-        <p className="text-base leading-relaxed mb-8" style={{ color: "#7A5C4A", maxWidth: 480 }}>
+        <p className="mx-auto mb-9 text-base leading-relaxed sm:text-lg" style={{ color: "#7A5C4A", maxWidth: 560 }}>
           Fiches, quiz corrigés, {flashcardsCount} flashcards et assistant IA — tout ce qu&apos;il te faut pour comprendre le droit, pas juste survivre aux partiels.
         </p>
 
-        <div className="flex flex-col gap-3 mb-10" style={{ maxWidth: 400 }}>
+        <div className="mx-auto mb-12 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ maxWidth: 520 }}>
           <Link href="/licence/l1"
-            className="flex items-center justify-center gap-2 rounded-2xl font-bold text-white transition-opacity hover:opacity-90"
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl font-bold text-white transition-opacity hover:opacity-90"
             style={{ background: "#E07B39", padding: "15px 24px", fontSize: "0.9375rem", boxShadow: "0 4px 20px rgba(224,123,57,0.35)" }}>
             Explorer les modules <ArrowRight className="h-4 w-4" />
           </Link>
           <Link href="/assistant"
-            className="btn-ghost flex items-center justify-center gap-2 rounded-2xl font-semibold transition">
+            className="btn-ghost flex flex-1 items-center justify-center gap-2 rounded-2xl font-semibold transition">
             Essayer l&apos;assistant IA ✦
           </Link>
         </div>
 
         {/* Stats chips */}
-        <div className="flex flex-wrap gap-2 pt-7" style={{ borderTop: "1.5px solid #EDE0CC" }}>
+        <div className="flex flex-wrap justify-center gap-2 pt-8" style={{ borderTop: "1.5px solid #EDE0CC" }}>
           {[
             { num: flashcardsCount, label: "flashcards" },
             { num: quizzesCount, label: "quiz" },
@@ -121,16 +121,16 @@ export default async function HomePage() {
       </section>
 
       {/* ── NIVEAUX ── */}
-      <section className="px-5 pb-12">
-        <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#7A5C4A" }}>Par niveau</p>
-        <h2 className="text-3xl font-extrabold tracking-tight mb-6" style={{ letterSpacing: "-0.03em" }}>
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Par niveau</p>
+        <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
           Où en es-tu&nbsp;?
         </h2>
 
-        <div className="flex flex-col gap-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {YEARS.map((y) => (
             <Link key={y.slug} href={`/licence/${y.slug}`}
-              className="block rounded-2xl overflow-hidden transition hover:-translate-y-0.5"
+              className="flex h-full flex-col overflow-hidden rounded-2xl transition hover:-translate-y-0.5"
               style={{ boxShadow: "0 2px 0 rgba(44,24,16,0.04)", textDecoration: "none" }}>
               {/* Coloured top */}
               <div className="flex items-start justify-between px-5 pt-5 pb-4"
@@ -148,7 +148,7 @@ export default async function HomePage() {
                 </div>
               </div>
               {/* Light bottom */}
-              <div className="px-5 py-3 text-sm font-medium leading-snug"
+              <div className="flex-1 px-5 py-4 text-sm font-medium leading-snug"
                 style={{ background: y.light, color: y.text }}>
                 {y.desc}
               </div>
@@ -158,16 +158,16 @@ export default async function HomePage() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="px-5 pb-12">
-        <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#7A5C4A" }}>Méthode</p>
-        <h2 className="text-3xl font-extrabold tracking-tight mb-6" style={{ letterSpacing: "-0.03em" }}>
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Méthode</p>
+        <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
           Pour vraiment progresser
         </h2>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {FEATURES.map((f) => (
             <div key={f.label}
-              className="rounded-2xl p-5 transition"
+              className="rounded-2xl p-6 text-center transition"
               style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}>
               <div className="text-3xl font-extrabold mb-1 tracking-tight"
                 style={{ color: "#E07B39", letterSpacing: "-0.04em", fontVariantNumeric: "tabular-nums" }}>
@@ -181,13 +181,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── OUTILS TRANSVERSAUX ── */}
-      <section className="px-5 pb-12">
-        <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#7A5C4A" }}>Aller plus loin</p>
-        <h2 className="text-3xl font-extrabold tracking-tight mb-6" style={{ letterSpacing: "-0.03em" }}>
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Aller plus loin</p>
+        <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
           Outils transversaux
         </h2>
 
-        <div className="flex flex-col gap-3">
+        <div className="mx-auto grid max-w-3xl gap-4 md:grid-cols-2">
           {[
             {
               href: "/transverse/anglais-juridique",
@@ -207,13 +207,13 @@ export default async function HomePage() {
             },
           ].map((t) => (
             <Link key={t.href} href={t.href}
-              className="block rounded-2xl overflow-hidden transition hover:-translate-y-0.5"
+              className="flex h-full flex-col overflow-hidden rounded-2xl transition hover:-translate-y-0.5"
               style={{ textDecoration: "none" }}>
               <div className="flex items-center justify-between px-5 py-4" style={{ background: t.bg }}>
                 <div className="text-lg font-extrabold text-white tracking-tight">{t.label}</div>
                 <div className="text-white text-lg">→</div>
               </div>
-              <div className="px-5 py-3 text-sm font-medium" style={{ background: t.light, color: t.text }}>
+              <div className="flex-1 px-5 py-4 text-sm font-medium" style={{ background: t.light, color: t.text }}>
                 {t.desc}
               </div>
             </Link>
@@ -222,8 +222,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── CTA FINAL ── */}
-      <section className="px-5 pb-14">
-        <div className="rounded-3xl p-10 text-center" style={{ background: "#2C1810" }}>
+      <section className="mx-auto max-w-4xl px-5 pb-20">
+        <div className="rounded-3xl p-10 text-center sm:p-14" style={{ background: "#2C1810" }}>
           <h2 className="text-3xl font-extrabold tracking-tight mb-2"
             style={{ color: "#FFF8EE", letterSpacing: "-0.03em" }}>
             Prêt à changer ta façon de bosser&nbsp;?
