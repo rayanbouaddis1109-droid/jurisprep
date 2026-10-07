@@ -18,6 +18,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "priceId manquant" }, { status: 400 });
   }
 
+  if (body?.waiver !== true) {
+    return NextResponse.json(
+      { error: "Accord sur l'accès immédiat et la renonciation à la rétractation requis" },
+      { status: 400 },
+    );
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_customer_id, plan, subscription_status")
@@ -69,6 +76,12 @@ export async function POST(req: NextRequest) {
     cancel_url: `${origin}/tarifs?canceled=1`,
     locale: "fr",
     allow_promotion_codes: true,
+    custom_text: {
+      submit: {
+        message:
+          "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation).",
+      },
+    },
     subscription_data: {
       metadata: { supabase_user_id: user.id },
     },

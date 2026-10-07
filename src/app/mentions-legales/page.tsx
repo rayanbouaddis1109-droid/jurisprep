@@ -18,7 +18,7 @@ export default function MentionsLegalesPage() {
         Mentions légales
       </h1>
       <p className="text-sm mb-12" style={{ color: "#7A5C4A" }}>
-        Dernière mise à jour : août 2026
+        Dernière mise à jour : octobre 2026
       </p>
 
       <section className="mb-10">
@@ -76,12 +76,12 @@ export default function MentionsLegalesPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">Cookies</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          JurisPrép dépose un unique cookie de session technique, nécessaire au maintien de ta
-          connexion. Ce cookie ne contient aucune donnée personnelle identifiable, n&apos;est pas
-          partagé avec des tiers et disparaît à la fermeture du navigateur ou à la déconnexion.
-          Aucun cookie publicitaire, analytique ou de traçage tiers n&apos;est déposé. Aucun
-          consentement n&apos;est requis pour ce cookie, qui est strictement nécessaire au
-          fonctionnement du service.
+          JurisPrép dépose uniquement des cookies strictement nécessaires : le cookie de connexion, qui
+          garde ta session ouverte jusqu&apos;à ta déconnexion ou à son expiration. Il contient un
+          identifiant de session et n&apos;est partagé avec aucun tiers. Aucun cookie publicitaire,
+          analytique ou de traçage tiers n&apos;est déposé. Aucun consentement n&apos;est requis pour ce
+          cookie, strictement nécessaire au fonctionnement du service. Plus de détails dans la{" "}
+          <a href="/confidentialite" style={{ color: "#E07B39" }}>politique de confidentialité</a>.
         </p>
       </section>
 

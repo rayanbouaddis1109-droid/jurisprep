@@ -12,6 +12,7 @@ interface Props {
 
 export function SubscribeButton({ priceId, children, className, style }: Props) {
   const [loading, setLoading] = useState(false);
+  const [waiver, setWaiver] = useState(false);
   const router = useRouter();
 
   async function handleClick() {
@@ -20,7 +21,7 @@ export function SubscribeButton({ priceId, children, className, style }: Props) 
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ priceId, waiver }),
       });
 
       if (res.status === 401) {
@@ -38,13 +39,27 @@ export function SubscribeButton({ priceId, children, className, style }: Props) 
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={loading}
-      className={className}
-      style={style}
-    >
-      {loading ? "Chargement..." : children}
-    </button>
+    <div>
+      <label className="mb-3 flex items-start gap-2 text-left text-xs opacity-90">
+        <input
+          type="checkbox"
+          checked={waiver}
+          onChange={(e) => setWaiver(e.target.checked)}
+          className="mt-0.5"
+        />
+        <span>
+          Je demande l&apos;accès immédiat au contenu et je renonce à mon droit de rétractation
+          (art. L221-28 du Code de la consommation).
+        </span>
+      </label>
+      <button
+        onClick={handleClick}
+        disabled={loading || !waiver}
+        className={className}
+        style={{ ...style, width: "100%" }}
+      >
+        {loading ? "Chargement..." : children}
+      </button>
+    </div>
   );
 }

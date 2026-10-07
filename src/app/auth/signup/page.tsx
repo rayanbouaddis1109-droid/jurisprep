@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [ageOk, setAgeOk] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -181,6 +182,23 @@ export default function SignupPage() {
             </div>
           )}
 
+          <label className="flex items-start gap-2 text-xs" style={{ color: "#7A5C4A" }}>
+            <input
+              type="checkbox"
+              required
+              checked={ageOk}
+              onChange={(e) => setAgeOk(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>
+              J&apos;ai 15 ans ou plus (ou l&apos;accord de mes parents) et j&apos;ai lu la{" "}
+              <Link href="/confidentialite" className="underline" style={{ color: "#E07B39" }}>
+                politique de confidentialité
+              </Link>
+              .
+            </span>
+          </label>
+
           <button
             type="submit"
             disabled={loading}
@@ -193,9 +211,13 @@ export default function SignupPage() {
           <p className="text-center text-xs" style={{ color: "#7A5C4A" }}>
             En créant un compte, tu acceptes les{" "}
             <Link href="/mentions-legales" className="underline" style={{ color: "#E07B39" }}>
-              conditions d&apos;utilisation
+              mentions légales
             </Link>{" "}
-            et la politique de confidentialité.
+            et les{" "}
+            <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
+              CGV
+            </Link>
+            .
           </p>
         </form>
 
