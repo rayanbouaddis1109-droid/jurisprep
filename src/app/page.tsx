@@ -120,6 +120,68 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+      {/* ── APERÇU DU PRODUIT ── */}
+      <section className="mx-auto max-w-5xl px-5 pb-16">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl p-6" style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>Quiz corrigé</p>
+            <p className="mb-4 font-bold" style={{ color: "#2C1810" }}>
+              Quel article de la Constitution de 1958 permet au Président de la République de prendre les mesures exigées par des circonstances exceptionnelles&nbsp;?
+            </p>
+            <div className="space-y-2 text-sm">
+              {["Article 5", "Article 16", "Article 49", "Article 89"].map((c, i) => (
+                <div key={c} className="rounded-xl px-4 py-2.5 font-medium"
+                  style={i === 1
+                    ? { background: "#E8FBF4", border: "1.5px solid #0DB37A", color: "#065E3F" }
+                    : { background: "#FFF8EE", border: "1.5px solid #EDE0CC", color: "#7A5C4A" }}>
+                  {c}
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-relaxed" style={{ color: "#7A5C4A" }}>
+              Chaque réponse est expliquée : tu comprends pourquoi, pas seulement quoi.
+            </p>
+          </div>
+
+          <div className="rounded-2xl p-6" style={{ background: "#2C1810" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>Flashcard</p>
+            <p className="mb-6 text-xl font-extrabold" style={{ color: "#FFF8EE", letterSpacing: "-0.02em" }}>
+              Que signifie l&apos;adage «&nbsp;Pacta sunt servanda&nbsp;»&nbsp;?
+            </p>
+            <div className="rounded-xl p-4 text-sm leading-relaxed"
+              style={{ background: "rgba(255,248,238,0.08)", color: "rgba(255,248,238,0.8)" }}>
+              Les conventions doivent être respectées : un contrat légalement formé tient lieu de loi à ceux qui l&apos;ont fait.
+            </div>
+            <p className="mt-4 text-xs leading-relaxed" style={{ color: "rgba(255,248,238,0.5)" }}>
+              Retourne la carte, vérifie, recommence jusqu&apos;à ce que ce soit acquis.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── COMMENT ÇA MARCHE ── */}
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Comment ça marche</p>
+        <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+          Trois étapes, pas plus
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            { n: "1", t: "Choisis ton niveau", d: "Lycéen, L1, L2 ou L3 : retrouve tes matières, chapitre par chapitre." },
+            { n: "2", t: "Apprends", d: "Lis les fiches, puis fixe l'essentiel avec les flashcards." },
+            { n: "3", t: "Teste-toi", d: "Quiz corrigés, exercices et sujets d'examen. Bloqué ? L'assistant IA t'aide." },
+          ].map((x) => (
+            <div key={x.n} className="rounded-2xl p-6 text-center" style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}>
+              <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-base font-extrabold text-white"
+                style={{ background: "#E07B39" }}>{x.n}</div>
+              <div className="mb-1 font-bold" style={{ color: "#2C1810" }}>{x.t}</div>
+              <div className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>{x.d}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── NIVEAUX ── */}
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Par niveau</p>
@@ -220,6 +282,7 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
 
       {/* ── CTA FINAL ── */}
       <section className="mx-auto max-w-4xl px-5 pb-20">
