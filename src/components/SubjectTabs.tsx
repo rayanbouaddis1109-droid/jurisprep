@@ -52,6 +52,7 @@ export function SubjectTabs({
   locked = null,
   isLoggedIn = false,
   level,
+  category,
 }: {
   sheets: RevisionSheet[];
   videos: Video[];
@@ -62,8 +63,13 @@ export function SubjectTabs({
   locked?: Record<TabKey, LockedItem[]> | null;
   isLoggedIn?: boolean;
   level?: Subject["level"];
+  category?: Subject["category"];
 }) {
-  const allTabs: { key: TabKey; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean; hideForLyceen?: boolean }[] = [
+  const isVocab = category === "anglais_juridique" || category === "culture_generale";
+  const jourCount = new Set(
+    flashcards.map((f) => f.deck_name ?? "").filter((d) => /^Jour \d+$/.test(d)),
+  ).size;
+  const allTabs: { key: TabKey | "jour"; label: string; icon: React.ReactNode; count: number; hideIfEmpty?: boolean; hideForLyceen?: boolean }[] = [
     { key: "fiches", label: "Fiches", icon: <FileText className="h-4 w-4" />, count: counts?.fiches ?? sheets.length },
     { key: "videos", label: "Vidéos", icon: <Play className="h-4 w-4" />, count: counts?.videos ?? videos.length, hideForLyceen: true },
     { key: "quiz", label: "Quiz", icon: <HelpCircle className="h-4 w-4" />, count: counts?.quiz ?? quizzes.length },
@@ -71,12 +77,17 @@ export function SubjectTabs({
     { key: "exercices", label: "Exercices", icon: <PenSquare className="h-4 w-4" />, count: counts?.exercices ?? exercises.length, hideForLyceen: true },
   ];
   // La section lycéen se limite aux fiches, aux quiz et aux flashcards.
-  const tabs = allTabs.filter(
+  // Anglais juridique et culture générale : ni fiches ni vidéos, mais les mots du jour.
+  const vocabTabs: typeof allTabs = [
+    { key: "jour", label: "Mots du jour", icon: <FileText className="h-4 w-4" />, count: jourCount },
+    ...allTabs.filter((t) => t.key !== "fiches" && t.key !== "videos"),
+  ];
+  const tabs = (isVocab ? vocabTabs : allTabs).filter(
     (t) => (!t.hideIfEmpty || t.count > 0) && !(t.hideForLyceen && level === "Lycéen"),
   );
 
-  const firstWithContent = tabs.find((t) => t.count > 0)?.key ?? "fiches";
-  const [active, setActive] = useState<TabKey>(firstWithContent);
+  const firstWithContent = tabs.find((t) => t.count > 0)?.key ?? tabs[0].key;
+  const [active, setActive] = useState<TabKey | "jour">(firstWithContent);
 
   return (
     <div>
@@ -100,6 +111,7 @@ export function SubjectTabs({
       </div>
 
       <div className="mt-6">
+        {active === "jour" && <DailyWordsPanel flashcards={flashcards} />}
         {active === "fiches" && sheets.length > 0 && <FichesPanel sheets={sheets} />}
         {active === "videos" && videos.length > 0 && <VideosPanel videos={videos} />}
         {active === "quiz" && quizzes.length > 0 && <QuizzesPanel quizzes={quizzes} />}
@@ -110,7 +122,7 @@ export function SubjectTabs({
           <ExercisesPanel exercises={exercises} />
         )}
 
-        {locked && (
+        {locked && active !== "jour" && (
           <LockedGrid
             items={locked[active]}
             label={LOCKED_LABELS[active]}
@@ -118,8 +130,53 @@ export function SubjectTabs({
           />
         )}
 
-        {counts?.[active] === 0 && <EmptyState label={EMPTY_LABELS[active]} />}
+        {active !== "jour" && counts?.[active] === 0 && <EmptyState label={EMPTY_LABELS[active]} />}
       </div>
+    </div>
+  );
+}
+
+// Le paquet du jour tourne automatiquement : un nouveau paquet de 20 mots chaque jour.
+function DailyWordsPanel({ flashcards }: { flashcards: Flashcard[] }) {
+  const decks = Array.from(
+    new Set(flashcards.map((f) => f.deck_name ?? "").filter((d) => /^Jour \d+$/.test(d))),
+  ).sort();
+  const [shown, setShown] = useState<Record<string, boolean>>({});
+  if (decks.length === 0) {
+    return <EmptyState label="les mots du jour" />;
+  }
+  const dayIndex = Math.floor(Date.now() / 86400000) % decks.length;
+  const deck = decks[dayIndex];
+  const cards = flashcards.filter((f) => f.deck_name === deck);
+  return (
+    <div>
+      <div className="mb-4">
+        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+          Aujourd&apos;hui · {deck}
+        </p>
+        <h2 className="mt-1 text-xl font-bold" style={{ color: "#2C1810" }}>
+          {cards.length} mots à apprendre
+        </h2>
+        <p className="mt-1 text-sm" style={{ color: "#7A5C4A" }}>
+          Lis chaque mot, essaie de retrouver la réponse, puis touche la ligne pour la vérifier.
+          Reviens demain pour 20 nouveaux mots, ou retrouve tous les jours dans les flashcards.
+        </p>
+      </div>
+      <ul className="divide-y rounded-xl" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
+        {cards.map((c) => (
+          <li key={c.id}>
+            <button
+              onClick={() => setShown((p) => ({ ...p, [c.id]: !p[c.id] }))}
+              className="w-full px-4 py-3 text-left"
+            >
+              <span className="font-semibold" style={{ color: "#2C1810" }}>{c.front}</span>
+              {shown[c.id] && (
+                <span className="mt-1 block text-sm" style={{ color: "#7A5C4A" }}>{c.back}</span>
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

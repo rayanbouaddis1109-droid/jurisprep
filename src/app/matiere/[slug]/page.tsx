@@ -182,6 +182,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           locked={locked}
           isLoggedIn={isAuthed}
           level={subject.level}
+          category={subject.category}
         />
       </section>
     </div>
