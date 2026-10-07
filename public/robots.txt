@@ -4,4 +4,4 @@ Allow: /
 Disallow: /api/
 Disallow: /auth/callback
 
-Sitemap: https://jurisprep-nextjs.vercel.app/sitemap.xml
+Sitemap: https://www.jurisprep.fr/sitemap.xml

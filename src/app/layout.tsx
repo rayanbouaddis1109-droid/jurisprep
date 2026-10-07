@@ -9,7 +9,7 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jurisprep-nextjs.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.jurisprep.fr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
