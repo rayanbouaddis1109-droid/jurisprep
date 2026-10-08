@@ -39,8 +39,8 @@ export default function CgvPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">2. Le service</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          JurisPrép propose des contenus pédagogiques de révision du droit (fiches de cours, fiches
-          d&apos;arrêts, quiz, flashcards, exercices corrigés, vidéos) accessibles en ligne. Une
+          JurisPrép propose des contenus pédagogiques de révision du droit (fiches de cours, quiz,
+          flashcards, exercices corrigés, sujets d&apos;examen, vidéos) accessibles en ligne. Une
           partie du contenu est gratuite ; l&apos;accès complet nécessite un abonnement payant.
         </p>
       </section>

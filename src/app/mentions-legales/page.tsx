@@ -88,7 +88,7 @@ export default function MentionsLegalesPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">Propriété intellectuelle</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          L&apos;ensemble du contenu de JurisPrép (fiches de cours, fiches d&apos;arrêts, flashcards,
+          L&apos;ensemble du contenu de JurisPrép (fiches de cours, quiz, flashcards,
           textes) est protégé par le droit d&apos;auteur. Toute reproduction, même partielle, sans
           autorisation écrite préalable est interdite.
         </p>

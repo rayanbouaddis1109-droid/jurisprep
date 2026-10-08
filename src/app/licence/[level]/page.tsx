@@ -100,8 +100,8 @@ export default async function LevelPage({
           <p className="mt-4 max-w-2xl" style={{ color: "#7A5C4A" }}>
 
             Retrouve les matières organisées par semestre. Chaque matière contient des
-            fiches de révision, des fiches d&apos;arrêts, des quiz, des flashcards et des exercices
-            corrigés.{!isSubscriber && " Le premier chapitre de chaque matière est en accès gratuit avec un simple compte."}
+            fiches de révision, des quiz, des flashcards, des exercices
+            corrigés et des sujets d&apos;examen.{!isSubscriber && " Le premier chapitre de chaque matière est en accès gratuit avec un simple compte."}
           </p>
         </div>
       </section>

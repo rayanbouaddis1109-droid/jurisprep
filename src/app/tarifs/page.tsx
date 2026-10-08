@@ -40,8 +40,7 @@ const PLANS = [
     features: [
       "Toutes les matières de ton niveau (Lycéen, L1, L2 ou L3)",
       "Tous les quiz, flashcards et exercices corrigés",
-      "Fiches d'arrêts complètes",
-      "Vidéos explicatives",
+      "Vidéos explicatives (selon les matières)",
       "Sections Anglais juridique et Culture générale",
       "Suivi de progression détaillé",
     ],

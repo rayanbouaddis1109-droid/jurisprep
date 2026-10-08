@@ -115,13 +115,18 @@ export function Footer() {
             <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,248,238,0.3)" }}>
               Niveaux
             </p>
-            {["Lycéen", "L1", "L2", "L3"].map((l) => (
+            {[
+              { label: "Lycéen", slug: "lyceen" },
+              { label: "L1", slug: "l1" },
+              { label: "L2", slug: "l2" },
+              { label: "L3", slug: "l3" },
+            ].map((l) => (
               <Link
-                key={l}
-                href={`/licence/${l.toLowerCase()}`}
+                key={l.slug}
+                href={`/licence/${l.slug}`}
                 className="block py-1 text-sm transition hover:text-white"
               >
-                {l}
+                {l.label}
               </Link>
             ))}
           </div>
