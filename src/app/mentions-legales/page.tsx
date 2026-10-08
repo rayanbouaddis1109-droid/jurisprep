@@ -28,6 +28,7 @@ export default function MentionsLegalesPage() {
         </p>
         <ul className="mt-3 space-y-1 text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           <li>SIRET : 131 231 573 00018</li>
+          <li>Adresse : 17 rue Georges Duhamel, 75015 Paris</li>
           <li>Directeur de la publication : Rayan Bouaddis</li>
           <li>TVA non applicable, article 293 B du CGI</li>
           <li>
