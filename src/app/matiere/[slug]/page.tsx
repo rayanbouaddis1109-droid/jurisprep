@@ -79,13 +79,30 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   const sheetsData: RevisionSheet[] = [...((sheetsRes?.data ?? []) as RevisionSheet[])];
   const quizzesData: Quiz[] = [...((quizzesRes?.data ?? []) as Quiz[])];
   const flashcardsData: Flashcard[] = [...((flashcardsRes?.data ?? []) as Flashcard[])];
+  const exercisesData: Exercise[] = [...((exercisesRes?.data ?? []) as Exercise[])];
   if (!canAccessAll) {
     const adm = createAdminClient();
     const add = <T extends { id: string }>(list: T[], rows: T[] | null | undefined) => {
       for (const r of rows ?? []) if (!list.some((x) => x.id === r.id)) list.push(r);
     };
     const isVocabSubject = subject.category === "anglais_juridique" || subject.category === "culture_generale";
+    // Premier exercice gratuit, pour toutes les matières
+    const { data: exo } = await adm
+      .from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true)
+      .order("created_at", { ascending: true }).limit(1);
+    add(exercisesData, exo as Exercise[] | null);
     if (!isVocabSubject) {
+      // Premier paquet de flashcards gratuit
+      const { data: firstCard } = await adm
+        .from("flashcards").select("deck_name").eq("subject_id", subject.id).eq("is_published", true)
+        .order("created_at", { ascending: true }).limit(1);
+      const deck = (firstCard as { deck_name: string | null }[] | null)?.[0]?.deck_name;
+      if (deck) {
+        const { data: cards } = await adm
+          .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
+          .eq("deck_name", deck);
+        add(flashcardsData, cards as Flashcard[] | null);
+      }
       const { data: first } = await adm
         .from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true)
         .order("order", { ascending: true }).limit(1);
@@ -136,7 +153,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
     const openSheets = openIds(sheetsData);
     const openVideos = openIds(videosRes?.data);
     const openQuizzes = openIds(quizzesData);
-    const openExos = openIds(exercisesRes?.data);
+    const openExos = openIds(exercisesData);
     const openDecks = new Set(
       flashcardsData.map((f) => f.deck_name ?? "Général")
     );
@@ -212,7 +229,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
           videos={(videosRes?.data ?? []) as Video[]}
           quizzes={quizzesData}
           flashcards={flashcardsData}
-          exercises={(exercisesRes?.data ?? []) as Exercise[]}
+          exercises={exercisesData}
           counts={counts}
           locked={locked}
           isLoggedIn={isAuthed}
