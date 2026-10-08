@@ -142,8 +142,18 @@ export default function CgvPage() {
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Conformément aux articles L611-1 et suivants du Code de la consommation, tout consommateur
           a le droit de recourir gratuitement à un médiateur de la consommation en cas de litige non
-          résolu. Les coordonnées du médiateur compétent pour JurisPrép seront publiées ici dès
-          finalisation de l&apos;adhésion en cours.
+          résolu, après avoir adressé une réclamation écrite à JurisPrép. Le médiateur de la
+          consommation dont relève JurisPrép est la Société Médiation Professionnelle (SMP),
+          Alteritae, 5 rue Salvaing, 12000 Rodez. Elle peut être saisie en ligne sur{" "}
+          <a
+            href="https://www.mediateur-consommation-smp.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#E07B39" }}
+          >
+            www.mediateur-consommation-smp.fr
+          </a>
+          .
         </p>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           Tu peux également utiliser la plateforme européenne de règlement en ligne des litiges :{" "}
