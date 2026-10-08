@@ -15,10 +15,8 @@ export async function Nav() {
       <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5" style={{ color: "#2C1810", textDecoration: "none" }}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg font-extrabold text-sm text-white"
-            style={{ background: "#E07B39", letterSpacing: "-0.02em" }}>
-            JP
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" width={32} height={32} className="h-8 w-8 rounded-lg" />
           <span className="text-lg font-extrabold tracking-tight" style={{ letterSpacing: "-0.02em" }}>
             Juris<span style={{ color: "#E07B39" }}>Prép</span>
           </span>
@@ -86,12 +84,8 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-lg font-extrabold text-sm text-white"
-                style={{ background: "#E07B39", letterSpacing: "-0.02em" }}
-              >
-                JP
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="" width={32} height={32} className="h-8 w-8 rounded-lg" />
               <span className="text-lg font-extrabold text-white">
                 Juris<span style={{ color: "#E07B39" }}>Prép</span>
               </span>
