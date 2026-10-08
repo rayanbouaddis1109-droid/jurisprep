@@ -52,9 +52,12 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
           className="mt-0.5"
         />
         <span>
-          Je demande l&apos;accès immédiat au contenu numérique et je reconnais que je perds mon
-          droit de rétractation dès le début de l&apos;accès (art. L221-28 du Code de la
-          consommation).
+          Je veux accéder au contenu tout de suite et j&apos;ai compris que je ne pourrai plus me
+          rétracter une fois l&apos;accès ouvert (
+          <a href="/cgv" target="_blank" rel="noopener noreferrer" className="underline">
+            conditions de vente
+          </a>
+          ).
         </span>
       </label>
       <button
