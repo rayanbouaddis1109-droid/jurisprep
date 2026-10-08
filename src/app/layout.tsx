@@ -28,12 +28,21 @@ export const metadata: Metadata = {
     title: "JurisPrép — Réussir ses études de droit",
     description:
       "Fiches de cours, quiz corrigés, flashcards et assistant IA pour réussir ses études de droit du lycée à la L3.",
+    images: [
+      {
+        url: "/apercu-jurisprep-2.png",
+        width: 1200,
+        height: 630,
+        alt: "JurisPrép — Réussir ses études de droit",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "JurisPrép — Réussir ses études de droit",
     description:
       "Fiches de cours, quiz corrigés, flashcards et assistant IA pour réussir ses études de droit.",
+    images: ["/apercu-jurisprep-2.png"],
   },
   icons: {
     icon: [
