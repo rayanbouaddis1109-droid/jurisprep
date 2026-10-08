@@ -87,9 +87,11 @@ export default function MentionsLegalesPage() {
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           JurisPrép dépose uniquement des cookies strictement nécessaires : le cookie de connexion, qui
           garde ta session ouverte jusqu&apos;à ta déconnexion ou à son expiration. Il contient un
-          identifiant de session et n&apos;est partagé avec aucun tiers. Aucun cookie publicitaire,
-          analytique ou de traçage tiers n&apos;est déposé. Aucun consentement n&apos;est requis pour ce
-          cookie, strictement nécessaire au fonctionnement du service. Plus de détails dans la{" "}
+          identifiant de session et n&apos;est partagé avec aucun tiers. Aucun cookie publicitaire ou
+          de traçage n&apos;est déposé. La fréquentation du site est mesurée avec Vercel Web Analytics,
+          qui ne dépose aucun cookie et ne crée pas de profil des visiteurs. Aucun consentement
+          n&apos;est requis pour le cookie de connexion, strictement nécessaire au fonctionnement du
+          service. Plus de détails dans la{" "}
           <a href="/confidentialite" style={{ color: "#E07B39" }}>politique de confidentialité</a>.
         </p>
       </section>

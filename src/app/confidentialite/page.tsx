@@ -97,8 +97,10 @@ export default function ConfidentialitePage() {
         <p className="text-sm leading-relaxed" style={text}>
           JurisPrép dépose uniquement des cookies strictement nécessaires : le cookie de connexion, qui
           garde ta session ouverte jusqu&apos;à ta déconnexion ou à son expiration. Aucun cookie
-          publicitaire ni de mesure d&apos;audience n&apos;est utilisé, donc aucun bandeau de consentement
-          n&apos;est nécessaire.
+          publicitaire n&apos;est utilisé. La fréquentation du site est mesurée avec Vercel Web
+          Analytics, un outil de mesure d&apos;audience qui ne dépose aucun cookie et ne crée pas de
+          profil des visiteurs : il compte les pages vues, les pays et les types d&apos;appareils.
+          Aucun bandeau de consentement n&apos;est donc nécessaire.
         </p>
       </section>
 
