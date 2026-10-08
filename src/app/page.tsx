@@ -186,6 +186,22 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── FICHES GRATUITES ── */}
+      <section className="mx-auto max-w-3xl px-5 pb-16 text-center">
+        <p className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Sans compte</p>
+        <h2 className="mb-3 text-3xl font-extrabold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+          Lis une fiche avant de t&apos;inscrire
+        </h2>
+        <p className="mx-auto mb-6 max-w-lg text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          Une fiche complète par niveau, ouverte à tous, pour juger la qualité du cours.
+        </p>
+        <Link href="/fiches-gratuites"
+          className="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+          style={{ background: "#E07B39" }}>
+          Voir les fiches gratuites <ArrowRight className="h-4 w-4" />
+        </Link>
+      </section>
+
       {/* ── FEATURES ── */}
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <p className="mb-2 text-center text-xs font-bold uppercase tracking-widest" style={{ color: "#7A5C4A" }}>Méthode</p>

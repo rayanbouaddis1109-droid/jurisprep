@@ -153,6 +153,7 @@ export function Footer() {
               Légal
             </p>
             {[
+              { label: "Fiches gratuites", href: "/fiches-gratuites" },
               { label: "Connexion", href: "/auth/login" },
               { label: "Inscription", href: "/auth/signup" },
               { label: "Mentions légales", href: "/mentions-legales" },

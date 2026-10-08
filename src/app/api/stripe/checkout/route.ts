@@ -3,6 +3,11 @@ import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
+  // Paiements fermés tant que PAYMENTS_OPEN n'est pas défini à "true".
+  if (process.env.PAYMENTS_OPEN !== "true") {
+    return NextResponse.json({ error: "Les abonnements ne sont pas encore ouverts." }, { status: 503 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

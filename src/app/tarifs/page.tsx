@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     "Accède gratuitement à JurisPrép. Découvre nos formules pour lycéens, L1, L2 et L3 — sans engagement.",
 };
 
+// Les paiements restent fermés tant que PAYMENTS_OPEN n'est pas défini à "true" dans Vercel.
+const PAYMENTS_OPEN = process.env.PAYMENTS_OPEN === "true";
+
 const PLANS = [
   {
     name: "Gratuit",
@@ -142,7 +145,18 @@ export default function TarifsPage() {
                 ))}
               </ul>
 
-              {p.priceId ? (
+              {p.priceId && !PAYMENTS_OPEN ? (
+                <div
+                  className="inline-block rounded-full text-center text-sm font-bold"
+                  style={{
+                    background: p.highlight ? "rgba(255,248,238,0.15)" : "#EDE0CC",
+                    color: p.highlight ? "#FFF8EE" : "#7A5C4A",
+                    padding: "12px 20px",
+                  }}
+                >
+                  Bientôt disponible
+                </div>
+              ) : p.priceId ? (
                 <SubscribeButton
                   priceId={p.priceId}
                   className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
@@ -171,14 +185,23 @@ export default function TarifsPage() {
           ))}
         </div>
 
-        <p className="mt-6 text-center text-xs" style={{ color: "#7A5C4A" }}>
-          En t&apos;abonnant, tu acceptes les{" "}
-          <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
-            conditions générales de vente
-          </Link>
-          , notamment l&apos;accès immédiat au contenu et la renonciation au droit de rétractation.
-          Abonnement sans engagement, résiliable à tout moment.
-        </p>
+        {PAYMENTS_OPEN ? (
+          <p className="mt-6 text-center text-xs" style={{ color: "#7A5C4A" }}>
+            En t&apos;abonnant, tu acceptes les{" "}
+            <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
+              conditions générales de vente
+            </Link>
+            . Abonnement sans engagement, résiliable à tout moment.
+          </p>
+        ) : (
+          <p className="mt-6 text-center text-sm" style={{ color: "#7A5C4A" }}>
+            Les abonnements ouvrent bientôt. En attendant, la formule gratuite te donne accès au premier
+            chapitre de chaque matière.{" "}
+            <Link href="/auth/signup" className="font-semibold underline" style={{ color: "#E07B39" }}>
+              Créer un compte gratuit
+            </Link>
+          </p>
+        )}
       </section>
     </div>
   );
