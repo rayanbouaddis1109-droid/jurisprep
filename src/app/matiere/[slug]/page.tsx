@@ -74,6 +74,41 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       ])
     : [null, null, null, null, null];
 
+  // Premier chapitre gratuit : la première fiche (et ce qui va avec) est lisible
+  // par tous, y compris les visiteurs non connectés. Lecture serveur, un seul chapitre.
+  const sheetsData: RevisionSheet[] = [...((sheetsRes?.data ?? []) as RevisionSheet[])];
+  const quizzesData: Quiz[] = [...((quizzesRes?.data ?? []) as Quiz[])];
+  const flashcardsData: Flashcard[] = [...((flashcardsRes?.data ?? []) as Flashcard[])];
+  if (!canAccessAll) {
+    const adm = createAdminClient();
+    const add = <T extends { id: string }>(list: T[], rows: T[] | null | undefined) => {
+      for (const r of rows ?? []) if (!list.some((x) => x.id === r.id)) list.push(r);
+    };
+    const isVocabSubject = subject.category === "anglais_juridique" || subject.category === "culture_generale";
+    if (!isVocabSubject) {
+      const { data: first } = await adm
+        .from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .order("order", { ascending: true }).limit(1);
+      add(sheetsData, first as RevisionSheet[] | null);
+      const chapter = (first as RevisionSheet[] | null)?.[0]?.chapter;
+      if (chapter) {
+        const { data: q } = await adm
+          .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
+          .eq("chapter", chapter).limit(1);
+        add(quizzesData, q as Quiz[] | null);
+      }
+    } else {
+      const { data: q } = await adm
+        .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .order("created_at", { ascending: true }).limit(1);
+      add(quizzesData, q as Quiz[] | null);
+      const { data: cards } = await adm
+        .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .eq("deck_name", "Jour 01");
+      add(flashcardsData, cards as Flashcard[] | null);
+    }
+  }
+
   // Titres du contenu verrouillé (métadonnées seulement, jamais le contenu) :
   // ils sont affichés floutés pour montrer ce que débloque l'abonnement.
   let counts = {
@@ -98,12 +133,12 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
     const openIds = (rows: { id: string }[] | null | undefined) =>
       new Set((rows ?? []).map((r) => r.id));
 
-    const openSheets = openIds(sheetsRes?.data);
+    const openSheets = openIds(sheetsData);
     const openVideos = openIds(videosRes?.data);
-    const openQuizzes = openIds(quizzesRes?.data);
+    const openQuizzes = openIds(quizzesData);
     const openExos = openIds(exercisesRes?.data);
     const openDecks = new Set(
-      (flashcardsRes?.data ?? []).map((f: { deck_name: string | null }) => f.deck_name ?? "Général")
+      flashcardsData.map((f) => f.deck_name ?? "Général")
     );
 
     // Les flashcards se comptent par paquet, pas par carte
@@ -173,10 +208,10 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SubjectTabs
-          sheets={(sheetsRes?.data ?? []) as RevisionSheet[]}
+          sheets={sheetsData}
           videos={(videosRes?.data ?? []) as Video[]}
-          quizzes={(quizzesRes?.data ?? []) as Quiz[]}
-          flashcards={(flashcardsRes?.data ?? []) as Flashcard[]}
+          quizzes={quizzesData}
+          flashcards={flashcardsData}
           exercises={(exercisesRes?.data ?? []) as Exercise[]}
           counts={counts}
           locked={locked}
