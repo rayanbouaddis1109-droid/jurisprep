@@ -8,9 +8,10 @@ interface Props {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  dark?: boolean;
 }
 
-export function SubscribeButton({ priceId, children, className, style }: Props) {
+export function SubscribeButton({ priceId, children, className, style, dark = false }: Props) {
   const [loading, setLoading] = useState(false);
   const [waiver, setWaiver] = useState(false);
   const router = useRouter();
@@ -40,7 +41,10 @@ export function SubscribeButton({ priceId, children, className, style }: Props) 
 
   return (
     <div>
-      <label className="mb-3 flex items-start gap-2 text-left text-xs opacity-90">
+      <label
+        className="mb-3 flex items-start gap-2 text-left text-xs"
+        style={{ color: dark ? "rgba(255,248,238,0.85)" : "#7A5C4A" }}
+      >
         <input
           type="checkbox"
           checked={waiver}

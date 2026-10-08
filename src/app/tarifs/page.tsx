@@ -158,6 +158,7 @@ export default function TarifsPage() {
               ) : p.priceId ? (
                 <SubscribeButton
                   priceId={p.priceId}
+                  dark={Boolean(p.highlight)}
                   className="inline-block rounded-full text-center text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
                   style={{
                     background: p.highlight ? "#E07B39" : "#2C1810",
