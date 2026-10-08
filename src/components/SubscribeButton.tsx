@@ -52,12 +52,11 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
           className="mt-0.5"
         />
         <span>
-          Je veux accéder au contenu tout de suite et j&apos;ai compris que je ne pourrai plus me
-          rétracter une fois l&apos;accès ouvert (
+          Je veux accéder au contenu tout de suite (sans droit de rétractation) et j&apos;accepte les{" "}
           <a href="/cgv" target="_blank" rel="noopener noreferrer" className="underline">
             conditions de vente
           </a>
-          ).
+          .
         </span>
       </label>
       <button

@@ -173,6 +173,14 @@ export function Footer() {
                 {label}
               </Link>
             ))}
+            <a
+              href="https://www.mediateur-consommation-smp.fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block py-1 text-sm transition hover:text-white"
+            >
+              Médiation de la consommation
+            </a>
           </div>
         </div>
 
