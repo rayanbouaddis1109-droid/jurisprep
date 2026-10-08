@@ -259,6 +259,19 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
   );
 }
 
+// Seules les adresses https de YouTube sont intégrées dans une iframe.
+function isYouTubeEmbed(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return (
+      u.protocol === "https:" &&
+      ["www.youtube.com", "youtube.com", "www.youtube-nocookie.com", "youtube-nocookie.com"].includes(u.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 function VideosPanel({ videos }: { videos: Video[] }) {
   if (videos.length === 0) return <EmptyState label="les vidéos" />;
   return (
@@ -266,9 +279,10 @@ function VideosPanel({ videos }: { videos: Video[] }) {
       {videos.map((v) => (
         <article key={v.id} className="rounded-xl" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
           <div className="relative w-full rounded-t-xl overflow-hidden bg-black" style={{ paddingTop: "56.25%" }}>
-            {v.video_url.includes("youtube.com") || v.video_url.includes("youtu.be") ? (
+            {isYouTubeEmbed(v.video_url) ? (
               <iframe
                 src={v.video_url}
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 title={v.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

@@ -26,10 +26,9 @@ export default async function FichesGratuitesPage() {
       const { data: sheet } = await admin
         .from("revision_sheets")
         .select("title, summary")
+        .eq("id", s.sheetId)
         .eq("subject_id", subject.id)
         .eq("is_published", true)
-        .order("order", { ascending: true })
-        .limit(1)
         .maybeSingle();
       if (!sheet) return null;
       return { ...s, subjectName: subject.name as string, title: sheet.title as string, summary: (sheet.summary as string | null) ?? "" };

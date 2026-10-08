@@ -29,6 +29,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Réservé à la formule Cursus : vérifié ici côté serveur (la policy RLS reste une seconde barrière)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, subscription_status")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const hasCursus =
+    profile?.plan === "cursus" &&
+    (profile.subscription_status === "active" || profile.subscription_status === "trialing");
+  if (!hasCursus) {
+    return NextResponse.json(
+      { error: "Le suivi personnalisé est réservé à la formule Cursus complet." },
+      { status: 403 }
+    );
+  }
+
   // Limite anti-abus : 5 questions en attente au maximum
   const { count } = await supabase
     .from("coaching_questions")

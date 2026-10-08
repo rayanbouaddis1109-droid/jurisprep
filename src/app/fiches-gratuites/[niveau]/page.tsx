@@ -23,10 +23,9 @@ async function loadSample(niveau: string) {
   const { data: sheet } = await admin
     .from("revision_sheets")
     .select("title, chapter, summary, content")
+    .eq("id", sample.sheetId)
     .eq("subject_id", subject.id)
     .eq("is_published", true)
-    .order("order", { ascending: true })
-    .limit(1)
     .maybeSingle();
   if (!sheet) return null;
   return { sample, subject, sheet };
