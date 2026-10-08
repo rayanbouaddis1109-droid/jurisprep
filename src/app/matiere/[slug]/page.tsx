@@ -79,6 +79,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   const sheetsData: RevisionSheet[] = [...((sheetsRes?.data ?? []) as RevisionSheet[])];
   const quizzesData: Quiz[] = [...((quizzesRes?.data ?? []) as Quiz[])];
   const flashcardsData: Flashcard[] = [...((flashcardsRes?.data ?? []) as Flashcard[])];
+  const videosData: Video[] = [...((videosRes?.data ?? []) as Video[])];
   const exercisesData: Exercise[] = [...((exercisesRes?.data ?? []) as Exercise[])];
   if (!canAccessAll) {
     const adm = createAdminClient();
@@ -86,7 +87,15 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       for (const r of rows ?? []) if (!list.some((x) => x.id === r.id)) list.push(r);
     };
     const isVocabSubject = subject.category === "anglais_juridique" || subject.category === "culture_generale";
-    // Premier exercice gratuit, pour toutes les matières
+    // Premier quiz, première vidéo et premier exercice gratuits, pour toutes les matières
+    const { data: quiz1 } = await adm
+      .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
+      .order("created_at", { ascending: true }).limit(1);
+    add(quizzesData, quiz1 as Quiz[] | null);
+    const { data: video1 } = await adm
+      .from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true)
+      .order("order", { ascending: true }).limit(1);
+    add(videosData, video1 as Video[] | null);
     const { data: exo } = await adm
       .from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true)
       .order("created_at", { ascending: true }).limit(1);
@@ -107,18 +116,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
         .from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true)
         .order("order", { ascending: true }).limit(1);
       add(sheetsData, first as RevisionSheet[] | null);
-      const chapter = (first as RevisionSheet[] | null)?.[0]?.chapter;
-      if (chapter) {
-        const { data: q } = await adm
-          .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
-          .eq("chapter", chapter).limit(1);
-        add(quizzesData, q as Quiz[] | null);
-      }
     } else {
-      const { data: q } = await adm
-        .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
-        .order("created_at", { ascending: true }).limit(1);
-      add(quizzesData, q as Quiz[] | null);
       const { data: cards } = await adm
         .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
         .eq("deck_name", "Jour 01");
@@ -151,7 +149,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       new Set((rows ?? []).map((r) => r.id));
 
     const openSheets = openIds(sheetsData);
-    const openVideos = openIds(videosRes?.data);
+    const openVideos = openIds(videosData);
     const openQuizzes = openIds(quizzesData);
     const openExos = openIds(exercisesData);
     const openDecks = new Set(
@@ -226,7 +224,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SubjectTabs
           sheets={sheetsData}
-          videos={(videosRes?.data ?? []) as Video[]}
+          videos={videosData}
           quizzes={quizzesData}
           flashcards={flashcardsData}
           exercises={exercisesData}
