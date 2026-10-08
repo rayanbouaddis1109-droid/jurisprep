@@ -36,7 +36,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "tailwind.config.ts"
+    "node_modules"
   ]
 }
