@@ -52,8 +52,9 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
           className="mt-0.5"
         />
         <span>
-          Je demande l&apos;accès immédiat au contenu et je renonce à mon droit de rétractation
-          (art. L221-28 du Code de la consommation).
+          Je demande l&apos;accès immédiat au contenu numérique et je reconnais que je perds mon
+          droit de rétractation dès le début de l&apos;accès (art. L221-28 du Code de la
+          consommation).
         </span>
       </label>
       <button

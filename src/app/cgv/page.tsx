@@ -106,13 +106,12 @@ export default function CgvPage() {
           d&apos;un délai de 14 jours pour te rétracter d&apos;un achat en ligne.
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
-          L&apos;abonnement JurisPrép donne accès immédiatement à un contenu numérique. En
-          souscrivant, tu demandes expressément cet accès immédiat et tu reconnais renoncer à ton
-          droit de rétractation, conformément à l&apos;article L221-28 du Code de la consommation.
-        </p>
-        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          L&apos;abonnement étant sans engagement, tu peux en toute hypothèse le résilier à tout
-          moment pour le mois suivant (voir article 6).
+          L&apos;abonnement JurisPrép donne accès immédiatement à du contenu numérique fourni sans
+          support matériel. En cochant la case prévue avant le paiement, tu demandes expressément
+          cet accès immédiat et tu reconnais que tu perds ton droit de rétractation dès le début
+          de l&apos;accès, conformément à l&apos;article L221-28 du Code de la consommation. Le
+          paiement d&apos;un mois n&apos;est donc pas remboursé ; tu peux en revanche résilier à
+          tout moment pour que l&apos;abonnement ne se renouvelle pas (voir article 6).
         </p>
       </section>
 
