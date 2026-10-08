@@ -17,7 +17,7 @@ export default function CgvPage() {
         Conditions générales de vente
       </h1>
       <p className="text-sm mb-12" style={{ color: "#7A5C4A" }}>
-        Dernière mise à jour : août 2026
+        Dernière mise à jour : octobre 2026
       </p>
 
       <section className="mb-10">
@@ -56,6 +56,9 @@ export default function CgvPage() {
           modifier ses tarifs ; toute modification est notifiée par email au moins 30 jours avant de
           s&apos;appliquer aux abonnements en cours, avec possibilité de résilier avant son entrée
           en vigueur.
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          Prix nets, TVA non applicable, article 293 B du CGI.
         </p>
       </section>
 

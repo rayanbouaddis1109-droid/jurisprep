@@ -24,11 +24,20 @@ export default function MentionsLegalesPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">Éditeur</h2>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          JurisPrép est un service en ligne édité à titre personnel. Contact :{" "}
-          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
-            jurisprep1@gmail.com
-          </a>
+          JurisPrép est édité par Rayan Bouaddis, entrepreneur individuel (micro-entrepreneur).
         </p>
+        <ul className="mt-3 space-y-1 text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          <li>SIRET : 131 231 573 00018</li>
+          <li>Adresse : 17 rue Georges Duhamel, 75015 Paris</li>
+          <li>Directeur de la publication : Rayan Bouaddis</li>
+          <li>TVA non applicable, article 293 B du CGI</li>
+          <li>
+            Contact :{" "}
+            <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+              jurisprep1@gmail.com
+            </a>
+          </li>
+        </ul>
       </section>
 
       <section className="mb-10">
