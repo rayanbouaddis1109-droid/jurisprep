@@ -320,6 +320,57 @@ function isYouTubeEmbed(url: string): boolean {
   }
 }
 
+function VideoPlayer({ url, poster, title }: { url: string; poster: string | null; title: string }) {
+  const [started, setStarted] = useState(false);
+  if (isYouTubeEmbed(url)) {
+    return (
+      <div className="relative w-full bg-black" style={{ paddingTop: "56.25%" }}>
+        <iframe
+          src={url}
+          sandbox="allow-scripts allow-same-origin allow-presentation"
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="absolute inset-0 h-full w-full"
+        />
+      </div>
+    );
+  }
+  return (
+    <div className="relative w-full" style={{ paddingTop: "56.25%", background: "#F6EFE4" }}>
+      {started ? (
+        <video
+          src={url}
+          poster={poster ?? undefined}
+          controls
+          autoPlay
+          playsInline
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{ background: "#000" }}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setStarted(true)}
+          aria-label={`Lire la vidéo : ${title}`}
+          className="group absolute inset-0 h-full w-full"
+        >
+          {poster && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+          )}
+          <span
+            className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-transform group-hover:scale-110"
+            style={{ background: "rgba(224,123,57,0.95)", boxShadow: "0 6px 20px rgba(44,24,16,0.25)" }}
+          >
+            <Play className="ml-1 h-7 w-7" style={{ color: "#FFFFFF", fill: "#FFFFFF" }} />
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function VideosPanel({
   videos,
   fiches,
@@ -348,27 +399,7 @@ function VideosPanel({
               boxShadow: highlighted ? "0 8px 24px rgba(224,123,57,0.18)" : "0 2px 10px rgba(44,24,16,0.05)",
             }}
           >
-            <div className="relative w-full bg-black" style={{ paddingTop: "56.25%" }}>
-              {isYouTubeEmbed(v.video_url) ? (
-                <iframe
-                  src={v.video_url}
-                  sandbox="allow-scripts allow-same-origin allow-presentation"
-                  title={v.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 h-full w-full"
-                />
-              ) : (
-                <video
-                  src={v.video_url}
-                  poster={v.thumbnail_url ?? undefined}
-                  controls
-                  playsInline
-                  className="absolute inset-0 h-full w-full object-contain"
-                  preload="none"
-                />
-              )}
-            </div>
+            <VideoPlayer url={v.video_url} poster={v.thumbnail_url} title={v.title} />
             <div className="p-5">
               <div className="flex flex-wrap items-center gap-2">
                 {isChapter && (
