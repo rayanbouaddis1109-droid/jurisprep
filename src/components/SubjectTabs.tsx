@@ -223,6 +223,39 @@ function EmptyState({ label }: { label: string }) {
   );
 }
 
+// Découpe une fiche en grandes parties pour colorer l'introduction et le « À retenir ».
+function FicheContent({ content }: { content: string }) {
+  const parts: { kind: "intro" | "retenir" | "main"; md: string }[] = [];
+  const lines = content.split("\n");
+  let current: string[] = [];
+  let kind: "intro" | "retenir" | "main" = "main";
+  let inFence = false;
+  const flush = () => {
+    const md = current.join("\n").trim();
+    if (md) parts.push({ kind, md });
+    current = [];
+  };
+  for (const line of lines) {
+    if (line.startsWith("```")) inFence = !inFence;
+    if (!inFence && line.startsWith("## ")) {
+      flush();
+      const t = line.slice(3).trim().toLowerCase();
+      kind = t.startsWith("introduction") ? "intro" : t.startsWith("à retenir") ? "retenir" : "main";
+    }
+    current.push(line);
+  }
+  flush();
+  return (
+    <>
+      {parts.map((p, i) => (
+        <div key={i} className={p.kind === "main" ? undefined : `fiche-sec-${p.kind}`}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{p.md}</ReactMarkdown>
+        </div>
+      ))}
+    </>
+  );
+}
+
 function FichesPanel({
   sheets,
   videoForFiche,
@@ -298,7 +331,7 @@ function FichesPanel({
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-orange-700"><span className="inline-block h-2.5 w-2.5 rounded-full bg-orange-500"></span>Articles de loi &amp; citations</span>
               </div>
               <div className="prose-jurisprep">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{s.content}</ReactMarkdown>
+                <FicheContent content={s.content} />
               </div>
             </div>
           ))}

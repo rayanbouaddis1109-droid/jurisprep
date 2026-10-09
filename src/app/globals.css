@@ -33,45 +33,88 @@ body {
    🟠 Orange → Citations et articles de loi (blockquote)
    ═══════════════════════════════════════════════════ */
 .prose-jurisprep h1 {
-  @apply text-2xl font-extrabold mt-8 mb-3 text-blue-700 border-b-2 border-blue-300 pb-2;
+  @apply text-2xl font-extrabold mt-8 mb-3 pb-2;
+  color: #1D4FA8;
+  border-bottom: 3px solid #9DBDF2;
 }
 .prose-jurisprep h2 {
-  @apply text-xl font-bold mt-6 mb-2 text-red-600;
+  @apply text-xl font-bold mt-7 mb-3;
+  color: #1D4FA8;
+  background: linear-gradient(90deg, #E4EEFF 0%, rgba(228, 238, 255, 0) 100%);
+  border-left: 5px solid #2F6FDE;
+  padding: 9px 16px;
+  border-radius: 0 12px 12px 0;
 }
 .prose-jurisprep h3 {
-  @apply text-base font-bold mt-4 mb-2 text-green-700 uppercase tracking-wide;
+  @apply text-base font-bold mt-5 mb-2 uppercase tracking-wide;
+  color: #0F8A74;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prose-jurisprep h3::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #19B394;
+  box-shadow: 0 0 0 4px #D5F4EC;
 }
 .prose-jurisprep h4 {
-  @apply text-sm font-semibold mt-3 mb-1 text-blue-600;
+  @apply text-sm font-bold mt-4 mb-1;
+  color: #D9651C;
 }
 .prose-jurisprep p {
-  @apply my-3 text-slate-700 leading-relaxed text-[15px];
+  @apply my-3 leading-relaxed text-[15px];
+  color: #3A2E27;
 }
 .prose-jurisprep ul {
-  @apply my-3 space-y-1 text-slate-700 pl-5;
+  @apply my-3 space-y-1.5 pl-5;
+  color: #3A2E27;
   list-style: none;
 }
 .prose-jurisprep ul li {
-  @apply relative pl-4;
+  @apply relative pl-5;
 }
 .prose-jurisprep ul li::before {
-  content: "▸";
-  @apply absolute left-0 text-blue-400 font-bold;
+  content: "\25B8";
+  @apply absolute left-0 font-bold;
+  color: #E07B39;
 }
 .prose-jurisprep ol {
-  @apply list-decimal pl-6 my-3 space-y-1 text-slate-700;
+  @apply list-decimal pl-6 my-3 space-y-1.5;
+  color: #3A2E27;
+}
+.prose-jurisprep ol li::marker {
+  color: #2F6FDE;
+  font-weight: 700;
 }
 .prose-jurisprep strong {
-  @apply font-bold text-red-600;
+  @apply font-bold;
+  color: #2C1810;
+  background: linear-gradient(transparent 52%, #FFE08A 52%);
+  padding: 0 2px;
+  border-radius: 2px;
 }
 .prose-jurisprep em {
-  @apply text-green-700 not-italic font-semibold;
+  @apply not-italic font-semibold;
+  color: #6B3FD4;
 }
 .prose-jurisprep code {
-  @apply bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-sm font-mono border border-blue-200;
+  @apply px-1.5 py-0.5 rounded text-sm font-mono;
+  background: #EEF4FF;
+  color: #1D4FA8;
+  border: 1px solid #C9DBFA;
 }
 .prose-jurisprep blockquote {
-  @apply border-l-4 border-orange-400 pl-5 py-2 my-4 bg-orange-50 rounded-r-lg text-orange-900 italic;
+  @apply pl-5 py-3 my-4 rounded-r-xl;
+  border-left: 5px solid #F28C3B;
+  background: linear-gradient(90deg, #FFF0DF 0%, #FFF8EE 100%);
+  color: #7A3E0C;
+}
+.prose-jurisprep blockquote p {
+  color: #7A3E0C;
 }
 .prose-jurisprep hr {
   @apply border-slate-200 my-6;
@@ -80,16 +123,58 @@ body {
   @apply text-blue-600 underline decoration-blue-300 hover:text-blue-800;
 }
 .prose-jurisprep table {
-  @apply w-full border-collapse my-4 text-sm;
+  @apply w-full border-collapse my-5 text-sm;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #C9DBFA;
 }
 .prose-jurisprep th {
-  @apply bg-blue-50 text-blue-700 font-bold px-4 py-2 border border-blue-200 text-left;
+  @apply font-bold px-4 py-2.5 text-left;
+  background: #2F6FDE;
+  color: #FFFFFF;
+  border: 1px solid #2F6FDE;
 }
 .prose-jurisprep td {
-  @apply px-4 py-2 border border-slate-200 text-slate-700;
+  @apply px-4 py-2.5;
+  color: #3A2E27;
+  border: 1px solid #DCE7FB;
 }
 .prose-jurisprep tr:nth-child(even) td {
-  @apply bg-slate-50;
+  background: #F3F7FF;
+}
+/* Sections d'une fiche : introduction, parties, à retenir */
+.fiche-sec-intro {
+  background: #F4EFFF;
+  border: 1.5px solid #DDD0FA;
+  border-radius: 18px;
+  padding: 4px 22px 14px;
+  margin: 12px 0 22px;
+}
+.fiche-sec-intro h2 {
+  color: #6B3FD4;
+  background: none;
+  border-left: none;
+  padding: 0;
+  margin: 14px 0 6px;
+  border-radius: 0;
+}
+.fiche-sec-retenir {
+  background: #EAF8EF;
+  border: 1.5px solid #BFE6CB;
+  border-radius: 18px;
+  padding: 4px 22px 14px;
+  margin: 28px 0 8px;
+}
+.fiche-sec-retenir h2 {
+  color: #167A3E;
+  background: none;
+  border-left: none;
+  padding: 0;
+  margin: 14px 0 6px;
+  border-radius: 0;
+}
+.fiche-sec-retenir ul li::before {
+  color: #1E9E55;
 }
 
 /* Flashcard 3D flip */
