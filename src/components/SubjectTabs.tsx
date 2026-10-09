@@ -93,6 +93,31 @@ export function SubjectTabs({
 
   const firstWithContent = tabs.find((t) => t.count > 0)?.key ?? tabs[0].key;
   const [active, setActive] = useState<TabKey | "jour">(firstWithContent);
+  const [videoFocus, setVideoFocus] = useState<string | null>(null);
+
+  // Liaison fiches et vidéos. Une vidéo qui porte le titre d'une fiche couvre cette fiche seule ;
+  // une vidéo dont le titre n'est celui d'aucune fiche couvre toutes les fiches de son chapitre.
+  const ficheRefs: { title: string; chapter: string | null }[] = [];
+  for (const sh of sheets) ficheRefs.push({ title: sh.title, chapter: sh.chapter });
+  for (const l of locked?.fiches ?? []) {
+    if (!ficheRefs.some((r) => r.title === l.title)) ficheRefs.push({ title: l.title, chapter: l.chapter ?? null });
+  }
+  const ficheTitles = new Set(ficheRefs.map((f) => f.title));
+  const allVideos: { id: string; title: string; chapter: string | null }[] = [
+    ...videos.map((v) => ({ id: v.id, title: v.title, chapter: v.chapter })),
+    ...(locked?.videos ?? []).map((l) => ({ id: l.id, title: l.title, chapter: l.chapter ?? null })),
+  ];
+  const videoForFiche: Record<string, string> = {};
+  for (const f of ficheRefs) {
+    const own = allVideos.find((v) => v.title === f.title);
+    const wide = allVideos.find((v) => v.chapter && v.chapter === f.chapter && !ficheTitles.has(v.title));
+    const found = own ?? wide;
+    if (found) videoForFiche[f.title] = found.id;
+  }
+  function watchVideo(id: string) {
+    setVideoFocus(id);
+    setActive("videos");
+  }
 
   return (
     <div>
@@ -117,8 +142,12 @@ export function SubjectTabs({
 
       <div className="mt-6">
         {active === "jour" && <DailyWordsPanel flashcards={flashcards} />}
-        {active === "fiches" && sheets.length > 0 && <FichesPanel sheets={sheets} />}
-        {active === "videos" && videos.length > 0 && <VideosPanel videos={videos} />}
+        {active === "fiches" && sheets.length > 0 && (
+          <FichesPanel sheets={sheets} videoForFiche={videoForFiche} onWatch={watchVideo} />
+        )}
+        {active === "videos" && videos.length > 0 && (
+          <VideosPanel videos={videos} fiches={ficheRefs} highlightId={videoFocus} />
+        )}
         {active === "quiz" && quizzes.length > 0 && <QuizzesPanel quizzes={quizzes} />}
         {active === "flashcards" && flashcards.length > 0 && (
           <FlashcardsPanel flashcards={flashcards} />
@@ -194,7 +223,15 @@ function EmptyState({ label }: { label: string }) {
   );
 }
 
-function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
+function FichesPanel({
+  sheets,
+  videoForFiche,
+  onWatch,
+}: {
+  sheets: RevisionSheet[];
+  videoForFiche: Record<string, string>;
+  onWatch: (videoId: string) => void;
+}) {
   const [openId, setOpenId] = useState<string | null>(sheets[0]?.id ?? null);
   if (sheets.length === 0) return <EmptyState label="les fiches" />;
   return (
@@ -221,6 +258,17 @@ function FichesPanel({ sheets }: { sheets: RevisionSheet[] }) {
             <div key={s.id}>
               <header className="mb-4 pb-4" style={{ borderBottom: "1px solid #EDE0CC" }}>
                 <h2 className="text-2xl font-bold" style={{ color: "#2C1810" }}>{s.title}</h2>
+                {videoForFiche[s.title] && (
+                  <button
+                    type="button"
+                    onClick={() => onWatch(videoForFiche[s.title])}
+                    className="mt-3 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition hover:opacity-90"
+                    style={{ background: "#FFF0E6", color: "#E07B39" }}
+                  >
+                    <Play className="h-3.5 w-3.5" />
+                    Voir la vidéo qui couvre cette fiche
+                  </button>
+                )}
                 {s.summary && <p className="mt-2" style={{ color: "#7A5C4A" }}>{s.summary}</p>}
                 {s.key_concepts && s.key_concepts.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -272,12 +320,31 @@ function isYouTubeEmbed(url: string): boolean {
   }
 }
 
-function VideosPanel({ videos }: { videos: Video[] }) {
+function VideosPanel({
+  videos,
+  fiches,
+  highlightId,
+}: {
+  videos: Video[];
+  fiches: { title: string; chapter: string | null }[];
+  highlightId: string | null;
+}) {
   if (videos.length === 0) return <EmptyState label="les vidéos" />;
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {videos.map((v) => (
-        <article key={v.id} className="rounded-xl" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
+      {videos.map((v) => {
+        const own = fiches.filter((f) => f.title === v.title);
+        const covered = own.length > 0 ? own : v.chapter ? fiches.filter((f) => f.chapter === v.chapter) : [];
+        const highlighted = highlightId !== null && v.id === highlightId;
+        return (
+        <article
+          key={v.id}
+          className="rounded-xl"
+          style={{
+            border: highlighted ? "2px solid #E07B39" : "1.5px solid #EDE0CC",
+            background: "#FFFDF8",
+          }}
+        >
           <div className="relative w-full rounded-t-xl overflow-hidden bg-black" style={{ paddingTop: "56.25%" }}>
             {isYouTubeEmbed(v.video_url) ? (
               <iframe
@@ -298,13 +365,31 @@ function VideosPanel({ videos }: { videos: Video[] }) {
             )}
           </div>
           <div className="p-4">
-            <h3 className="font-semibold text-ink-900">{v.title}</h3>
+            {v.chapter && (
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+                {v.chapter}
+              </p>
+            )}
+            <h3 className="mt-1 font-semibold text-ink-900">{v.title}</h3>
             {v.description && (
               <p className="mt-2 text-sm text-ink-600">{v.description}</p>
             )}
+            {covered.length > 0 && (
+              <div className="mt-3 rounded-lg p-3" style={{ background: "#FFF8EE", border: "1px solid #EDE0CC" }}>
+                <p className="text-xs font-semibold" style={{ color: "#7A5C4A" }}>
+                  {covered.length > 1 ? "Fiches couvertes par cette vidéo" : "Fiche couverte par cette vidéo"}
+                </p>
+                <ol className="mt-1 list-decimal space-y-0.5 pl-4 text-xs" style={{ color: "#2C1810" }}>
+                  {covered.map((f) => (
+                    <li key={f.title}>{f.title}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
           </div>
         </article>
-      ))}
+        );
+      })}
     </div>
   );
 }
