@@ -331,63 +331,99 @@ function VideosPanel({
 }) {
   if (videos.length === 0) return <EmptyState label="les vidéos" />;
   return (
-    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {videos.map((v) => {
+    <div className="grid items-start gap-6 md:grid-cols-2">
+      {videos.map((v, index) => {
         const own = fiches.filter((f) => f.title === v.title);
         const covered = own.length > 0 ? own : v.chapter ? fiches.filter((f) => f.chapter === v.chapter) : [];
         const highlighted = highlightId !== null && v.id === highlightId;
+        const isChapter = v.title.startsWith("Vidéo du chapitre");
+        const shortTitle = isChapter ? v.title.replace(/^Vidéo du chapitre\s*:\s*/, "") : v.title;
         return (
-        <article
-          key={v.id}
-          className="rounded-xl"
-          style={{
-            border: highlighted ? "2px solid #E07B39" : "1.5px solid #EDE0CC",
-            background: "#FFFDF8",
-          }}
-        >
-          <div className="relative w-full rounded-t-xl overflow-hidden bg-black" style={{ paddingTop: "56.25%" }}>
-            {isYouTubeEmbed(v.video_url) ? (
-              <iframe
-                src={v.video_url}
-                sandbox="allow-scripts allow-same-origin allow-presentation"
-                title={v.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 h-full w-full"
-              />
-            ) : (
-              <video
-                src={`${v.video_url}#t=0.001`}
-                controls
-                className="absolute inset-0 h-full w-full object-contain"
-                preload="metadata"
-              />
-            )}
-          </div>
-          <div className="p-4">
-            {v.chapter && (
-              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#E07B39" }}>
-                {v.chapter}
-              </p>
-            )}
-            <h3 className="mt-1 font-semibold text-ink-900">{v.title}</h3>
-            {v.description && (
-              <p className="mt-2 text-sm text-ink-600">{v.description}</p>
-            )}
-            {covered.length > 0 && (
-              <div className="mt-3 rounded-lg p-3" style={{ background: "#FFF8EE", border: "1px solid #EDE0CC" }}>
-                <p className="text-xs font-semibold" style={{ color: "#7A5C4A" }}>
-                  {covered.length > 1 ? "Fiches couvertes par cette vidéo" : "Fiche couverte par cette vidéo"}
-                </p>
-                <ol className="mt-1 list-decimal space-y-0.5 pl-4 text-xs" style={{ color: "#2C1810" }}>
-                  {covered.map((f) => (
-                    <li key={f.title}>{f.title}</li>
-                  ))}
-                </ol>
+          <article
+            key={v.id}
+            className="overflow-hidden rounded-2xl transition-shadow hover:shadow-lg"
+            style={{
+              background: "#FFFDF8",
+              border: highlighted ? "2px solid #E07B39" : "1.5px solid #EDE0CC",
+              boxShadow: highlighted ? "0 8px 24px rgba(224,123,57,0.18)" : "0 2px 10px rgba(44,24,16,0.05)",
+            }}
+          >
+            <div className="relative w-full bg-black" style={{ paddingTop: "56.25%" }}>
+              {isYouTubeEmbed(v.video_url) ? (
+                <iframe
+                  src={v.video_url}
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
+                  title={v.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
+              ) : (
+                <video
+                  src={v.video_url}
+                  poster={v.thumbnail_url ?? undefined}
+                  controls
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-contain"
+                  preload="none"
+                />
+              )}
+            </div>
+            <div className="p-5">
+              <div className="flex flex-wrap items-center gap-2">
+                {isChapter && (
+                  <span
+                    className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ background: "#FFF0E6", color: "#E07B39" }}
+                  >
+                    Vidéo {index + 1} sur {videos.length}
+                  </span>
+                )}
+                {v.chapter && (
+                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#B89F8A" }}>
+                    {v.chapter}
+                  </span>
+                )}
               </div>
-            )}
-          </div>
-        </article>
+              <h3 className="mt-2 text-xl font-bold leading-snug" style={{ color: "#2C1810" }}>
+                {shortTitle}
+              </h3>
+              {v.description && (
+                <p
+                  className="mt-2 text-sm leading-relaxed"
+                  style={{
+                    color: "#7A5C4A",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {v.description}
+                </p>
+              )}
+              {covered.length > 0 && (
+                <details className="group mt-4 rounded-xl" style={{ background: "#FFF8EE", border: "1px solid #EDE0CC" }}>
+                  <summary
+                    className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5 text-sm font-semibold"
+                    style={{ color: "#2C1810" }}
+                  >
+                    <span>
+                      {covered.length > 1
+                        ? `${covered.length} fiches couvertes par cette vidéo`
+                        : "Fiche couverte par cette vidéo"}
+                    </span>
+                    <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" style={{ color: "#E07B39" }} />
+                  </summary>
+                  <ol className="list-decimal space-y-1 px-4 pb-3 pl-8 text-sm" style={{ color: "#7A5C4A" }}>
+                    {covered.map((f) => (
+                      <li key={f.title}>{f.title}</li>
+                    ))}
+                  </ol>
+                </details>
+              )}
+            </div>
+          </article>
         );
       })}
     </div>
