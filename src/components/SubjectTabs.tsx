@@ -109,6 +109,11 @@ export function SubjectTabs({
   ];
   const videoForFiche: Record<string, string> = {};
   for (const f of ficheRefs) {
+    const listedIn = videos.find((v) => parseCoveredTitles(v.transcript).includes(f.title));
+    if (listedIn) {
+      videoForFiche[f.title] = listedIn.id;
+      continue;
+    }
     const own = allVideos.find((v) => v.title === f.title);
     const wide = allVideos.find((v) => v.chapter && v.chapter === f.chapter && !ficheTitles.has(v.title));
     const found = own ?? wide;
@@ -353,6 +358,17 @@ function isYouTubeEmbed(url: string): boolean {
   }
 }
 
+// Une vidéo peut lister précisément les fiches qu'elle couvre : transcript = "FICHES:" + liste JSON.
+function parseCoveredTitles(transcript: string | null): string[] {
+  if (!transcript || !transcript.startsWith("FICHES:")) return [];
+  try {
+    const list = JSON.parse(transcript.slice(7));
+    return Array.isArray(list) ? list.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 function VideoPlayer({ url, poster, title }: { url: string; poster: string | null; title: string }) {
   const [started, setStarted] = useState(false);
   if (isYouTubeEmbed(url)) {
@@ -417,8 +433,16 @@ function VideosPanel({
   return (
     <div className="grid items-start gap-6 md:grid-cols-2">
       {videos.map((v, index) => {
+        const listed = parseCoveredTitles(v.transcript);
         const own = fiches.filter((f) => f.title === v.title);
-        const covered = own.length > 0 ? own : v.chapter ? fiches.filter((f) => f.chapter === v.chapter) : [];
+        const covered =
+          listed.length > 0
+            ? fiches.filter((f) => listed.includes(f.title))
+            : own.length > 0
+              ? own
+              : v.chapter
+                ? fiches.filter((f) => f.chapter === v.chapter)
+                : [];
         const highlighted = highlightId !== null && v.id === highlightId;
         const isChapter = v.title.startsWith("Vidéo du chapitre");
         const shortTitle = isChapter ? v.title.replace(/^Vidéo du chapitre\s*:\s*/, "") : v.title;
