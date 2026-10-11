@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { HeroDemo } from "@/components/HeroDemo";
 
@@ -52,12 +54,14 @@ export default async function HomePage() {
   // Compteurs via le client admin (serveur) : la RLS réserve désormais le
   // contenu aux abonnés, mais les totaux restent affichables publiquement.
   const supabase = createAdminClient();
-  const [subjectsRes, sheetsRes, flashcardsRes, quizzesRes] = await Promise.all([
+  const [subjectsRes, sheetsRes, flashcardsRes, quizzesRes, authRes] = await Promise.all([
     supabase.from("subjects").select("*", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("revision_sheets").select("id", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("flashcards").select("id", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("is_published", true),
+    createClient().then((c) => c.auth.getUser()),
   ]);
+  const showWelcome = !authRes.data.user && WELCOME_ACCESS_DAYS > 0;
   const subjectsCount = subjectsRes.count;
   const sheetsCount = formatCount(sheetsRes.count);
   const flashcardsCount = formatCount(flashcardsRes.count);
@@ -90,6 +94,30 @@ export default async function HomePage() {
         <p className="jp-rise jp-d3 mx-auto mb-9 text-base leading-relaxed sm:text-lg" style={{ color: "#7A5C4A", maxWidth: 560 }}>
           Fiches, quiz corrigés, {flashcardsCount} flashcards et assistant IA — tout ce qu&apos;il te faut pour comprendre le droit, pas juste survivre aux partiels.
         </p>
+
+        {showWelcome && (
+          <div
+            className="jp-rise jp-d4 mx-auto mb-8 rounded-2xl px-5 py-4"
+            style={{ maxWidth: 560, background: "#2C1810", color: "#FFF8EE", boxShadow: "0 8px 30px rgba(44,24,16,0.25)" }}
+          >
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+              Offre de lancement
+            </p>
+            <p className="mt-1 text-xl font-extrabold" style={{ letterSpacing: "-0.02em" }}>
+              {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout
+            </p>
+            <p className="mt-1 text-sm" style={{ color: "rgba(255,248,238,0.7)" }}>
+              Crée un compte et profite de tout le contenu pendant {WELCOME_ACCESS_DAYS} jours, sans carte bancaire.
+            </p>
+            <Link
+              href="/auth/signup"
+              className="mt-3 inline-block rounded-full px-5 py-2 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ background: "#E07B39" }}
+            >
+              Créer mon compte gratuit
+            </Link>
+          </div>
+        )}
 
         <div className="jp-rise jp-d4 mx-auto mb-12 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ maxWidth: 520 }}>
           <Link href="/licence/l1"

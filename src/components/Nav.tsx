@@ -14,9 +14,18 @@ export async function Nav() {
   return (
     <>
     {!user && WELCOME_ACCESS_DAYS > 0 && (
-      <div className="px-4 py-2 text-center text-sm" style={{ background: "#E07B39", color: "white" }}>
-        <span className="font-bold">Offre de lancement : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout dès la création d&apos;un compte.</span>{" "}
-        <Link href="/auth/signup" className="underline font-semibold" style={{ color: "white" }}>
+      <div
+        className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-3 text-center"
+        style={{ background: "#E07B39", color: "white" }}
+      >
+        <span className="text-base font-extrabold sm:text-lg" style={{ letterSpacing: "-0.01em" }}>
+          Offre de lancement : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout dès la création d&apos;un compte
+        </span>
+        <Link
+          href="/auth/signup"
+          className="rounded-full px-5 py-1.5 text-sm font-extrabold transition hover:opacity-90"
+          style={{ background: "#2C1810", color: "white" }}
+        >
           Créer mon compte
         </Link>
       </div>
