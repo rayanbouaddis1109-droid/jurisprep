@@ -225,7 +225,7 @@ function EmptyState({ label }: { label: string }) {
     return (
       <div className="rounded-lg p-8 text-center text-sm" style={{ border: "1.5px dashed #EDE0CC", color: "#7A5C4A" }}>
         <p className="mb-1 font-semibold" style={{ color: "#2C1810" }}>
-          Patience, les vidéos de cette matière arrivent très bientôt.
+          Patience, les vidéos de cette matière sont en ligne demain.
         </p>
         <p>De nouvelles vidéos explicatives sont ajoutées régulièrement. En attendant, les fiches, quiz et flashcards sont disponibles.</p>
       </div>
