@@ -92,41 +92,43 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       for (const r of rows ?? []) if (!list.some((x) => x.id === r.id)) list.push(r);
     };
     const isVocabSubject = subject.category === "anglais_juridique" || subject.category === "culture_generale";
-    // Premier quiz, première vidéo et premier exercice gratuits, pour toutes les matières
-    const { data: quiz1 } = await adm
-      .from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
-      .order("created_at", { ascending: true }).limit(1);
-    add(quizzesData, quiz1 as Quiz[] | null);
-    const { data: video1 } = await adm
-      .from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true)
-      .order("order", { ascending: true }).limit(1);
-    add(videosData, video1 as Video[] | null);
-    const { data: exo } = await adm
-      .from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true)
-      .order("created_at", { ascending: true }).limit(1);
-    add(exercisesData, exo as Exercise[] | null);
-    if (!isVocabSubject) {
-      // Premier paquet de flashcards gratuit
+    // Premier quiz, première vidéo et premier exercice gratuits, pour toutes les matières.
+    // Les requêtes sont lancées ensemble pour limiter le temps d'attente.
+    const firstDeck = async (): Promise<Flashcard[] | null> => {
+      if (isVocabSubject) {
+        const { data } = await adm
+          .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
+          .eq("deck_name", "Jour 01");
+        return data as Flashcard[] | null;
+      }
       const { data: firstCard } = await adm
         .from("flashcards").select("deck_name").eq("subject_id", subject.id).eq("is_published", true)
         .order("created_at", { ascending: true }).limit(1);
       const deck = (firstCard as { deck_name: string | null }[] | null)?.[0]?.deck_name;
-      if (deck) {
-        const { data: cards } = await adm
-          .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
-          .eq("deck_name", deck);
-        add(flashcardsData, cards as Flashcard[] | null);
-      }
-      const { data: first } = await adm
-        .from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true)
-        .order("order", { ascending: true }).limit(1);
-      add(sheetsData, first as RevisionSheet[] | null);
-    } else {
+      if (!deck) return null;
       const { data: cards } = await adm
         .from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true)
-        .eq("deck_name", "Jour 01");
-      add(flashcardsData, cards as Flashcard[] | null);
-    }
+        .eq("deck_name", deck);
+      return cards as Flashcard[] | null;
+    };
+    const [quiz1, video1, exo, cards, first] = await Promise.all([
+      adm.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .order("created_at", { ascending: true }).limit(1),
+      adm.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .order("order", { ascending: true }).limit(1),
+      adm.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true)
+        .order("created_at", { ascending: true }).limit(1),
+      firstDeck(),
+      isVocabSubject
+        ? Promise.resolve({ data: null })
+        : adm.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true)
+            .order("order", { ascending: true }).limit(1),
+    ]);
+    add(quizzesData, quiz1.data as Quiz[] | null);
+    add(videosData, video1.data as Video[] | null);
+    add(exercisesData, exo.data as Exercise[] | null);
+    add(flashcardsData, cards);
+    add(sheetsData, first.data as RevisionSheet[] | null);
   }
 
   // Titres du contenu verrouillé (métadonnées seulement, jamais le contenu) :
