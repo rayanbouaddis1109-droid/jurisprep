@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GraduationCap, ArrowLeft } from "lucide-react";
 import { getUserPlan, hasFullAccess } from "@/lib/subscription";
+import { welcomeDaysLeft } from "@/lib/offer";
 import type { Subject } from "@/lib/types";
 import { slugToLevel, levelLabel } from "@/lib/utils";
 import { SubjectSearch } from "@/components/SubjectSearch";
@@ -69,7 +70,11 @@ export default async function LevelPage({
     .order("semester", { ascending: true })
     .order("name", { ascending: true });
 
-  const isSubscriber = hasFullAccess(await getUserPlan());
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isSubscriber =
+    hasFullAccess(await getUserPlan()) || (user ? welcomeDaysLeft(user.created_at) > 0 : false);
 
   const s1 = (subjects ?? []).filter((s: Subject) => s.semester === "S1");
   const s2 = (subjects ?? []).filter((s: Subject) => s.semester === "S2");

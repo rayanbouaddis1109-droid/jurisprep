@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { SubscribeButton } from "@/components/SubscribeButton";
 import { createClient } from "@/lib/supabase/server";
-import { WELCOME_TRIAL_DAYS } from "@/lib/offer";
+import { WELCOME_ACCESS_DAYS, WELCOME_TRIAL_DAYS } from "@/lib/offer";
 
 export const metadata: Metadata = {
   title: "Tarifs",
@@ -27,6 +27,7 @@ const PLANS = [
       "Le premier chapitre de chaque matière : cours, quiz, flashcards",
       "Accès à l'assistant IA",
       "Suivi de progression",
+      `${WELCOME_ACCESS_DAYS} jours d'accès complet offerts à la création du compte`,
       "Aucune carte bancaire demandée",
     ],
     highlight: false,
@@ -105,19 +106,21 @@ export default async function TarifsPage() {
         <p style={{ color: "#7A5C4A", fontSize: "1rem", lineHeight: 1.65 }}>
           Commence gratuitement. Passe à un abonnement si tu veux accéder à tout le contenu.
         </p>
-        {trialEligible && (
+        {WELCOME_ACCESS_DAYS > 0 && (
           <div
             className="mt-6 rounded-2xl px-5 py-4 text-sm"
             style={{ background: "#FFF0E6", border: "1.5px solid #F5C9A6", color: "#2C1810" }}
           >
             <p className="mb-1 text-base font-extrabold" style={{ color: "#E07B39" }}>
-              Offre de bienvenue : {WELCOME_TRIAL_DAYS} jours gratuits
+              Offre de bienvenue : {WELCOME_ACCESS_DAYS} jours d&apos;accès complet offerts
             </p>
             <p style={{ color: "#7A5C4A" }}>
-              Pour ton premier abonnement, les {WELCOME_TRIAL_DAYS} premiers jours sont offerts, avec
-              de nouvelles vidéos explicatives ajoutées régulièrement. Une carte bancaire est
-              demandée, et tu peux résilier à tout moment avant la fin de l&apos;essai sans rien
-              payer.
+              Crée un compte gratuit et profite de tout le contenu pendant {WELCOME_ACCESS_DAYS} jours,
+              sans carte bancaire et sans engagement. De nouvelles vidéos explicatives sont ajoutées
+              régulièrement.{" "}
+              <Link href="/auth/signup" className="font-semibold underline" style={{ color: "#E07B39" }}>
+                Créer mon compte
+              </Link>
             </p>
           </div>
         )}
@@ -228,7 +231,7 @@ export default async function TarifsPage() {
             <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
               conditions générales de vente
             </Link>
-            . Abonnement sans engagement, résiliable à tout moment. Après l'essai gratuit, l'abonnement est prélevé chaque mois au prix affiché.
+            . Abonnement sans engagement, résiliable à tout moment.
           </p>
         ) : (
           <p className="mt-6 text-center text-sm" style={{ color: "#7A5C4A" }}>

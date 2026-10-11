@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/subscription";
+import { welcomeDaysLeft } from "@/lib/offer";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOrCreateReferralCode, MAX_REWARDS_PER_REFERRER } from "@/lib/referral";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
@@ -41,6 +42,7 @@ export default async function ComptePage({
 
   const plan = await getUserPlan();
   const isPaid = plan === "etudiant" || plan === "cursus";
+  const welcomeLeft = isPaid ? 0 : welcomeDaysLeft(user.created_at);
 
   const { data: progressRows } = await supabase
     .from("user_progress")
@@ -124,6 +126,13 @@ export default async function ComptePage({
           {isPaid && endDate && (
             <p className="text-sm mb-5" style={{ color: "#7A5C4A" }}>
               Renouvellement le {endDate}
+            </p>
+          )}
+
+          {welcomeLeft > 0 && (
+            <p className="text-sm mb-5" style={{ color: "#7A5C4A" }}>
+              Accès complet offert pendant encore {welcomeLeft} {welcomeLeft > 1 ? "jours" : "jour"}, sans
+              carte bancaire.
             </p>
           )}
 

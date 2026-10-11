@@ -15,6 +15,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
 import { getUserPlan, hasFullAccess } from "@/lib/subscription";
+import { welcomeDaysLeft } from "@/lib/offer";
 import type {
   Exercise,
   Flashcard,
@@ -62,15 +63,19 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   } = await supabase.auth.getUser();
   const plan = await getUserPlan();
   const isAuthed = Boolean(user);
-  const canAccessAll = hasFullAccess(plan);
+  // Accès de bienvenue : date de création du compte vérifiée côté serveur. La lecture complète
+  // passe alors par le client serveur (la sécurité de la base ne connaît que les abonnés).
+  const welcomeLeft = isAuthed && !hasFullAccess(plan) ? welcomeDaysLeft(user?.created_at) : 0;
+  const canAccessAll = hasFullAccess(plan) || welcomeLeft > 0;
+  const db = welcomeLeft > 0 ? createAdminClient() : supabase;
 
   const [sheetsRes, videosRes, quizzesRes, flashcardsRes, exercisesRes] = isAuthed
     ? await Promise.all([
-        supabase.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-        supabase.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
-        supabase.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
-        supabase.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
-        supabase.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+        db.from("revision_sheets").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+        db.from("videos").select("*").eq("subject_id", subject.id).eq("is_published", true).order("order", { ascending: true }),
+        db.from("quizzes").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+        db.from("flashcards").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
+        db.from("exercises").select("*").eq("subject_id", subject.id).eq("is_published", true).order("created_at", { ascending: true }),
       ])
     : [null, null, null, null, null];
 
@@ -222,6 +227,17 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8">
+        {welcomeLeft > 0 && (
+          <div
+            className="mb-6 rounded-xl px-4 py-3 text-sm"
+            style={{ background: "#FFF0E6", border: "1.5px solid #F5C9A6", color: "#2C1810" }}
+          >
+            Accès complet offert : il te reste {welcomeLeft} {welcomeLeft > 1 ? "jours" : "jour"}.{" "}
+            <Link href="/tarifs" className="font-semibold underline" style={{ color: "#E07B39" }}>
+              Voir les formules
+            </Link>
+          </div>
+        )}
         <SubjectTabs
           sheets={sheetsData}
           videos={videosData}

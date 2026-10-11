@@ -81,7 +81,7 @@ export default function SignupPage() {
           Créer un compte
         </h1>
         <p className="text-sm mb-6" style={{ color: "#7A5C4A" }}>
-          Gratuit. 30 secondes.
+          Gratuit, 30 secondes. 14 jours d'accès complet offerts, sans carte bancaire.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

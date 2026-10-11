@@ -179,11 +179,10 @@ export default function CgvPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">11. Offre de bienvenue et parrainage</h2>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
-          Pour un premier abonnement, JurisPrép peut offrir une période d&apos;essai gratuite de 14
-          jours. L&apos;essai nécessite l&apos;enregistrement d&apos;une carte bancaire. Sans
-          résiliation avant la fin de l&apos;essai, l&apos;abonnement se poursuit et le premier
-          prélèvement est effectué à la fin de l&apos;essai, au prix affiché. L&apos;essai est limité
-          à un par personne.
+          À la création d&apos;un compte, JurisPrép offre un accès complet au contenu pendant 14 jours,
+          sans carte bancaire et sans abonnement. Cet accès prend fin automatiquement à l&apos;issue des
+          14 jours, sans prélèvement ni engagement ; l&apos;utilisateur conserve alors l&apos;accès au
+          contenu gratuit. Cette offre est limitée à un compte par personne.
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Chaque utilisateur dispose d&apos;un lien de parrainage dans sa page Mon compte. Lorsqu&apos;une
