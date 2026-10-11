@@ -136,7 +136,7 @@ export default function CgvPage() {
           <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
             jurisprep1@gmail.com
           </a>{" "}
-          — une réponse est apportée sous 30 jours au maximum.
+          : une réponse est apportée sous 30 jours au maximum.
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           Conformément aux articles L611-1 et suivants du Code de la consommation, tout consommateur
@@ -173,6 +173,28 @@ export default function CgvPage() {
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           Les présentes conditions sont soumises au droit français. En cas de litige, une solution
           amiable sera recherchée avant toute action judiciaire.
+        </p>
+      </section>
+
+      <section className="mb-10">
+        <h2 className="text-xl font-bold mb-3">11. Offre de bienvenue et parrainage</h2>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          Pour un premier abonnement, JurisPrép peut offrir une période d&apos;essai gratuite de 14
+          jours. L&apos;essai nécessite l&apos;enregistrement d&apos;une carte bancaire. Sans
+          résiliation avant la fin de l&apos;essai, l&apos;abonnement se poursuit et le premier
+          prélèvement est effectué à la fin de l&apos;essai, au prix affiché. L&apos;essai est limité
+          à un par personne.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          Chaque utilisateur dispose d&apos;un lien de parrainage dans sa page Mon compte. Lorsqu&apos;une
+          personne qui s&apos;abonne pour la première fois grâce à ce lien a effectué son premier
+          paiement, le parrain reçoit un crédit équivalent à un mois de la formule Étudiant, déduit de
+          ses prochaines factures. Ce crédit n&apos;est ni remboursable ni convertible en argent. Il est
+          limité à 12 mois par parrain.
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          Le parrainage de soi-même et la création de comptes dans le seul but d&apos;obtenir un crédit
+          sont exclus. JurisPrép peut refuser ou annuler un crédit en cas d&apos;abus.
         </p>
       </section>
     </div>

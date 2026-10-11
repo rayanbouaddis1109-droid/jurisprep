@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { customerBelongsToUser, getSafeOrigin } from "@/app/api/_lib/billing";
 import { prepareReferral } from "@/lib/referral";
 import { REF_COOKIE } from "@/lib/referral-code";
+import { WELCOME_TRIAL_DAYS } from "@/lib/offer";
 
 export async function POST(req: NextRequest) {
   // Paiements fermés tant que PAYMENTS_OPEN n'est pas défini à "true".
@@ -125,10 +126,15 @@ export async function POST(req: NextRequest) {
       custom_text: {
         submit: {
           message:
-            "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation).",
+            "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation). Tu peux résilier à tout moment depuis Mon compte.",
         },
       },
       subscription_data: {
+        // Essai réservé à un premier abonnement : le statut d'abonnement n'est renseigné
+        // qu'après un abonnement passé.
+        ...(WELCOME_TRIAL_DAYS > 0 && !profile?.subscription_status
+          ? { trial_period_days: WELCOME_TRIAL_DAYS }
+          : {}),
         metadata: {
           supabase_user_id: user.id,
           ...(referralId ? { referral_id: referralId } : {}),

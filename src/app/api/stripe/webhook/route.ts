@@ -199,6 +199,21 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         await syncFromSubscription(supabase, subscription);
+
+        // Fin de l'essai gratuit avec premier prélèvement réussi : le parrain est récompensé.
+        const previous = (event.data as { previous_attributes?: { status?: string } })
+          .previous_attributes;
+        const referralId = validUserId(subscription.metadata?.referral_id);
+        const referredUserId = validUserId(subscription.metadata?.supabase_user_id);
+        if (
+          event.type === "customer.subscription.updated" &&
+          referralId &&
+          referredUserId &&
+          previous?.status === "trialing" &&
+          subscription.status === "active"
+        ) {
+          await rewardReferral(supabase, referralId, referredUserId);
+        }
         break;
       }
     }

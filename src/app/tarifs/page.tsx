@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { SubscribeButton } from "@/components/SubscribeButton";
+import { createClient } from "@/lib/supabase/server";
+import { WELCOME_TRIAL_DAYS } from "@/lib/offer";
 
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Accède gratuitement à JurisPrép. Découvre nos formules pour lycéens, L1, L2 et L3 — sans engagement.",
+    "Accède gratuitement à JurisPrép. Découvre nos formules pour lycéens, L1, L2 et L3, sans engagement.",
 };
 
 // Les paiements restent fermés tant que PAYMENTS_OPEN n'est pas défini à "true" dans Vercel.
@@ -65,7 +67,26 @@ const PLANS = [
   },
 ];
 
-export default function TarifsPage() {
+export default async function TarifsPage() {
+  // L'essai gratuit est réservé à un premier abonnement : on ne l'annonce pas à qui a déjà été abonné.
+  let trialEligible = WELCOME_TRIAL_DAYS > 0;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("subscription_status")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (profile?.subscription_status) trialEligible = false;
+    }
+  } catch {
+    // En cas d'erreur, on garde l'affichage par défaut.
+  }
+
   return (
     <div style={{ background: "#FFF8EE", color: "#2C1810" }}>
       <section className="px-5 pt-14 pb-10 text-center" style={{ maxWidth: 680, margin: "0 auto" }}>
@@ -84,6 +105,22 @@ export default function TarifsPage() {
         <p style={{ color: "#7A5C4A", fontSize: "1rem", lineHeight: 1.65 }}>
           Commence gratuitement. Passe à un abonnement si tu veux accéder à tout le contenu.
         </p>
+        {trialEligible && (
+          <div
+            className="mt-6 rounded-2xl px-5 py-4 text-sm"
+            style={{ background: "#FFF0E6", border: "1.5px solid #F5C9A6", color: "#2C1810" }}
+          >
+            <p className="mb-1 text-base font-extrabold" style={{ color: "#E07B39" }}>
+              Offre de bienvenue : {WELCOME_TRIAL_DAYS} jours gratuits
+            </p>
+            <p style={{ color: "#7A5C4A" }}>
+              Pour ton premier abonnement, les {WELCOME_TRIAL_DAYS} premiers jours sont offerts, avec
+              de nouvelles vidéos explicatives ajoutées régulièrement. Une carte bancaire est
+              demandée, et tu peux résilier à tout moment avant la fin de l&apos;essai sans rien
+              payer.
+            </p>
+          </div>
+        )}
       </section>
 
       <section className="px-5 pb-16" style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -166,7 +203,7 @@ export default function TarifsPage() {
                     padding: "12px 20px",
                   }}
                 >
-                  {p.ctaLabel}
+                  {trialEligible ? `Essayer ${WELCOME_TRIAL_DAYS} jours gratuits` : p.ctaLabel}
                 </SubscribeButton>
               ) : (
                 <Link
@@ -191,7 +228,7 @@ export default function TarifsPage() {
             <Link href="/cgv" className="underline" style={{ color: "#E07B39" }}>
               conditions générales de vente
             </Link>
-            . Abonnement sans engagement, résiliable à tout moment.
+            . Abonnement sans engagement, résiliable à tout moment. Après l'essai gratuit, l'abonnement est prélevé chaque mois au prix affiché.
           </p>
         ) : (
           <p className="mt-6 text-center text-sm" style={{ color: "#7A5C4A" }}>
