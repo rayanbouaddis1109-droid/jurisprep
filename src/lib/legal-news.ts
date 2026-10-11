@@ -124,7 +124,8 @@ async function generateSummary(link: string, title: string, host: string): Promi
     body: JSON.stringify({
       model: "openai/gpt-oss-120b",
       temperature: 0.2,
-      max_tokens: 400,
+      max_tokens: 1500,
+      reasoning_effort: "low",
       messages: [
         {
           role: "system",
@@ -139,13 +140,15 @@ async function generateSummary(link: string, title: string, host: string): Promi
   if (!res.ok) throw new Error("résumé indisponible");
   const data = await res.json();
   const out = String(data?.choices?.[0]?.message?.content ?? "").trim();
-  if (!out || /^VIDE\b/i.test(out) || out.length > 900) return "";
+  if (!out || /^VIDE\b/i.test(out)) return "";
+  // Réponse coupée ou trop courte pour être un résumé : on ne la garde pas.
+  if (out.length < 60 || out.length > 900 || !/[.!?»)]$/.test(out)) throw new Error("résumé incomplet");
   return out.replace(/\s*—\s*/g, ", ");
 }
 
 const cachedSummary = unstable_cache(
   async (link: string, title: string, host: string) => generateSummary(link, title, host),
-  ["legal-news-summary-v1"],
+  ["legal-news-summary-v2"],
   { revalidate: 60 * 60 * 24 * 30 }
 );
 
