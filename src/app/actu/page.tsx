@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getLegalNews } from "@/lib/legal-news";
+import { getLegalNews, withSummaries } from "@/lib/legal-news";
 import { ExternalLink } from "lucide-react";
 
 export const revalidate = 3600;
@@ -21,7 +21,8 @@ function dayLabel(d: Date): string {
 }
 
 export default async function ActuPage() {
-  const { items, failed } = await getLegalNews();
+  const { items: raw, failed } = await getLegalNews();
+  const items = await withSummaries(raw, 8);
 
   const groups: { label: string; items: typeof items }[] = [];
   for (const item of items) {
@@ -41,8 +42,8 @@ export default async function ActuPage() {
           Actualité juridique
         </h1>
         <p className="mb-8 text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-          Les dernières publications des institutions, reprises de leurs sites officiels et mises à jour
-          automatiquement. Chaque article renvoie vers la source.
+          Les dernières publications des institutions, résumées en quelques phrases et mises à jour
+          automatiquement. Tu as l'essentiel ici, et le lien vers la source si tu veux le texte complet.
         </p>
 
         {items.length === 0 ? (
@@ -74,13 +75,17 @@ export default async function ActuPage() {
                           {n.source}
                         </span>
                         <span className="block text-base font-bold leading-snug">{n.title}</span>
-                        {n.excerpt && (
+                        {n.summary ? (
+                          <span className="mt-2 block text-sm leading-relaxed" style={{ color: "#2C1810" }}>
+                            {n.summary}
+                          </span>
+                        ) : n.excerpt && (
                           <span className="mt-1 block text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
                             {n.excerpt}
                           </span>
                         )}
                         <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold" style={{ color: "#E07B39" }}>
-                          Lire à la source <ExternalLink className="h-3 w-3" />
+                          Texte officiel <ExternalLink className="h-3 w-3" />
                         </span>
                       </a>
                     </li>

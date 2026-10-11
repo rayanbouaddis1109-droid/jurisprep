@@ -1,7 +1,10 @@
+import { unstable_cache } from "next/cache";
+
 // Flux d'actualité juridique : sources officielles, lues côté serveur.
 // Seuls les titres, une courte introduction et le lien vers la source sont repris.
 
 export interface NewsItem {
+  summary?: string;
   title: string;
   excerpt: string;
   link: string;
@@ -89,4 +92,77 @@ export async function getLegalNews(limit = 40): Promise<{ items: NewsItem[]; fai
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, limit);
   return { items, failed };
+}
+
+// ── Résumés ──────────────────────────────────────────────────────────────
+// Le texte de l'article officiel est résumé en quelques phrases, uniquement à partir de ce texte.
+// Le résumé est mis en cache 30 jours par article : une seule génération par article.
+
+function articleText(html: string): string {
+  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html;
+  const body = main.replace(/<(script|style|nav|header|footer|aside|form)[\s\S]*?<\/\1>/gi, " ");
+  return clean(body).slice(0, 6000);
+}
+
+async function generateSummary(link: string, title: string, host: string): Promise<string> {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) throw new Error("clé manquante");
+  const u = new URL(link);
+  if (u.protocol !== "https:" || u.hostname !== host) throw new Error("hôte refusé");
+
+  const page = await fetch(link, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; JurisPrepBot/1.0)" },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!page.ok) throw new Error("page illisible");
+  const text = articleText(await page.text());
+  if (text.length < 200) return "";
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({
+      model: "openai/gpt-oss-120b",
+      temperature: 0.2,
+      max_tokens: 400,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Tu résumes une actualité juridique pour des étudiants en droit. Écris 2 à 3 phrases en français clair, uniquement à partir du texte fourni : n'ajoute aucun fait, aucun chiffre, aucune date ni aucun nom qui n'y figure pas. Va à l'essentiel : qui, quoi, ce que cela change. Si le texte ne permet pas de résumer, réponds exactement VIDE. Pas de tiret cadratin, pas d'emoji, pas de mise en forme, pas de formule d'introduction.",
+        },
+        { role: "user", content: `Titre : ${title}\n\nTexte :\n${text}` },
+      ],
+    }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw new Error("résumé indisponible");
+  const data = await res.json();
+  const out = String(data?.choices?.[0]?.message?.content ?? "").trim();
+  if (!out || /^VIDE\b/i.test(out) || out.length > 900) return "";
+  return out.replace(/\s*—\s*/g, ", ");
+}
+
+const cachedSummary = unstable_cache(
+  async (link: string, title: string, host: string) => generateSummary(link, title, host),
+  ["legal-news-summary-v1"],
+  { revalidate: 60 * 60 * 24 * 30 }
+);
+
+export async function withSummaries(items: NewsItem[], count = 8): Promise<NewsItem[]> {
+  const hostOf = (l: string) => new URL(l).hostname;
+  const head = await Promise.all(
+    items.slice(0, count).map(async (it) => {
+      try {
+        const summary = await Promise.race([
+          cachedSummary(it.link, it.title, hostOf(it.link)),
+          new Promise<string>((r) => setTimeout(() => r(""), 20000)),
+        ]);
+        return summary ? { ...it, summary } : it;
+      } catch {
+        return it;
+      }
+    })
+  );
+  return [...head, ...items.slice(count)];
 }
