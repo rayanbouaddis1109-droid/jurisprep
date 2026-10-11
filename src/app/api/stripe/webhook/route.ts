@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { rewardReferral } from "@/lib/referral";
 import type Stripe from "stripe";
 
 type Db = ReturnType<typeof createAdminClient>;
@@ -177,6 +178,19 @@ export async function POST(req: NextRequest) {
           subscription,
           validUserId(session.client_reference_id)
         );
+
+        // Parrainage : le mois offert n'est accordé qu'après un vrai premier paiement.
+        const referralId = validUserId(subscription.metadata?.referral_id);
+        const referredUserId = validUserId(subscription.metadata?.supabase_user_id);
+        if (
+          referralId &&
+          referredUserId &&
+          referredUserId === validUserId(session.client_reference_id) &&
+          session.payment_status === "paid" &&
+          subscription.status === "active"
+        ) {
+          await rewardReferral(supabase, referralId, referredUserId);
+        }
         break;
       }
 

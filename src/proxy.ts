@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { REF_CODE_RE, REF_COOKIE } from "@/lib/referral-code";
 
 const PROTECTED_ROUTES = ["/assistant", "/compte", "/suivi", "/admin"];
 
@@ -39,6 +40,18 @@ export async function proxy(request: NextRequest) {
     const redirectUrl = new URL("/auth/login", request.url);
     redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Lien de parrainage : on garde le code 30 jours (format vérifié, valeur sans effet seule).
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (ref && REF_CODE_RE.test(ref)) {
+    response.cookies.set(REF_COOKIE, ref, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+    });
   }
 
   return response;

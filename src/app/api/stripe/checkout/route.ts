@@ -3,6 +3,8 @@ import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { customerBelongsToUser, getSafeOrigin } from "@/app/api/_lib/billing";
+import { prepareReferral } from "@/lib/referral";
+import { REF_COOKIE } from "@/lib/referral-code";
 
 export async function POST(req: NextRequest) {
   // Paiements fermés tant que PAYMENTS_OPEN n'est pas défini à "true".
@@ -98,6 +100,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Parrainage : un échec ici ne doit jamais bloquer le paiement.
+    let referralId: string | null = null;
+    try {
+      referralId = await prepareReferral(
+        createAdminClient(),
+        user.id,
+        profile?.subscription_status,
+        req.cookies.get(REF_COOKIE)?.value
+      );
+    } catch (err) {
+      console.error("[checkout] parrainage ignoré", err instanceof Error ? err.message : "erreur inconnue");
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: user.id,
@@ -114,7 +129,10 @@ export async function POST(req: NextRequest) {
         },
       },
       subscription_data: {
-        metadata: { supabase_user_id: user.id },
+        metadata: {
+          supabase_user_id: user.id,
+          ...(referralId ? { referral_id: referralId } : {}),
+        },
       },
     });
 

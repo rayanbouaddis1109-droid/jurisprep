@@ -2,6 +2,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getUserPlan } from "@/lib/subscription";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getOrCreateReferralCode, MAX_REWARDS_PER_REFERRER } from "@/lib/referral";
+import { CopyLinkButton } from "@/components/CopyLinkButton";
 import { ManageBillingButton } from "@/components/ManageBillingButton";
 import { CheckCircle2, Crown, BookOpen } from "lucide-react";
 import type { Metadata } from "next";
@@ -52,6 +55,23 @@ export default async function ComptePage({
     ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
     : null;
   const mastered = (progressRows ?? []).filter((r) => r.status === "mastered").length;
+
+  // Parrainage : section masquée tant que les tables n'existent pas ou en cas d'erreur.
+  let referralLink: string | null = null;
+  let referralRewarded = 0;
+  let referralPending = 0;
+  try {
+    const code = await getOrCreateReferralCode(createAdminClient(), user.id);
+    if (code) {
+      const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.jurisprep.fr").replace(/\/$/, "");
+      referralLink = `${site}/?ref=${code}`;
+      const { data: refs } = await supabase.from("referrals").select("status");
+      referralRewarded = (refs ?? []).filter((r) => r.status === "rewarded").length;
+      referralPending = (refs ?? []).filter((r) => r.status === "pending").length;
+    }
+  } catch {
+    referralLink = null;
+  }
 
   const endDate = profile?.subscription_end
     ? new Date(profile.subscription_end).toLocaleDateString("fr-FR", {
@@ -152,6 +172,34 @@ export default async function ComptePage({
             </div>
           )}
         </div>
+
+        {referralLink && (
+          <div
+            className="rounded-2xl p-6 mb-6"
+            style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}
+          >
+            <h2 className="text-lg font-bold mb-2">Parrainage</h2>
+            <p className="text-sm mb-4" style={{ color: "#7A5C4A" }}>
+              Un mois de formule Étudiant offert pour chaque camarade qui s&apos;abonne avec ton lien.
+              Le mois est déduit de ta prochaine facture.
+            </p>
+            <div
+              className="mb-4 break-all rounded-xl px-3 py-2.5 text-sm select-all"
+              style={{ border: "1.5px solid #EDE0CC", background: "#FFF8EE" }}
+            >
+              {referralLink}
+            </div>
+            <CopyLinkButton link={referralLink} />
+            <p className="mt-4 text-xs" style={{ color: "#7A5C4A" }}>
+              {referralRewarded} {referralRewarded > 1 ? "mois offerts" : "mois offert"}
+              {referralPending > 0
+                ? `, ${referralPending} ${referralPending > 1 ? "invitations en attente" : "invitation en attente"}`
+                : ""}
+              . Limite de {MAX_REWARDS_PER_REFERRER} mois offerts par parrain. Le mois est accordé
+              après le premier paiement du filleul.
+            </p>
+          </div>
+        )}
 
         <div
           className="rounded-2xl p-6"
