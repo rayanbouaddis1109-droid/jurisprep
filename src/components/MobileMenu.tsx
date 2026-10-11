@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/licence/l3", label: "L3" },
   { href: "/transverse/anglais-juridique", label: "Anglais juridique" },
   { href: "/transverse/culture-generale", label: "Culture générale" },
+  { href: "/actu", label: "Actualité juridique" },
   { href: "/tarifs", label: "Tarifs" },
   { href: "/assistant", label: "Assistant IA" },
 ];

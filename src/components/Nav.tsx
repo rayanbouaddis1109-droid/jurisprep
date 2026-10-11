@@ -48,6 +48,7 @@ export async function Nav() {
             { href: "/licence/l1", label: "L1" },
             { href: "/licence/l2", label: "L2" },
             { href: "/licence/l3", label: "L3" },
+            { href: "/actu", label: "Actu" },
             { href: "/tarifs", label: "Tarifs" },
           ].map(({ href, label }) => (
             <Link key={href} href={href}
@@ -189,6 +190,7 @@ export function Footer() {
               { label: "Anglais juridique", href: "/transverse/anglais-juridique" },
               { label: "Culture générale", href: "/transverse/culture-generale" },
               { label: "Assistant IA", href: "/assistant" },
+              { label: "Actualité juridique", href: "/actu" },
               { label: "Tarifs", href: "/tarifs" },
             ].map(({ label, href }) => (
               <Link
