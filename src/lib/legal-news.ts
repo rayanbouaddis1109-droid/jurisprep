@@ -1,4 +1,5 @@
-import { unstable_cache } from "next/cache";
+import { after } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // Flux d'actualité juridique : sources officielles, lues côté serveur.
 // Seuls les titres, une courte introduction et le lien vers la source sont repris.
@@ -146,26 +147,35 @@ async function generateSummary(link: string, title: string, host: string): Promi
   return out.replace(/\s*—\s*/g, ", ");
 }
 
-const cachedSummary = unstable_cache(
-  async (link: string, title: string, host: string) => generateSummary(link, title, host),
-  ["legal-news-summary-v2"],
-  { revalidate: 60 * 60 * 24 * 30 }
-);
+const hostOf = (l: string) => new URL(l).hostname;
 
-export async function withSummaries(items: NewsItem[], count = 8): Promise<NewsItem[]> {
-  const hostOf = (l: string) => new URL(l).hostname;
-  const head = await Promise.all(
-    items.slice(0, count).map(async (it) => {
-      try {
-        const summary = await Promise.race([
-          cachedSummary(it.link, it.title, hostOf(it.link)),
-          new Promise<string>((r) => setTimeout(() => r(""), 20000)),
-        ]);
-        return summary ? { ...it, summary } : it;
-      } catch {
-        return it;
-      }
-    })
-  );
-  return [...head, ...items.slice(count)];
+// Résumés déjà générés : lus en base (serveur). Les manquants sont générés après la réponse,
+// quelques-uns à la fois, pour ne pas ralentir la page ni saturer le service de résumé.
+export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4): Promise<NewsItem[]> {
+  const head = items.slice(0, count);
+  const links = head.map((i) => i.link);
+  let stored = new Map<string, string>();
+  try {
+    const db = createAdminClient();
+    const { data, error } = await db.from("news_summaries").select("link, summary").in("link", links);
+    if (error) return items;
+    stored = new Map((data ?? []).map((r) => [r.link as string, r.summary as string]));
+
+    const missing = head.filter((i) => !stored.has(i.link)).slice(0, perVisit);
+    if (missing.length > 0) {
+      after(async () => {
+        for (const it of missing) {
+          try {
+            const summary = await generateSummary(it.link, it.title, hostOf(it.link));
+            if (summary) await db.from("news_summaries").upsert({ link: it.link, summary });
+          } catch {
+            // Échec ponctuel : l'article sera retenté à une prochaine visite.
+          }
+        }
+      });
+    }
+  } catch {
+    return items;
+  }
+  return items.map((it) => (stored.has(it.link) ? { ...it, summary: stored.get(it.link) } : it));
 }

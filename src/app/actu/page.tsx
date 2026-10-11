@@ -22,7 +22,7 @@ function dayLabel(d: Date): string {
 
 export default async function ActuPage() {
   const { items: raw, failed } = await getLegalNews();
-  const items = await withSummaries(raw, 8);
+  const items = await withSummaries(raw, 12);
 
   const groups: { label: string; items: typeof items }[] = [];
   for (const item of items) {
