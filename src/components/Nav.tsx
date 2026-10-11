@@ -3,6 +3,7 @@ import { MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./LogoutButton";
 import { MobileMenu } from "./MobileMenu";
+import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
 
 export async function Nav() {
   const supabase = await createClient();
@@ -11,6 +12,15 @@ export async function Nav() {
   } = await supabase.auth.getUser();
 
   return (
+    <>
+    {!user && WELCOME_ACCESS_DAYS > 0 && (
+      <div className="px-4 py-2 text-center text-sm" style={{ background: "#E07B39", color: "white" }}>
+        <span className="font-bold">Offre de lancement : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout dès la création d&apos;un compte.</span>{" "}
+        <Link href="/auth/signup" className="underline font-semibold" style={{ color: "white" }}>
+          Créer mon compte
+        </Link>
+      </div>
+    )}
     <header className="sticky top-0 z-50" style={{ background: "rgba(255,248,238,0.9)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1.5px solid #EDE0CC" }}>
       <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
@@ -73,6 +83,7 @@ export async function Nav() {
         </div>
       </nav>
     </header>
+    </>
   );
 }
 
@@ -80,6 +91,41 @@ export function Footer() {
   return (
     <footer style={{ borderTop: "1.5px solid #EDE0CC", background: "#2C1810", color: "rgba(255,248,238,0.5)" }}>
       <div className="mx-auto max-w-6xl px-4 py-12">
+        {/* Tarifs */}
+        <div className="mb-12 rounded-2xl p-6" style={{ background: "rgba(255,248,238,0.05)", border: "1px solid rgba(255,248,238,0.1)" }}>
+          <p className="mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+            Offre de lancement
+          </p>
+          <p className="mb-5 text-lg font-extrabold text-white">
+            {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout dès la création d&apos;un compte
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { name: "Gratuit", price: "0 €", note: "Le premier chapitre de chaque matière" },
+              { name: "Étudiant", price: "9,90 € / mois", note: "Tout le contenu de ton niveau" },
+              { name: "Cursus complet", price: "19,90 € / mois", note: "Tout JurisPrép et un suivi personnalisé" },
+            ].map((t) => (
+              <div key={t.name} className="rounded-xl p-4" style={{ background: "rgba(255,248,238,0.06)" }}>
+                <p className="text-sm font-bold text-white">{t.name}</p>
+                <p className="text-lg font-extrabold" style={{ color: "#E07B39" }}>{t.price}</p>
+                <p className="mt-1 text-xs">{t.note}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <Link
+              href="/auth/signup"
+              className="rounded-full px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+              style={{ background: "#E07B39" }}
+            >
+              Créer mon compte gratuit
+            </Link>
+            <Link href="/tarifs" className="text-sm underline transition hover:text-white">
+              Voir le détail des formules
+            </Link>
+          </div>
+        </div>
+
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
