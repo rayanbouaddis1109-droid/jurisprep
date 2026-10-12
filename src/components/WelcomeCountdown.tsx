@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-// Compte à rebours de la période offerte : jours, heures, minutes et secondes restantes.
+// Compte à rebours de la période offerte : jours et heures restants.
 export function WelcomeCountdown({ endsAt, price }: { endsAt: string; price: string }) {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
     setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
+    const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -19,9 +19,7 @@ export function WelcomeCountdown({ endsAt, price }: { endsAt: string; price: str
   if (left !== null) {
     const d = Math.floor(left / 86400000);
     const h = Math.floor((left % 86400000) / 3600000);
-    const m = Math.floor((left % 3600000) / 60000);
-    const s = Math.floor((left % 60000) / 1000);
-    label = `${d} ${d > 1 ? "jours" : "jour"} ${h} h ${String(m).padStart(2, "0")} min ${String(s).padStart(2, "0")} s`;
+    label = `${d} ${d > 1 ? "jours" : "jour"} ${h} h`;
   }
 
   return (
