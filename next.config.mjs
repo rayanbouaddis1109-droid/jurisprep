@@ -25,6 +25,17 @@ const csp = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // L'ancienne adresse technique redirige vers le site officiel (évite un doublon dans Google).
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "jurisprep-nextjs.vercel.app" }],
+        destination: "https://www.jurisprep.fr/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

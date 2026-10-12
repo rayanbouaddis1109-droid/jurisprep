@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Mentions légales — JurisPrép",
   description: "Mentions légales, politique de confidentialité et informations sur les cookies de JurisPrép.",
+  // Page obligatoire mais sans intérêt à apparaître dans les résultats de recherche.
+  robots: { index: false, follow: true },
 };
 
 export default function MentionsLegalesPage() {
