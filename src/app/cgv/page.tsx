@@ -102,16 +102,27 @@ export default function CgvPage() {
       <section className="mb-10">
         <h2 className="text-xl font-bold mb-3">7. Droit de rétractation</h2>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
-          Conformément à l&apos;article L221-18 du Code de la consommation, tu disposes en principe
-          d&apos;un délai de 14 jours pour te rétracter d&apos;un achat en ligne.
+          Conformément à l&apos;article L221-18 du Code de la consommation, tu disposes d&apos;un délai
+          de 14 jours à compter de la souscription de ton abonnement pour te rétracter, sans avoir à
+          donner de motif.
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
-          L&apos;abonnement JurisPrép donne accès immédiatement à du contenu numérique fourni sans
-          support matériel. En cochant la case prévue au moment du paiement, tu demandes expressément
-          cet accès immédiat et tu reconnais que tu perds ton droit de rétractation dès le début
-          de l&apos;accès, conformément à l&apos;article L221-28 du Code de la consommation. Le
-          paiement d&apos;un mois n&apos;est donc pas remboursé ; tu peux en revanche résilier à
-          tout moment pour que l&apos;abonnement ne se renouvelle pas (voir article 6).
+          Pour exercer ce droit, il te suffit de nous le faire savoir par email à{" "}
+          <a href="mailto:jurisprep1@gmail.com" style={{ color: "#E07B39" }}>
+            jurisprep1@gmail.com
+          </a>
+          , en indiquant l&apos;adresse email de ton compte et ta décision de te rétracter. Tu peux
+          utiliser le modèle suivant : « Je vous notifie par la présente ma rétractation du contrat
+          d&apos;abonnement JurisPrép souscrit le [date]. Nom, adresse email du compte, date. »
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
+          En cas de rétractation dans le délai, JurisPrép te rembourse l&apos;intégralité des sommes
+          versées au plus tard 14 jours après avoir reçu ta demande, par le même moyen de paiement,
+          et ton abonnement prend fin.
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
+          Passé ce délai, tu peux résilier à tout moment pour que l&apos;abonnement ne se renouvelle
+          pas (voir article 6).
         </p>
       </section>
 
@@ -189,7 +200,7 @@ export default function CgvPage() {
           personne qui s&apos;abonne pour la première fois grâce à ce lien a effectué son premier
           paiement, le parrain reçoit un crédit équivalent à un mois de la formule Étudiant, déduit de
           ses prochaines factures. Ce crédit n&apos;est ni remboursable ni convertible en argent. Il est
-          limité à 12 mois par parrain.
+          limité à 12 mois par parrain, et annulé si le filleul exerce son droit de rétractation.
         </p>
         <p className="text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           Le parrainage de soi-même et la création de comptes dans le seul but d&apos;obtenir un crédit

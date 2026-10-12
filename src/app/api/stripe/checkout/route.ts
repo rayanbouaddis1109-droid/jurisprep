@@ -39,11 +39,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Offre inconnue" }, { status: 400 });
   }
 
-  // Accord sur l'accès immédiat et la renonciation à la rétractation : recueilli sur la page
-  // de paiement Stripe. Si Stripe ne peut pas le collecter (adresse des conditions non
-  // renseignée dans son tableau de bord), la page Tarifs le demande avant de payer.
-  const waiverGiven = body?.waiver === true;
-
   try {
     const { data: profile } = await supabase
       .from("profiles")
@@ -135,42 +130,15 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    let session: Stripe.Checkout.Session;
-    if (waiverGiven) {
-      session = await stripe.checkout.sessions.create({
-        ...sessionParams,
-        custom_text: {
-          submit: {
-            message:
-              "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation). Tu peux résilier à tout moment depuis Mon compte.",
-          },
+    // Droit de rétractation de 14 jours accordé : aucune renonciation n'est demandée.
+    const session = await stripe.checkout.sessions.create({
+      ...sessionParams,
+      custom_text: {
+        submit: {
+          message: `En t'abonnant, tu acceptes les [conditions générales de vente](${origin}/cgv). Tu disposes de 14 jours pour te rétracter et être remboursé, en écrivant à jurisprep1@gmail.com. Tu peux aussi résilier à tout moment depuis Mon compte.`,
         },
-      });
-    } else {
-      try {
-        session = await stripe.checkout.sessions.create({
-          ...sessionParams,
-          consent_collection: { terms_of_service: "required" },
-          custom_text: {
-            terms_of_service_acceptance: {
-              message: `Je veux accéder au contenu tout de suite (sans droit de rétractation, art. L221-28 du Code de la consommation) et j'accepte les [conditions de vente](${origin}/cgv).`,
-            },
-          },
-        });
-      } catch (err) {
-        // Requête refusée par Stripe (typiquement : adresse des conditions de vente non
-        // renseignée dans son tableau de bord) : la page Tarifs demande l'accord avant le
-        // paiement, et la nouvelle tentative remonte toute autre erreur.
-        const type = (err as { type?: string })?.type;
-        if (type === "StripeInvalidRequestError") {
-          return NextResponse.json(
-            { error: "Accord requis", needsWaiver: true },
-            { status: 409 },
-          );
-        }
-        throw err;
-      }
-    }
+      },
+    });
 
     if (!session.url) {
       throw new Error("session Stripe sans URL");
