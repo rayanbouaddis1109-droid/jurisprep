@@ -102,7 +102,7 @@ export async function getLegalNews(limit = 40): Promise<{ items: NewsItem[]; fai
 function articleText(html: string): string {
   const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html;
   const body = main.replace(/<(script|style|nav|header|footer|aside|form)[\s\S]*?<\/\1>/gi, " ");
-  return clean(body).slice(0, 6000);
+  return clean(body).slice(0, 9000);
 }
 
 async function generateSummary(link: string, title: string, host: string): Promise<string> {
@@ -125,13 +125,13 @@ async function generateSummary(link: string, title: string, host: string): Promi
     body: JSON.stringify({
       model: "openai/gpt-oss-120b",
       temperature: 0.2,
-      max_tokens: 1500,
+      max_tokens: 2500,
       reasoning_effort: "low",
       messages: [
         {
           role: "system",
           content:
-            "Tu résumes une actualité juridique pour des étudiants en droit. Écris 2 à 3 phrases en français clair, uniquement à partir du texte fourni : n'ajoute aucun fait, aucun chiffre, aucune date ni aucun nom qui n'y figure pas. Va à l'essentiel : qui, quoi, ce que cela change. Si le texte ne permet pas de résumer, réponds exactement VIDE. Pas de tiret cadratin, pas d'emoji, pas de mise en forme, pas de formule d'introduction.",
+            "Tu rédiges le résumé d'une actualité juridique pour des étudiants en droit, à partir du seul texte fourni. Écris 4 à 6 phrases en français clair, en un seul paragraphe : le contexte, ce que décide ou annonce l'institution, les points importants, puis ce que cela change ou pourquoi c'est utile à connaître. Reprends exactement les références du texte (numéros de décision, articles, dates, noms d'institutions) et n'ajoute aucun fait, chiffre, date ni nom qui n'y figure pas. Explique en une demi-phrase les termes techniques indispensables. Si le texte ne permet pas de résumer, réponds exactement VIDE. Pas de tiret cadratin, pas d'emoji, pas de liste, pas de mise en forme, pas de formule d'introduction comme « Cet article ».",
         },
         { role: "user", content: `Titre : ${title}\n\nTexte :\n${text}` },
       ],
@@ -143,7 +143,7 @@ async function generateSummary(link: string, title: string, host: string): Promi
   const out = String(data?.choices?.[0]?.message?.content ?? "").trim();
   if (!out || /^VIDE\b/i.test(out)) return "";
   // Réponse coupée ou trop courte pour être un résumé : on ne la garde pas.
-  if (out.length < 60 || out.length > 900 || !/[.!?»)]$/.test(out)) throw new Error("résumé incomplet");
+  if (out.length < 120 || out.length > 1600 || !/[.!?»)]$/.test(out)) throw new Error("résumé incomplet");
   return out.replace(/\s*—\s*/g, ", ");
 }
 

@@ -43,7 +43,7 @@ export default async function ActuPage() {
         </h1>
         <p className="mb-8 text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
           Les dernières publications des institutions, résumées en quelques phrases et mises à jour
-          automatiquement. Tu as l'essentiel ici, et le lien vers la source si tu veux le texte complet.
+          automatiquement. Tu as l'essentiel ici, et un bouton pour lire l'article complet sur le site officiel.
         </p>
 
         {items.length === 0 ? (
@@ -61,12 +61,9 @@ export default async function ActuPage() {
                   const c = SOURCE_COLORS[n.source] ?? { bg: "#EDE0CC", fg: "#7A5C4A" };
                   return (
                     <li key={n.link}>
-                      <a
-                        href={n.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block rounded-2xl p-5 transition hover:-translate-y-0.5"
-                        style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC", textDecoration: "none", color: "#2C1810" }}
+                      <article
+                        className="rounded-2xl p-5"
+                        style={{ background: "#FFFDF8", border: "1.5px solid #EDE0CC" }}
                       >
                         <span
                           className="mb-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold"
@@ -74,20 +71,32 @@ export default async function ActuPage() {
                         >
                           {n.source}
                         </span>
-                        <span className="block text-base font-bold leading-snug">{n.title}</span>
-                        {n.summary ? (
-                          <span className="mt-2 block text-sm leading-relaxed" style={{ color: "#2C1810" }}>
-                            {n.summary}
-                          </span>
-                        ) : n.excerpt && (
-                          <span className="mt-1 block text-sm leading-relaxed" style={{ color: "#7A5C4A" }}>
-                            {n.excerpt}
-                          </span>
+                        <h3 className="text-base font-bold leading-snug">
+                          <a
+                            href={n.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                            style={{ color: "#2C1810" }}
+                          >
+                            {n.title}
+                          </a>
+                        </h3>
+                        {(n.summary || n.excerpt) && (
+                          <p className="mt-2 text-sm leading-relaxed" style={{ color: n.summary ? "#2C1810" : "#7A5C4A" }}>
+                            {n.summary || n.excerpt}
+                          </p>
                         )}
-                        <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold" style={{ color: "#E07B39" }}>
-                          Texte officiel <ExternalLink className="h-3 w-3" />
-                        </span>
-                      </a>
+                        <a
+                          href={n.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition hover:opacity-90"
+                          style={{ background: "#E07B39", color: "white" }}
+                        >
+                          Lire l&apos;article complet sur le site de {n.source} <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </article>
                     </li>
                   );
                 })}
