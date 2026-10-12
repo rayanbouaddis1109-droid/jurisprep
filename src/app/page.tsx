@@ -117,7 +117,7 @@ export default async function HomePage() {
               </p>
               <p className="mt-1 text-sm" style={{ color: "rgba(255,248,238,0.7)" }}>
                 Sans engagement, sans carte bancaire, rien à payer. Tu testes tout le contenu pendant{" "}
-                {WELCOME_ACCESS_DAYS} jours, et tu décides ensuite.
+                {WELCOME_ACCESS_DAYS} jours, puis tu décides : {prices.etudiant} par mois, sans engagement.
               </p>
               <Link
                 href="/auth/signup"

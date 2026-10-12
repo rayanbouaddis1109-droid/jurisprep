@@ -15,7 +15,9 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { SubjectTabs } from "@/components/SubjectTabs";
 import { levelSlug, levelLabel } from "@/lib/utils";
 import { getUserPlan, hasFullAccess } from "@/lib/subscription";
-import { welcomeDaysLeft } from "@/lib/offer";
+import { welcomeDaysLeft, welcomeEndsAt, welcomeExpired } from "@/lib/offer";
+import { getPlanPrices } from "@/lib/pricing";
+import { WelcomeCountdown } from "@/components/WelcomeCountdown";
 import type {
   Exercise,
   Flashcard,
@@ -66,6 +68,9 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   // Accès de bienvenue : date de création du compte vérifiée côté serveur. La lecture complète
   // passe alors par le client serveur (la sécurité de la base ne connaît que les abonnés).
   const welcomeLeft = isAuthed && !hasFullAccess(plan) ? welcomeDaysLeft(user?.created_at) : 0;
+  const welcomeEnd = welcomeLeft > 0 ? welcomeEndsAt(user?.created_at) : null;
+  const welcomeIsOver = isAuthed && !hasFullAccess(plan) && welcomeExpired(user?.created_at);
+  const prices = await getPlanPrices();
   const canAccessAll = hasFullAccess(plan) || welcomeLeft > 0;
   const db = welcomeLeft > 0 ? createAdminClient() : supabase;
 
@@ -229,12 +234,16 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8">
-        {welcomeLeft > 0 && (
+        {welcomeLeft > 0 && welcomeEnd && (
+          <WelcomeCountdown endsAt={welcomeEnd.toISOString()} price={prices.etudiant} />
+        )}
+        {welcomeIsOver && (
           <div
             className="mb-6 rounded-xl px-4 py-3 text-sm"
             style={{ background: "#FFF0E6", border: "1.5px solid #F5C9A6", color: "#2C1810" }}
           >
-            Accès complet offert : il te reste {welcomeLeft} {welcomeLeft > 1 ? "jours" : "jour"}.{" "}
+            Ta période d&apos;accès gratuit est terminée. Continue avec tout le contenu pour {prices.etudiant}{" "}
+            par mois, sans engagement.{" "}
             <Link href="/tarifs" className="font-semibold underline" style={{ color: "#E07B39" }}>
               Voir les formules
             </Link>
