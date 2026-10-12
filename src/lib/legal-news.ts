@@ -144,7 +144,17 @@ async function generateSummary(link: string, title: string, host: string): Promi
   if (!out || /^VIDE\b/i.test(out)) return "";
   // Réponse coupée ou trop courte pour être un résumé : on ne la garde pas.
   if (out.length < 120 || out.length > 1600 || !/[.!?»)]$/.test(out)) throw new Error("résumé incomplet");
-  return out.replace(/\s*—\s*/g, ", ");
+  // Le modèle ajoute parfois ses propres définitions entre parenthèses ou en fin de texte :
+  // elles ne viennent pas de l'article et peuvent être fausses, on les retire.
+  const stripped = out
+    .replace(/\s*—\s*/g, ", ")
+    .replace(/\s*\([^()]*[:=][^()]*\)/g, "")
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => !(sentence.includes(" : ") && sentence.includes(";")))
+    .join(" ")
+    .trim();
+  if (stripped.length < 120) throw new Error("résumé incomplet");
+  return stripped;
 }
 
 const hostOf = (l: string) => new URL(l).hostname;
@@ -154,14 +164,14 @@ const hostOf = (l: string) => new URL(l).hostname;
 export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4): Promise<NewsItem[]> {
   const head = items.slice(0, count);
   // Version de la clé : changer ce préfixe force la régénération des résumés.
-  const K = (l: string) => `v3:${l}`;
+  const K = (l: string) => `v4:${l}`;
   const links = head.map((i) => K(i.link));
   let stored = new Map<string, string>();
   try {
     const db = createAdminClient();
     const { data, error } = await db.from("news_summaries").select("link, summary").in("link", links);
     if (error) return items;
-    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v3:/, ""), r.summary as string]));
+    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v4:/, ""), r.summary as string]));
 
     const missing = head.filter((i) => !stored.has(i.link)).slice(0, perVisit);
     if (missing.length > 0) {
