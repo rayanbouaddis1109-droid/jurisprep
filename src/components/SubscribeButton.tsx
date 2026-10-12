@@ -13,7 +13,10 @@ interface Props {
 
 export function SubscribeButton({ priceId, children, className, style, dark = false }: Props) {
   const [loading, setLoading] = useState(false);
+  // L'accord est recueilli sur la page de paiement Stripe. La case n'apparaît ici que si
+  // Stripe ne peut pas la collecter (le serveur le signale).
   const [waiver, setWaiver] = useState(false);
+  const [needsWaiver, setNeedsWaiver] = useState(false);
   const router = useRouter();
 
   async function handleClick() {
@@ -31,6 +34,10 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
       }
 
       const data = await res.json();
+      if (res.status === 409 && data.needsWaiver) {
+        setNeedsWaiver(true);
+        return;
+      }
       if (data.url) {
         window.location.href = data.url;
       }
@@ -41,6 +48,7 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
 
   return (
     <div>
+      {needsWaiver && (
       <label
         className="mb-3 flex items-start gap-2 text-left text-xs"
         style={{ color: dark ? "rgba(255,248,238,0.85)" : "#7A5C4A" }}
@@ -59,9 +67,10 @@ export function SubscribeButton({ priceId, children, className, style, dark = fa
           .
         </span>
       </label>
+      )}
       <button
         onClick={handleClick}
-        disabled={loading || !waiver}
+        disabled={loading || (needsWaiver && !waiver)}
         className={className}
         style={{ ...style, width: "100%" }}
       >

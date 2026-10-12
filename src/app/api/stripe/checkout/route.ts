@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -38,12 +39,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Offre inconnue" }, { status: 400 });
   }
 
-  if (body?.waiver !== true) {
-    return NextResponse.json(
-      { error: "Accord sur l'accès immédiat et la renonciation à la rétractation requis" },
-      { status: 400 },
-    );
-  }
+  // Accord sur l'accès immédiat et la renonciation à la rétractation : recueilli sur la page
+  // de paiement Stripe. Si Stripe ne peut pas le collecter (adresse des conditions non
+  // renseignée dans son tableau de bord), la page Tarifs le demande avant de payer.
+  const waiverGiven = body?.waiver === true;
 
   try {
     const { data: profile } = await supabase
@@ -114,7 +113,7 @@ export async function POST(req: NextRequest) {
       console.error("[checkout] parrainage ignoré", err instanceof Error ? err.message : "erreur inconnue");
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       client_reference_id: user.id,
       mode: "subscription",
@@ -123,12 +122,6 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/tarifs?canceled=1`,
       locale: "fr",
       allow_promotion_codes: true,
-      custom_text: {
-        submit: {
-          message:
-            "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation). Tu peux résilier à tout moment depuis Mon compte.",
-        },
-      },
       subscription_data: {
         // Essai réservé à un premier abonnement : le statut d'abonnement n'est renseigné
         // qu'après un abonnement passé.
@@ -140,7 +133,44 @@ export async function POST(req: NextRequest) {
           ...(referralId ? { referral_id: referralId } : {}),
         },
       },
-    });
+    };
+
+    let session: Stripe.Checkout.Session;
+    if (waiverGiven) {
+      session = await stripe.checkout.sessions.create({
+        ...sessionParams,
+        custom_text: {
+          submit: {
+            message:
+              "En confirmant, tu demandes l'accès immédiat au contenu et tu renonces à ton droit de rétractation (art. L221-28 du Code de la consommation). Tu peux résilier à tout moment depuis Mon compte.",
+          },
+        },
+      });
+    } else {
+      try {
+        session = await stripe.checkout.sessions.create({
+          ...sessionParams,
+          consent_collection: { terms_of_service: "required" },
+          custom_text: {
+            terms_of_service_acceptance: {
+              message: `Je veux accéder au contenu tout de suite (sans droit de rétractation, art. L221-28 du Code de la consommation) et j'accepte les [conditions de vente](${origin}/cgv).`,
+            },
+          },
+        });
+      } catch (err) {
+        // Requête refusée par Stripe (typiquement : adresse des conditions de vente non
+        // renseignée dans son tableau de bord) : la page Tarifs demande l'accord avant le
+        // paiement, et la nouvelle tentative remonte toute autre erreur.
+        const type = (err as { type?: string })?.type;
+        if (type === "StripeInvalidRequestError") {
+          return NextResponse.json(
+            { error: "Accord requis", needsWaiver: true },
+            { status: 409 },
+          );
+        }
+        throw err;
+      }
+    }
 
     if (!session.url) {
       throw new Error("session Stripe sans URL");

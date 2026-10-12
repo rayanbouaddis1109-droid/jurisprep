@@ -107,7 +107,7 @@ export default function CgvPage() {
         </p>
         <p className="text-sm leading-relaxed mb-3" style={{ color: "#7A5C4A" }}>
           L&apos;abonnement JurisPrép donne accès immédiatement à du contenu numérique fourni sans
-          support matériel. En cochant la case prévue avant le paiement, tu demandes expressément
+          support matériel. En cochant la case prévue au moment du paiement, tu demandes expressément
           cet accès immédiat et tu reconnais que tu perds ton droit de rétractation dès le début
           de l&apos;accès, conformément à l&apos;article L221-28 du Code de la consommation. Le
           paiement d&apos;un mois n&apos;est donc pas remboursé ; tu peux en revanche résilier à
