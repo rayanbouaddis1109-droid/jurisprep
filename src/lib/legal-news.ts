@@ -124,14 +124,14 @@ async function generateSummary(link: string, title: string, host: string): Promi
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
     body: JSON.stringify({
       model: "openai/gpt-oss-120b",
-      temperature: 0.2,
+      temperature: 0,
       max_tokens: 2500,
       reasoning_effort: "low",
       messages: [
         {
           role: "system",
           content:
-            "Tu rédiges le résumé d'une actualité juridique pour des étudiants en droit, à partir du seul texte fourni. Écris 4 à 6 phrases COURTES en français clair, en un seul paragraphe : le contexte, ce que décide ou annonce l'institution, puis les points importants. Une idée par phrase, pas de point-virgule, pas de phrase de plus de 30 mots. Reprends exactement les références du texte (numéros de décision, articles, dates, noms d'institutions) et n'ajoute aucun fait, chiffre, date ni nom qui n'y figure pas. N'ajoute aucun commentaire sur l'utilité ou l'intérêt de l'information. Explique en une demi-phrase les termes techniques indispensables. Si le texte ne permet pas de résumer, réponds exactement VIDE. Pas de tiret cadratin, pas d'emoji, pas de liste, pas de mise en forme, pas de formule d'introduction comme « Cet article ».",
+            "Tu rédiges le résumé d'une actualité juridique pour des étudiants en droit, à partir du seul texte fourni. Écris 4 à 6 phrases COURTES en français clair, en un seul paragraphe : le contexte, ce que décide ou annonce l'institution, puis les points importants. Une idée par phrase, pas de point-virgule, pas de phrase de plus de 30 mots. Reprends exactement les références du texte (numéros de décision, articles, dates, noms d'institutions) et n'ajoute aucun fait, chiffre, date ni nom qui n'y figure pas. N'ajoute aucun commentaire sur l'utilité ou l'intérêt de l'information, aucune explication personnelle, aucune parenthèse explicative : chaque phrase doit correspondre à une information présente dans le texte. Relis ton texte pour vérifier l'orthographe de chaque mot. Explique en une demi-phrase les termes techniques indispensables. Si le texte ne permet pas de résumer, réponds exactement VIDE. Pas de tiret cadratin, pas d'emoji, pas de liste, pas de mise en forme, pas de formule d'introduction comme « Cet article ».",
         },
         { role: "user", content: `Titre : ${title}\n\nTexte :\n${text}` },
       ],
@@ -154,14 +154,14 @@ const hostOf = (l: string) => new URL(l).hostname;
 export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4): Promise<NewsItem[]> {
   const head = items.slice(0, count);
   // Version de la clé : changer ce préfixe force la régénération des résumés.
-  const K = (l: string) => `v2:${l}`;
+  const K = (l: string) => `v3:${l}`;
   const links = head.map((i) => K(i.link));
   let stored = new Map<string, string>();
   try {
     const db = createAdminClient();
     const { data, error } = await db.from("news_summaries").select("link, summary").in("link", links);
     if (error) return items;
-    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v2:/, ""), r.summary as string]));
+    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v3:/, ""), r.summary as string]));
 
     const missing = head.filter((i) => !stored.has(i.link)).slice(0, perVisit);
     if (missing.length > 0) {

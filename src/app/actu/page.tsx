@@ -87,6 +87,11 @@ export default async function ActuPage() {
                             {n.summary || n.excerpt}
                           </p>
                         )}
+                        {n.summary && (
+                          <p className="mt-2 text-xs" style={{ color: "#7A5C4A" }}>
+                            Résumé rédigé automatiquement : le texte officiel fait foi.
+                          </p>
+                        )}
                         <a
                           href={n.link}
                           target="_blank"
