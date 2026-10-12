@@ -153,13 +153,15 @@ const hostOf = (l: string) => new URL(l).hostname;
 // quelques-uns à la fois, pour ne pas ralentir la page ni saturer le service de résumé.
 export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4): Promise<NewsItem[]> {
   const head = items.slice(0, count);
-  const links = head.map((i) => i.link);
+  // Version de la clé : changer ce préfixe force la régénération des résumés.
+  const K = (l: string) => `v2:${l}`;
+  const links = head.map((i) => K(i.link));
   let stored = new Map<string, string>();
   try {
     const db = createAdminClient();
     const { data, error } = await db.from("news_summaries").select("link, summary").in("link", links);
     if (error) return items;
-    stored = new Map((data ?? []).map((r) => [r.link as string, r.summary as string]));
+    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v2:/, ""), r.summary as string]));
 
     const missing = head.filter((i) => !stored.has(i.link)).slice(0, perVisit);
     if (missing.length > 0) {
@@ -167,7 +169,7 @@ export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4)
         for (const it of missing) {
           try {
             const summary = await generateSummary(it.link, it.title, hostOf(it.link));
-            if (summary) await db.from("news_summaries").upsert({ link: it.link, summary });
+            if (summary) await db.from("news_summaries").upsert({ link: K(it.link), summary });
           } catch {
             // Échec ponctuel : l'article sera retenté à une prochaine visite.
           }
