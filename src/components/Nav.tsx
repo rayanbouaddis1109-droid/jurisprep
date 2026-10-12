@@ -20,7 +20,7 @@ export async function Nav() {
         style={{ background: "#E07B39", color: "white" }}
       >
         <span className="text-base font-extrabold sm:text-lg" style={{ letterSpacing: "-0.01em" }}>
-          Offre de lancement : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout dès la création d&apos;un compte, sans carte bancaire ni engagement
+          Offre de lancement : crée gratuitement un compte pour tout voir pendant {WELCOME_ACCESS_DAYS} jours, sans carte bancaire ni engagement
         </span>
         <Link
           href="/auth/signup"

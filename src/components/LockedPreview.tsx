@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Lock, X } from "lucide-react";
+import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
 
 export interface LockedItem {
   id: string;
@@ -37,9 +38,18 @@ export function LockedGrid({
       <div className="mb-4 flex items-center gap-2">
         <Lock className="h-4 w-4" style={{ color: "#E07B39" }} />
         <h3 className="text-sm font-bold" style={{ color: "#2C1810" }}>
-          {items.length} {label} inclus dans la formule Étudiant
+          {items.length} {label} {isLoggedIn ? "inclus dans la formule Étudiant" : "à débloquer"}
         </h3>
       </div>
+      {!isLoggedIn && WELCOME_ACCESS_DAYS > 0 && (
+        <Link
+          href="/auth/signup"
+          className="mb-4 block rounded-xl px-4 py-3 text-sm font-bold transition hover:opacity-90"
+          style={{ background: "#E07B39", color: "white" }}
+        >
+          Crée gratuitement un compte pour tout voir pendant {WELCOME_ACCESS_DAYS} jours
+        </Link>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
@@ -77,7 +87,9 @@ export function LockedGrid({
       </div>
 
       <p className="mt-4 text-xs" style={{ color: "#7A5C4A" }}>
-        Le premier chapitre de chaque matière reste gratuit, sans carte bancaire.
+        {isLoggedIn
+          ? "Le premier chapitre de chaque matière reste gratuit, sans carte bancaire."
+          : `Crée gratuitement un compte pour tout voir pendant ${WELCOME_ACCESS_DAYS} jours, sans carte bancaire ni engagement.`}
       </p>
 
       {selected && (
@@ -107,7 +119,9 @@ export function LockedGrid({
               className="text-xs font-semibold uppercase tracking-widest"
               style={{ color: "#E07B39" }}
             >
-              Inclus dans la formule Étudiant
+              {isLoggedIn
+                ? "Inclus dans la formule Étudiant"
+                : `Crée gratuitement un compte pour tout voir pendant ${WELCOME_ACCESS_DAYS} jours`}
             </p>
             <h4 className="mt-2 text-base font-semibold" style={{ color: "#2C1810" }}>
               {selected.title}
@@ -115,7 +129,7 @@ export function LockedGrid({
             <p className="mt-2 text-sm" style={{ color: "#7A5C4A" }}>
               {isLoggedIn
                 ? "Ce contenu fait partie de la formule Étudiant, qui ouvre toutes les matières de ton niveau. Sans engagement, tu peux arrêter quand tu veux."
-                : "Ce contenu fait partie de la formule Étudiant. Tu peux déjà lire le premier chapitre de chaque matière. Avec un compte gratuit, tu gardes ta progression et tu passes à la formule quand tu veux."}
+                : "Sans carte bancaire et sans engagement : tu accèdes à tous les contenus de toutes les matières pendant 14 jours, et tu décides ensuite si tu continues."}
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <Link
@@ -123,7 +137,7 @@ export function LockedGrid({
                 className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
                 style={{ background: "#E07B39", color: "white" }}
               >
-                {isLoggedIn ? "Voir les formules" : "Créer un compte gratuit"}
+                {isLoggedIn ? "Voir les formules" : "Créer gratuitement mon compte"}
               </Link>
               <button
                 type="button"

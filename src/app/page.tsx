@@ -113,7 +113,7 @@ export default async function HomePage() {
           {showWelcome && (
             <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,248,238,0.15)" }}>
               <p className="text-xl font-extrabold" style={{ letterSpacing: "-0.02em" }}>
-                Crée un compte : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout
+                Crée gratuitement un compte pour tout voir pendant {WELCOME_ACCESS_DAYS} jours
               </p>
               <p className="mt-1 text-sm" style={{ color: "rgba(255,248,238,0.7)" }}>
                 Sans engagement, sans carte bancaire, rien à payer. Tu testes tout le contenu pendant{" "}
