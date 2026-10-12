@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { SubscribeButton } from "@/components/SubscribeButton";
 import { createClient } from "@/lib/supabase/server";
+import { getPlanPrices } from "@/lib/pricing";
 import { WELCOME_ACCESS_DAYS, WELCOME_TRIAL_DAYS } from "@/lib/offer";
 
 export const metadata: Metadata = {
@@ -69,6 +70,11 @@ const PLANS = [
 ];
 
 export default async function TarifsPage() {
+  const prices = await getPlanPrices();
+  const plans = PLANS.map((p) =>
+    p.name === "Étudiant" ? { ...p, price: prices.etudiant } : p.name === "Cursus complet" ? { ...p, price: prices.cursus } : p
+  );
+
   // L'essai gratuit est réservé à un premier abonnement : on ne l'annonce pas à qui a déjà été abonné.
   let trialEligible = WELCOME_TRIAL_DAYS > 0;
   try {
@@ -128,7 +134,7 @@ export default async function TarifsPage() {
 
       <section className="px-5 pb-16" style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div className="grid gap-5 lg:grid-cols-3">
-          {PLANS.map((p) => (
+          {plans.map((p) => (
             <div
               key={p.name}
               className="flex flex-col rounded-2xl p-6"

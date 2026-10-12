@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./LogoutButton";
 import { MobileMenu } from "./MobileMenu";
 import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
+import { getPlanPrices } from "@/lib/pricing";
 
 export async function Nav() {
   const supabase = await createClient();
@@ -97,7 +98,8 @@ export async function Nav() {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const prices = await getPlanPrices();
   return (
     <footer style={{ borderTop: "1.5px solid #EDE0CC", background: "#2C1810", color: "rgba(255,248,238,0.5)" }}>
       <div className="mx-auto max-w-6xl px-4 py-12">
@@ -112,8 +114,8 @@ export function Footer() {
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               { name: "Gratuit", price: "0 €", note: "Le premier chapitre de chaque matière" },
-              { name: "Étudiant", price: "9,90 € / mois", note: "Tout le contenu de ton niveau" },
-              { name: "Cursus complet", price: "19,90 € / mois", note: "Tout JurisPrép et un suivi personnalisé" },
+              { name: "Étudiant", price: `${prices.etudiant} / mois`, note: "Tout le contenu de ton niveau" },
+              { name: "Cursus complet", price: `${prices.cursus} / mois`, note: "Tout JurisPrép et un suivi personnalisé" },
             ].map((t) => (
               <div key={t.name} className="rounded-xl p-4" style={{ background: "rgba(255,248,238,0.06)" }}>
                 <p className="text-sm font-bold text-white">{t.name}</p>
