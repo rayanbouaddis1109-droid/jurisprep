@@ -1,6 +1,6 @@
-// Offre de bienvenue : accès complet pendant 14 jours à partir de la création du compte,
+// Offre de bienvenue : accès complet pendant 7 jours à partir de la création du compte,
 // sans carte bancaire. Mettre 0 pour la couper.
-export const WELCOME_ACCESS_DAYS = 14;
+export const WELCOME_ACCESS_DAYS = 7;
 
 // L'offre ne concerne que les comptes créés à partir de cette date (heure de Paris).
 export const WELCOME_START = new Date("2026-10-12T00:00:00+02:00");

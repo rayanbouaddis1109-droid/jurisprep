@@ -129,7 +129,7 @@ export function LockedGrid({
             <p className="mt-2 text-sm" style={{ color: "#7A5C4A" }}>
               {isLoggedIn
                 ? "Ce contenu fait partie de la formule Étudiant, qui ouvre toutes les matières de ton niveau. Sans engagement, tu peux arrêter quand tu veux."
-                : "Sans carte bancaire et sans engagement : tu accèdes à tous les contenus de toutes les matières pendant 14 jours, et tu décides ensuite si tu continues."}
+                : "Sans carte bancaire et sans engagement : tu accèdes à tous les contenus de toutes les matières pendant 7 jours, et tu décides ensuite si tu continues."}
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <Link
