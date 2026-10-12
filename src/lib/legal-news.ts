@@ -149,12 +149,15 @@ async function generateSummary(link: string, title: string, host: string): Promi
   const stripped = out
     .replace(/\s*—\s*/g, ", ")
     .replace(/\s*\([^()]*[:=][^()]*\)/g, "")
+    // Mot répété suivi de sa définition entre virgules : « recours, recours, contestation …, ».
+    .replace(/(\p{L}+), \1, [^,.]+,/gu, "$1")
     .split(/(?<=[.!?])\s+/)
     .filter(
       (sentence) =>
         // Les espaces avant « : » et « ; » peuvent être insécables.
         !(/[\s\u00a0\u202f]:/.test(sentence) && /[\s\u00a0\u202f];/.test(sentence)) &&
-        !/\s(désigne|signifie)\s/.test(sentence)
+        !/\s(désigne|signifie)\s/.test(sentence) &&
+        !sentence.includes("*")
     )
     .join(" ")
     .trim();
@@ -169,14 +172,14 @@ const hostOf = (l: string) => new URL(l).hostname;
 export async function withSummaries(items: NewsItem[], count = 12, perVisit = 4): Promise<NewsItem[]> {
   const head = items.slice(0, count);
   // Version de la clé : changer ce préfixe force la régénération des résumés.
-  const K = (l: string) => `v5:${l}`;
+  const K = (l: string) => `v6:${l}`;
   const links = head.map((i) => K(i.link));
   let stored = new Map<string, string>();
   try {
     const db = createAdminClient();
     const { data, error } = await db.from("news_summaries").select("link, summary").in("link", links);
     if (error) return items;
-    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v5:/, ""), r.summary as string]));
+    stored = new Map((data ?? []).map((r) => [(r.link as string).replace(/^v6:/, ""), r.summary as string]));
 
     const missing = head.filter((i) => !stored.has(i.link)).slice(0, perVisit);
     if (missing.length > 0) {
