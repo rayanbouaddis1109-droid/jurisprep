@@ -12,8 +12,32 @@ export async function Nav() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Barre « Octobre rose » : affichée jusqu'au 31 octobre 2026 inclus (heure de Paris).
+  const octobreRose = new Date() < new Date("2026-11-01T00:00:00+01:00");
+
   return (
     <>
+    {octobreRose && (
+      <div
+        className="flex items-center justify-center gap-2 px-4 py-2 text-center text-sm"
+        style={{ background: "#F9D5E2", color: "#7A1F45" }}
+      >
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="20"
+          viewBox="0 0 16 20"
+          className="flex-shrink-0"
+          fill="#D6336C"
+        >
+          <path d="M8 0c3 0 5.2 2 5.2 4.6 0 2.4-1.6 4-3.3 5.9L14.5 18c.3.9-.6 1.6-1.4 1.1L8 15.7 2.9 19.1c-.8.5-1.7-.2-1.4-1.1l4.6-7.5C4.4 8.6 2.8 7 2.8 4.6 2.8 2 5 0 8 0Zm0 2.2c-1.4 0-2.6.9-2.6 2.4 0 1.2.8 2.3 2.6 4.3 1.8-2 2.6-3.1 2.6-4.3 0-1.5-1.2-2.4-2.6-2.4Z" />
+        </svg>
+        <span>
+          Octobre rose : JurisPrép a une pensée pour toutes les femmes qui se battent contre le cancer du
+          sein, et pour leurs proches. Courage à elles.
+        </span>
+      </div>
+    )}
     {!user && WELCOME_ACCESS_DAYS > 0 && (
       <div
         className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-3 text-center"
