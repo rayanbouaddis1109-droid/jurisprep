@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
+import { getPlanPrices } from "@/lib/pricing";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { HeroDemo } from "@/components/HeroDemo";
 
@@ -62,6 +63,7 @@ export default async function HomePage() {
     createClient().then((c) => c.auth.getUser()),
   ]);
   const showWelcome = !authRes.data.user && WELCOME_ACCESS_DAYS > 0;
+  const prices = await getPlanPrices();
   const subjectsCount = subjectsRes.count;
   const sheetsCount = formatCount(sheetsRes.count);
   const flashcardsCount = formatCount(flashcardsRes.count);
@@ -95,29 +97,38 @@ export default async function HomePage() {
           Fiches, quiz corrigés, {flashcardsCount} flashcards et assistant IA — tout ce qu&apos;il te faut pour comprendre le droit, pas juste survivre aux partiels.
         </p>
 
-        {showWelcome && (
-          <div
-            className="jp-rise jp-d4 mx-auto mb-8 rounded-2xl px-5 py-4"
-            style={{ maxWidth: 560, background: "#2C1810", color: "#FFF8EE", boxShadow: "0 8px 30px rgba(44,24,16,0.25)" }}
-          >
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
-              Offre de lancement
-            </p>
-            <p className="mt-1 text-xl font-extrabold" style={{ letterSpacing: "-0.02em" }}>
-              {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout
-            </p>
-            <p className="mt-1 text-sm" style={{ color: "rgba(255,248,238,0.7)" }}>
-              Crée un compte et profite de tout le contenu pendant {WELCOME_ACCESS_DAYS} jours, sans carte bancaire.
-            </p>
-            <Link
-              href="/auth/signup"
-              className="mt-3 inline-block rounded-full px-5 py-2 text-sm font-bold text-white transition hover:opacity-90"
-              style={{ background: "#E07B39" }}
-            >
-              Créer mon compte gratuit
-            </Link>
-          </div>
-        )}
+        <div
+          className="jp-rise jp-d4 mx-auto mb-8 rounded-2xl px-5 py-5 text-left"
+          style={{ maxWidth: 600, background: "#2C1810", color: "#FFF8EE", boxShadow: "0 8px 30px rgba(44,24,16,0.25)" }}
+        >
+          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+            Pour l&apos;égalité des chances
+          </p>
+          <p className="mt-2 text-sm leading-relaxed" style={{ color: "rgba(255,248,238,0.85)" }}>
+            Réussir en droit ne devrait pas dépendre du budget de ta famille. Les préparations privées
+            coûtent cher, et tout le monde ne peut pas se les payer. JurisPrép existe pour que le prix
+            ne soit plus un désavantage : fiches, quiz, flashcards, exercices corrigés et vidéos, pour{" "}
+            {prices.etudiant} par mois, sans engagement.
+          </p>
+          {showWelcome && (
+            <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,248,238,0.15)" }}>
+              <p className="text-xl font-extrabold" style={{ letterSpacing: "-0.02em" }}>
+                Crée un compte : {WELCOME_ACCESS_DAYS} jours gratuits, accès à tout
+              </p>
+              <p className="mt-1 text-sm" style={{ color: "rgba(255,248,238,0.7)" }}>
+                Sans engagement, sans carte bancaire, rien à payer. Tu testes tout le contenu pendant{" "}
+                {WELCOME_ACCESS_DAYS} jours, et tu décides ensuite.
+              </p>
+              <Link
+                href="/auth/signup"
+                className="mt-3 inline-block rounded-full px-5 py-2 text-sm font-bold text-white transition hover:opacity-90"
+                style={{ background: "#E07B39" }}
+              >
+                Créer mon compte gratuit
+              </Link>
+            </div>
+          )}
+        </div>
 
         <div className="jp-rise jp-d4 mx-auto mb-12 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ maxWidth: 520 }}>
           <Link href="/licence/l1"
