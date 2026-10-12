@@ -112,6 +112,23 @@ export default async function TarifsPage() {
         <p style={{ color: "#7A5C4A", fontSize: "1rem", lineHeight: 1.65 }}>
           Commence gratuitement. Passe à un abonnement si tu veux accéder à tout le contenu.
         </p>
+        <div
+          className="mt-6 rounded-2xl px-5 py-5 text-left text-sm"
+          style={{ background: "#2C1810", color: "#FFF8EE" }}
+        >
+          <p className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: "#E07B39" }}>
+            Pourquoi un prix aussi bas
+          </p>
+          <p className="mb-2 text-lg font-extrabold" style={{ letterSpacing: "-0.02em" }}>
+            {prices.etudiant} par mois, pour l&apos;égalité des chances
+          </p>
+          <p style={{ color: "rgba(255,248,238,0.75)", lineHeight: 1.65 }}>
+            Réussir en droit ne devrait pas dépendre du budget de ta famille. Les préparations privées
+            coûtent cher, et tout le monde ne peut pas se les payer. JurisPrép existe pour que le prix ne
+            soit plus un désavantage : fiches, quiz, flashcards, exercices corrigés et vidéos, pour{" "}
+            {prices.etudiant} par mois, sans engagement.
+          </p>
+        </div>
         {WELCOME_ACCESS_DAYS > 0 && (
           <div
             className="mt-6 rounded-2xl px-5 py-4 text-sm"

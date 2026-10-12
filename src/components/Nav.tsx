@@ -124,6 +124,10 @@ export async function Footer() {
               </div>
             ))}
           </div>
+          <p className="mt-4 text-xs leading-relaxed">
+            Un prix volontairement bas, pour l&apos;égalité des chances : réussir en droit ne doit pas
+            dépendre du budget de ta famille.
+          </p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <Link
               href="/auth/signup"
