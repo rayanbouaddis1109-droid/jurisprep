@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { UniversitySelect } from "@/components/UniversitySelect";
+import { ALL_UNIVERSITY_LABELS } from "@/lib/universities";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function SignupPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [ageOk, setAgeOk] = useState(false);
+  const [university, setUniversity] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,12 +28,16 @@ export default function SignupPage() {
       setError("Les deux mots de passe ne sont pas identiques.");
       return;
     }
+    if (!ALL_UNIVERSITY_LABELS.includes(university)) {
+      setError("Choisis ta fac dans la liste proposée (ou « Autre établissement »).");
+      return;
+    }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName, university },
         emailRedirectTo:
           typeof window !== "undefined"
             ? `${window.location.origin}/auth/callback`
@@ -101,6 +108,17 @@ export default function SignupPage() {
                 color: "#2C1810",
               }}
               placeholder="Prénom Nom"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
+              Ta fac
+            </label>
+            <UniversitySelect
+              value={university}
+              onChange={setUniversity}
+              inputStyle={{ border: "1.5px solid #EDE0CC", background: "#FFF8EE", color: "#2C1810" }}
             />
           </div>
 
