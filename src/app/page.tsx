@@ -131,16 +131,39 @@ export default async function HomePage() {
         </div>
 
         <div className="jp-rise jp-d4 mx-auto mb-12 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ maxWidth: 520 }}>
-          <Link href="/licence/l1"
-            className="flex flex-1 items-center justify-center gap-2 rounded-2xl font-bold text-white transition-opacity hover:opacity-90"
-            style={{ background: "#E07B39", padding: "15px 24px", fontSize: "0.9375rem", boxShadow: "0 4px 20px rgba(224,123,57,0.35)" }}>
-            Explorer les modules <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link href="/assistant"
-            className="btn-ghost flex flex-1 items-center justify-center gap-2 rounded-2xl font-semibold transition">
-            Essayer l&apos;assistant IA ✦
-          </Link>
+          {showWelcome ? (
+            <>
+              <Link href="/auth/signup"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "#E07B39", padding: "15px 24px", fontSize: "0.9375rem", boxShadow: "0 4px 20px rgba(224,123,57,0.35)" }}>
+                Créer mon compte gratuit <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/licence/l1"
+                className="btn-ghost flex flex-1 items-center justify-center gap-2 rounded-2xl font-semibold transition">
+                Explorer les modules
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/licence/l1"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "#E07B39", padding: "15px 24px", fontSize: "0.9375rem", boxShadow: "0 4px 20px rgba(224,123,57,0.35)" }}>
+                Explorer les modules <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/assistant"
+                className="btn-ghost flex flex-1 items-center justify-center gap-2 rounded-2xl font-semibold transition">
+                Essayer l&apos;assistant IA ✦
+              </Link>
+            </>
+          )}
         </div>
+
+        <p className="jp-rise jp-d4 -mt-6 mb-10 text-sm" style={{ color: "#7A5C4A" }}>
+          <Link href="/tarifs" className="font-semibold underline" style={{ color: "#E07B39" }}>
+            Voir les tarifs
+          </Link>
+          {" "}: {prices.etudiant} par mois, sans engagement.
+        </p>
 
         {/* Stats chips */}
         <div className="jp-rise jp-d5 flex flex-wrap justify-center gap-2 pt-8" style={{ borderTop: "1.5px solid #EDE0CC" }}>

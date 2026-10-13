@@ -86,6 +86,15 @@ export async function Nav() {
 
         {/* Right */}
         <div className="flex items-center gap-2 text-sm">
+          {!user && (
+            <Link
+              href="/auth/signup"
+              className="rounded-full px-3 py-1.5 text-xs font-bold text-white md:hidden"
+              style={{ background: "#E07B39" }}
+            >
+              Créer un compte
+            </Link>
+          )}
           <MobileMenu isLoggedIn={!!user} />
           <Link href="/assistant"
             className="hidden items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition md:flex"

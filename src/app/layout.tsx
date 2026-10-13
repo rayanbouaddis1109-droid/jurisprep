@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Nav, Footer } from "@/components/Nav";
+import { MobileSignupBar } from "@/components/MobileSignupBar";
 import { Analytics } from "@vercel/analytics/next";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -71,6 +72,7 @@ export default function RootLayout({
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
+        <MobileSignupBar />
         <Analytics />
       </body>
     </html>
