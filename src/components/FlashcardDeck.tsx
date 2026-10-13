@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, RefreshCcw, Shuffle, Layers } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCcw, Shuffle, Layers, Check, RotateCcw } from "lucide-react";
 import type { Flashcard } from "@/lib/types";
 
 export function FlashcardDeck({
@@ -16,6 +16,8 @@ export function FlashcardDeck({
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState<Set<number>>(new Set());
   const [feedback, setFeedback] = useState<"known" | "unknown" | null>(null);
+  // Durée d'affichage du retour « Maîtrisé / À revoir » avant la carte suivante.
+  const FEEDBACK_MS = 450;
 
   if (cards.length === 0) return null;
 
@@ -58,7 +60,7 @@ export function FlashcardDeck({
     setTimeout(() => {
       setFeedback(null);
       next();
-    }, 1500);
+    }, FEEDBACK_MS);
   }
 
   function markUnknown() {
@@ -71,7 +73,7 @@ export function FlashcardDeck({
     setTimeout(() => {
       setFeedback(null);
       next();
-    }, 1500);
+    }, FEEDBACK_MS);
   }
 
   return (
@@ -127,7 +129,7 @@ export function FlashcardDeck({
             : feedback === "unknown"
             ? "rgba(244,63,94,0.15)"
             : "#f8fafc",
-          transition: "background-color 0.2s ease",
+          transition: "background-color 0.15s ease",
         }}
       >
         {feedback ? (
@@ -142,9 +144,13 @@ export function FlashcardDeck({
               backgroundColor: feedback === "known" ? "#10b981" : "#f43f5e",
             }}
           >
-            <span style={{ fontSize: "4rem" }}>{feedback === "known" ? "✅" : "🔁"}</span>
+            {feedback === "known" ? (
+              <Check className="h-14 w-14 text-white" strokeWidth={3} />
+            ) : (
+              <RotateCcw className="h-14 w-14 text-white" strokeWidth={3} />
+            )}
             <span style={{ color: "#fff", fontWeight: 900, fontSize: "1.75rem", marginTop: "0.75rem" }}>
-              {feedback === "known" ? "Maîtrisé !" : "À revoir"}
+              {feedback === "known" ? "Maîtrisé" : "À revoir"}
             </span>
           </div>
         ) : (
@@ -193,13 +199,13 @@ export function FlashcardDeck({
               onClick={markUnknown}
               className="flex-1 rounded-xl border-2 border-rose-200 bg-rose-50 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
             >
-              A revoir
+              À revoir
             </button>
             <button
               onClick={markKnown}
               className="flex-1 rounded-xl border-2 border-emerald-200 bg-emerald-50 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition"
             >
-              Maitrise
+              Maîtrisé
             </button>
           </div>
 
@@ -214,7 +220,7 @@ export function FlashcardDeck({
         {/* Indicateur connue */}
         {isKnown && (
           <div className="mt-3 text-center text-xs font-medium text-emerald-600">
-            Carte marquée comme maitrisée
+            Carte marquée comme maîtrisée
           </div>
         )}
       </div>
