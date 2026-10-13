@@ -30,6 +30,7 @@ export default async function AdminInscritsPage() {
   const rows = users
     .map((u) => ({
       email: u.email ?? "",
+      phone: typeof u.user_metadata?.phone === "string" ? (u.user_metadata.phone as string) : "",
       created: u.created_at,
       university:
         typeof u.user_metadata?.university === "string" && u.user_metadata.university
@@ -71,7 +72,7 @@ export default async function AdminInscritsPage() {
             <li key={r.email + r.created} className="px-4 py-2.5 text-sm">
               <p className="font-semibold">{r.email}</p>
               <p style={{ color: "#7A5C4A" }}>
-                {r.university} · inscrit le {date(r.created)}
+                {r.university} · inscrit le {date(r.created)}{r.phone ? ` · ${r.phone}` : ""}
               </p>
             </li>
           ))}
