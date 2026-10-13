@@ -19,7 +19,6 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [ageOk, setAgeOk] = useState(false);
   const [university, setUniversity] = useState("");
-  const [phone, setPhone] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,21 +32,12 @@ export default function SignupPage() {
       setError("Choisis ta fac dans la liste proposée (ou « Autre établissement »).");
       return;
     }
-    // Téléphone facultatif : chiffres, espaces, + . - ( ) acceptés, 8 à 15 chiffres.
-    const phoneClean = phone.trim();
-    if (phoneClean) {
-      const digits = phoneClean.replace(/\D/g, "");
-      if (!/^[0-9+\s.()-]+$/.test(phoneClean) || digits.length < 8 || digits.length > 15) {
-        setError("Le numéro de téléphone n'est pas valide. Tu peux aussi laisser le champ vide.");
-        return;
-      }
-    }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, university, ...(phoneClean ? { phone: phoneClean } : {}) },
+        data: { full_name: fullName, university },
         emailRedirectTo:
           typeof window !== "undefined"
             ? `${window.location.origin}/auth/callback`
@@ -148,28 +138,6 @@ export default function SignupPage() {
                 color: "#2C1810",
               }}
               placeholder="ton.email@exemple.fr"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-semibold" style={{ color: "#2C1810" }}>
-              Téléphone
-              <span className="ml-1 font-normal" style={{ color: "#7A5C4A" }}>
-                (facultatif)
-              </span>
-            </label>
-            <input
-              type="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm outline-none transition"
-              style={{
-                border: "1.5px solid #EDE0CC",
-                background: "#FFF8EE",
-                color: "#2C1810",
-              }}
-              placeholder="06 12 34 56 78"
             />
           </div>
 
