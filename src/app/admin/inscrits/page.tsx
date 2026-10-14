@@ -27,12 +27,22 @@ export default async function AdminInscritsPage() {
     data: { users },
   } = await admin.auth.admin.listUsers({ perPage: 1000 });
 
+  // Dernière activité réelle (table optionnelle : repli sur la dernière connexion).
+  const seen = new Map<string, string>();
+  try {
+    const { data } = await admin.from("user_activity").select("user_id, last_seen");
+    for (const r of data ?? []) seen.set(r.user_id as string, r.last_seen as string);
+  } catch {
+    // table absente
+  }
+
   const rows = users
     .map((u) => ({
       email: u.email ?? "",
       phone: typeof u.user_metadata?.phone === "string" ? (u.user_metadata.phone as string) : "",
       created: u.created_at,
       lastSignIn: u.last_sign_in_at ?? null,
+      lastSeen: seen.get(u.id) ?? null,
       university:
         typeof u.user_metadata?.university === "string" && u.user_metadata.university
           ? (u.user_metadata.university as string)
@@ -43,9 +53,14 @@ export default async function AdminInscritsPage() {
   const now = Date.now();
   const recent = (iso: string | null, minutes: number) =>
     iso !== null && now - new Date(iso).getTime() < minutes * 60000;
-  const onlineNow = rows.filter((r) => recent(r.lastSignIn, 30)).length;
-  const last24h = rows.filter((r) => recent(r.lastSignIn, 24 * 60)).length;
-  const byConnection = [...rows].sort((a, b) => (b.lastSignIn ?? "").localeCompare(a.lastSignIn ?? ""));
+  const activity = (r: { lastSignIn: string | null; lastSeen: string | null }) => {
+    const a = r.lastSeen ?? "";
+    const b = r.lastSignIn ?? "";
+    return a > b ? a : b || null;
+  };
+  const onlineNow = rows.filter((r) => recent(activity(r), 5)).length;
+  const last24h = rows.filter((r) => recent(activity(r), 24 * 60)).length;
+  const byConnection = [...rows].sort((a, b) => (activity(b) ?? "").localeCompare(activity(a) ?? ""));
 
   const ago = (iso: string | null) => {
     if (!iso) return "jamais connecté";
@@ -84,7 +99,7 @@ export default async function AdminInscritsPage() {
         <div className="mb-10 grid grid-cols-2 gap-3">
           <div className="rounded-xl p-4" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
             <p className="text-2xl font-extrabold" style={{ color: "#16a34a" }}>{onlineNow}</p>
-            <p className="text-xs" style={{ color: "#7A5C4A" }}>connectés depuis moins de 30 min</p>
+            <p className="text-xs" style={{ color: "#7A5C4A" }}>en ligne maintenant (actifs depuis moins de 5 min)</p>
           </div>
           <div className="rounded-xl p-4" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
             <p className="text-2xl font-extrabold" style={{ color: "#E07B39" }}>{last24h}</p>
@@ -104,10 +119,10 @@ export default async function AdminInscritsPage() {
           ))}
         </ul>
 
-        <h2 className="mb-1 text-lg font-bold">Liste, par dernière connexion</h2>
+        <h2 className="mb-1 text-lg font-bold">Liste, par dernière activité</h2>
         <p className="mb-3 text-xs" style={{ color: "#7A5C4A" }}>
-          La dernière connexion est la dernière fois que la personne s&apos;est identifiée. Le point vert
-          signale une connexion il y a moins de 30 minutes.
+          La dernière activité est la dernière page vue (ou, à défaut, la dernière connexion). Le point vert
+          signale une activité il y a moins de 5 minutes.
         </p>
         <ul className="divide-y rounded-xl" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
           {byConnection.map((r) => (
@@ -116,7 +131,7 @@ export default async function AdminInscritsPage() {
                 <span
                   aria-hidden="true"
                   className="inline-block h-2 w-2 rounded-full"
-                  style={{ background: recent(r.lastSignIn, 30) ? "#16a34a" : "#D8CBB8" }}
+                  style={{ background: recent(activity(r), 5) ? "#16a34a" : "#D8CBB8" }}
                 />
                 {r.email}
               </p>
@@ -124,8 +139,8 @@ export default async function AdminInscritsPage() {
                 {r.university} · inscrit le {date(r.created)}
               </p>
               <p style={{ color: "#7A5C4A" }}>
-                Dernière connexion :{" "}
-                {r.lastSignIn ? `${dateTime(r.lastSignIn)} (${ago(r.lastSignIn)})` : "jamais connecté"}
+                Dernière activité :{" "}
+                {activity(r) ? `${dateTime(activity(r) as string)} (${ago(activity(r))})` : "jamais connecté"}
               </p>
             </li>
           ))}

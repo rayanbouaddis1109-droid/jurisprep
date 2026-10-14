@@ -42,6 +42,37 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  // Dernière activité : écrite au plus une fois toutes les 2 minutes par utilisateur
+  // (cookie de limitation). Une erreur ici ne doit jamais gêner la navigation.
+  if (user && !request.cookies.get("jp_seen")) {
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (url && key) {
+        await fetch(`${url}/rest/v1/user_activity?on_conflict=user_id`, {
+          method: "POST",
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates,return=minimal",
+          },
+          body: JSON.stringify({ user_id: user.id, last_seen: new Date().toISOString() }),
+          signal: AbortSignal.timeout(1500),
+        });
+      }
+    } catch {
+      // ignoré
+    }
+    response.cookies.set("jp_seen", "1", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 120,
+      path: "/",
+    });
+  }
+
   // Lien de parrainage : on garde le code 30 jours (format vérifié, valeur sans effet seule).
   const ref = request.nextUrl.searchParams.get("ref");
   if (ref && REF_CODE_RE.test(ref)) {
