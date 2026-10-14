@@ -33,10 +33,20 @@ const ITEMS = [
   "Le suivi de ta progression, sur ta page Mon compte",
 ];
 
-export function buildWelcome(firstName: string): { subject: string; text: string; html: string } {
+export function buildWelcome(
+  firstName: string,
+  variant: "new" | "existing" = "new",
+): { subject: string; text: string; html: string } {
   const hello = firstName ? `Bonjour ${firstName},` : "Bonjour,";
   const intro = "Bienvenue sur JurisPrép, et merci de t'être inscrit.";
-  const who = "JurisPrép est le site des étudiants, fait pour les étudiants. Voici tout ce à quoi tu as accès :";
+  const who =
+    variant === "new"
+      ? "JurisPrép est le site des étudiants, fait pour les étudiants. Voici tout ce à quoi tu as accès :"
+      : "JurisPrép est le site des étudiants, fait pour les étudiants. Voici ce que tu y trouves :";
+  const access =
+    variant === "new"
+      ? ""
+      : "Le premier chapitre de chaque matière est gratuit, avec ses quiz, ses flashcards et sa vidéo. Le reste du contenu est inclus dans la formule Étudiant.";
   const ask =
     "Une chose compte vraiment pour nous : que le site te serve. Si tu as besoin de quelque chose en plus, une matière, une section, un type d'exercice, une fonction, ou si quelque chose ne te paraît pas clair, dis-le-nous. Réponds simplement à ce mail, on lit chaque message et on s'en sert pour construire la suite.";
   const goal = "Le but est de faire le site le plus utile possible pour toi.";
@@ -51,6 +61,7 @@ export function buildWelcome(firstName: string): { subject: string; text: string
     "",
     ...ITEMS.map((i) => `- ${i}`),
     "",
+    ...(access ? [access, ""] : []),
     ask,
     "",
     goal,
@@ -73,6 +84,7 @@ ${p(who)}
 <ul style="margin:0 0 16px;padding-left:20px;font-size:16px;line-height:1.7;color:#2C1810;">
 ${ITEMS.map((i) => `<li>${escapeHtml(i)}</li>`).join("\n")}
 </ul>
+${access ? p(access) : ""}
 ${p(ask)}
 ${p(goal)}
 ${p(bye)}
@@ -83,11 +95,15 @@ ${p(bye)}
 }
 
 // Envoi par l'API Resend. Réponses aux messages : jurisprep1@gmail.com.
-export async function sendWelcomeTo(email: string, firstName: string): Promise<void> {
+export async function sendWelcomeTo(
+  email: string,
+  firstName: string,
+  variant: "new" | "existing" = "new",
+): Promise<void> {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error("RESEND_API_KEY non défini");
   const from = process.env.WELCOME_FROM || "JurisPrép <contact@jurisprep.fr>";
-  const { subject, text, html } = buildWelcome(firstName);
+  const { subject, text, html } = buildWelcome(firstName, variant);
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -109,13 +125,17 @@ export async function sendWelcomeTo(email: string, firstName: string): Promise<v
 }
 
 // Envoie le mail de bienvenue une seule fois par compte (drapeau dans app_metadata).
+const OFFER_START = new Date("2026-10-12T00:00:00+02:00").getTime();
+
 export async function sendWelcomeOnce(db: Db, userId: string): Promise<"sent" | "already" | "skipped"> {
   const { data, error } = await db.auth.admin.getUserById(userId);
   if (error || !data.user?.email) return "skipped";
   const user = data.user;
   if (user.app_metadata?.welcome_sent) return "already";
 
-  await sendWelcomeTo(user.email as string, firstNameOf(user.user_metadata?.full_name));
+  // Les comptes créés avant l'offre de 7 jours n'ont pas l'accès complet offert : texte adapté.
+  const variant = new Date(user.created_at).getTime() >= OFFER_START ? "new" : "existing";
+  await sendWelcomeTo(user.email as string, firstNameOf(user.user_metadata?.full_name), variant);
   await db.auth.admin.updateUserById(userId, {
     app_metadata: { ...user.app_metadata, welcome_sent: new Date().toISOString() },
   });

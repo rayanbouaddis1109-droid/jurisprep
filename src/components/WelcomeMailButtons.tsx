@@ -6,8 +6,11 @@ export function WelcomeMailButtons() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function run(mode: "test" | "recent") {
+  async function run(mode: "test" | "recent" | "all") {
     if (mode === "recent" && !window.confirm("Envoyer le mail de bienvenue aux comptes créés depuis le 12 octobre qui ne l'ont pas reçu ?")) {
+      return;
+    }
+    if (mode === "all" && !window.confirm("Envoyer le mail de bienvenue à TOUS les comptes qui ne l'ont pas encore reçu ? Les comptes plus anciens reçoivent une version adaptée (premier chapitre gratuit).")) {
       return;
     }
     setBusy(true);
@@ -50,6 +53,15 @@ export function WelcomeMailButtons() {
           style={{ background: "#E07B39" }}
         >
           Envoyer aux inscrits récents
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => run("all")}
+          className="rounded-full px-4 py-2 text-sm font-bold disabled:opacity-50"
+          style={{ background: "#FFF0E6", color: "#E07B39", border: "1.5px solid #F5C9A6" }}
+        >
+          Envoyer à tout le monde
         </button>
       </div>
       {msg && <p className="mt-3 text-sm" style={{ color: "#7A5C4A" }}>{msg}</p>}

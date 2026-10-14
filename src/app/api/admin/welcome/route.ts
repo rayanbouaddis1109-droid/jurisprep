@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ sent: 1, to: user.email });
     }
 
-    if (mode === "recent") {
-      const since = new Date("2026-10-12T00:00:00+02:00").getTime();
+    if (mode === "recent" || mode === "all") {
+      const since = mode === "recent" ? new Date("2026-10-12T00:00:00+02:00").getTime() : 0;
       const {
         data: { users },
       } = await admin.auth.admin.listUsers({ perPage: 1000 });
