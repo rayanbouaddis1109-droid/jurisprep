@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { WelcomeMailButtons } from "@/components/WelcomeMailButtons";
 
 export const metadata = { robots: { index: false, follow: false } };
 
@@ -95,6 +96,8 @@ export default async function AdminInscritsPage() {
         <p className="mb-8 text-sm" style={{ color: "#7A5C4A" }}>
           {rows.length} comptes. La fac est demandée à l&apos;inscription depuis le 13 octobre 2026.
         </p>
+
+        <WelcomeMailButtons />
 
         <div className="mb-10 grid grid-cols-2 gap-3">
           <div className="rounded-xl p-4" style={{ border: "1.5px solid #EDE0CC", background: "#FFFDF8" }}>
