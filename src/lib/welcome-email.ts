@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { welcomeEndsAt } from "@/lib/offer";
 
 type Db = ReturnType<typeof createAdminClient>;
 
@@ -36,9 +37,14 @@ const ITEMS = [
 export function buildWelcome(
   firstName: string,
   variant: "new" | "existing" = "new",
+  earlyUntil?: string,
 ): { subject: string; text: string; html: string } {
   const hello = firstName ? `Bonjour ${firstName},` : "Bonjour,";
   const intro = "Bienvenue sur JurisPrép, et merci de t'être inscrit.";
+  // Comptes créés avant l'ouverture de l'offre de 7 jours : on le leur dit.
+  const early = earlyUntil
+    ? `Tu t'es inscrit juste avant le lancement de l'offre de 7 jours gratuits. Pour que tu en profites aussi, nous venons d'ouvrir ton accès complet pendant 7 jours, jusqu'au ${earlyUntil}.`
+    : "";
   const who =
     variant === "new"
       ? "JurisPrép est le site des étudiants, fait pour les étudiants. Voici tout ce à quoi tu as accès :"
@@ -57,6 +63,7 @@ export function buildWelcome(
     "",
     intro,
     "",
+    ...(early ? [early, ""] : []),
     who,
     "",
     ...ITEMS.map((i) => `- ${i}`),
@@ -80,6 +87,7 @@ export function buildWelcome(
 <p style="margin:0 0 24px;font-size:22px;font-weight:700;color:#2C1810;">Juris<span style="color:#E07B39;">Prép</span></p>
 ${p(hello)}
 ${p(intro)}
+${early ? p(early) : ""}
 ${p(who)}
 <ul style="margin:0 0 16px;padding-left:20px;font-size:16px;line-height:1.7;color:#2C1810;">
 ${ITEMS.map((i) => `<li>${escapeHtml(i)}</li>`).join("\n")}
@@ -99,11 +107,12 @@ export async function sendWelcomeTo(
   email: string,
   firstName: string,
   variant: "new" | "existing" = "new",
+  earlyUntil?: string,
 ): Promise<void> {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error("RESEND_API_KEY non défini");
   const from = process.env.WELCOME_FROM || "JurisPrép <contact@jurisprep.fr>";
-  const { subject, text, html } = buildWelcome(firstName, variant);
+  const { subject, text, html } = buildWelcome(firstName, variant, earlyUntil);
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -134,7 +143,16 @@ export async function sendWelcomeOnce(db: Db, userId: string): Promise<"sent" | 
   // Les comptes créés avant l'offre de 7 jours n'ont pas l'accès complet offert : texte adapté.
   // Tous les comptes ont l'accès complet de 7 jours : même texte pour tout le monde.
   const variant = "new" as const;
-  await sendWelcomeTo(user.email as string, firstNameOf(user.user_metadata?.full_name), variant);
+  // Compte créé avant le 12 octobre : mention de l'accès ouvert après coup, avec la date de fin.
+  const created = new Date(user.created_at).getTime();
+  let earlyUntil: string | undefined;
+  if (created < new Date("2026-10-12T00:00:00+02:00").getTime()) {
+    const end = welcomeEndsAt(user.created_at);
+    if (end) {
+      earlyUntil = end.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" });
+    }
+  }
+  await sendWelcomeTo(user.email as string, firstNameOf(user.user_metadata?.full_name), variant, earlyUntil);
   await db.auth.admin.updateUserById(userId, {
     app_metadata: { ...user.app_metadata, welcome_sent: new Date().toISOString() },
   });
