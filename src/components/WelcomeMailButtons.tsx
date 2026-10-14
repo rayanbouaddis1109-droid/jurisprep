@@ -10,7 +10,7 @@ export function WelcomeMailButtons() {
     if (mode === "recent" && !window.confirm("Envoyer le mail de bienvenue aux comptes créés depuis le 12 octobre qui ne l'ont pas reçu ?")) {
       return;
     }
-    if (mode === "all" && !window.confirm("Envoyer le mail de bienvenue à TOUS les comptes qui ne l'ont pas encore reçu ? Les comptes plus anciens reçoivent une version adaptée (premier chapitre gratuit).")) {
+    if (mode === "all" && !window.confirm("Envoyer le mail de bienvenue à TOUS les comptes qui ne l'ont pas encore reçu ?")) {
       return;
     }
     setBusy(true);

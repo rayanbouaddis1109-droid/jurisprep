@@ -2,19 +2,21 @@
 // sans carte bancaire. Mettre 0 pour la couper.
 export const WELCOME_ACCESS_DAYS = 7;
 
-// L'offre ne concerne que les comptes créés à partir de cette date (heure de Paris).
-export const WELCOME_START = new Date("2026-10-12T00:00:00+02:00");
+// Tous les comptes ont droit à 7 jours d'accès complet : à compter de leur création, ou à
+// compter de cette date pour les comptes plus anciens (heure de Paris).
+export const WELCOME_START = new Date("2026-10-14T00:00:00+02:00");
 
 // Essai gratuit Stripe (carte demandée) : remplacé par l'accès de bienvenue ci-dessus.
 export const WELCOME_TRIAL_DAYS = 0;
 
-// Fin de la période offerte, ou null si le compte n'y a pas droit.
+// Fin de la période offerte, ou null si la date de création est inconnue.
 // createdAt vient de l'authentification (non modifiable par l'utilisateur).
 export function welcomeEndsAt(createdAt: string | null | undefined): Date | null {
   if (!WELCOME_ACCESS_DAYS || !createdAt) return null;
-  const start = new Date(createdAt).getTime();
-  if (Number.isNaN(start) || start < WELCOME_START.getTime()) return null;
-  return new Date(start + WELCOME_ACCESS_DAYS * 86400000);
+  const created = new Date(createdAt).getTime();
+  if (Number.isNaN(created)) return null;
+  const base = Math.max(created, WELCOME_START.getTime());
+  return new Date(base + WELCOME_ACCESS_DAYS * 86400000);
 }
 
 // Jours restants arrondis au supérieur (0 si terminée ou sans droit).

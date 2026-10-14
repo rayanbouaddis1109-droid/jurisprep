@@ -125,8 +125,6 @@ export async function sendWelcomeTo(
 }
 
 // Envoie le mail de bienvenue une seule fois par compte (drapeau dans app_metadata).
-const OFFER_START = new Date("2026-10-12T00:00:00+02:00").getTime();
-
 export async function sendWelcomeOnce(db: Db, userId: string): Promise<"sent" | "already" | "skipped"> {
   const { data, error } = await db.auth.admin.getUserById(userId);
   if (error || !data.user?.email) return "skipped";
@@ -134,7 +132,8 @@ export async function sendWelcomeOnce(db: Db, userId: string): Promise<"sent" | 
   if (user.app_metadata?.welcome_sent) return "already";
 
   // Les comptes créés avant l'offre de 7 jours n'ont pas l'accès complet offert : texte adapté.
-  const variant = new Date(user.created_at).getTime() >= OFFER_START ? "new" : "existing";
+  // Tous les comptes ont l'accès complet de 7 jours : même texte pour tout le monde.
+  const variant = "new" as const;
   await sendWelcomeTo(user.email as string, firstNameOf(user.user_metadata?.full_name), variant);
   await db.auth.admin.updateUserById(userId, {
     app_metadata: { ...user.app_metadata, welcome_sent: new Date().toISOString() },
