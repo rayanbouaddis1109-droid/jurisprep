@@ -248,6 +248,7 @@ export async function Footer() {
               Légal
             </p>
             {[
+              { label: "Proposer une idée", href: "/idees" },
               { label: "Fiches gratuites", href: "/fiches-gratuites" },
               { label: "Connexion", href: "/auth/login" },
               { label: "Inscription", href: "/auth/signup" },

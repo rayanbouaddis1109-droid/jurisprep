@@ -54,7 +54,7 @@ export function buildWelcome(
       ? ""
       : "Le premier chapitre de chaque matière est gratuit, avec ses quiz, ses flashcards et sa vidéo. Le reste du contenu est inclus dans la formule Étudiant.";
   const ask =
-    "Une chose compte vraiment pour nous : que le site te serve. Si tu as besoin de quelque chose en plus, une matière, une section, un type d'exercice, une fonction, ou si quelque chose ne te paraît pas clair, dis-le-nous. Réponds simplement à ce mail, on lit chaque message et on s'en sert pour construire la suite.";
+    "Une chose compte vraiment pour nous : que le site te serve. Si tu as besoin de quelque chose en plus, une matière, une section, un type d'exercice, une fonction, ou si quelque chose ne te paraît pas clair, dis-le-nous. Réponds simplement à ce mail, ou écris-nous sur jurisprep.fr/idees : on lit chaque message et on s'en sert pour construire la suite.";
   const goal = "Le but est de faire le site le plus utile possible pour toi.";
   const bye = "Bonne révision,";
 
