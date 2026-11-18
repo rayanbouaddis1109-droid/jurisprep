@@ -1,60 +1,13 @@
 import Link from "next/link";
-import { MessageSquare } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "./LogoutButton";
-import { MobileMenu } from "./MobileMenu";
+import { NavRight, WelcomeBanner } from "./NavAuth";
 import { WELCOME_ACCESS_DAYS } from "@/lib/offer";
 import { getPlanPrices } from "@/lib/pricing";
 
-export async function Nav() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Barre « Octobre rose » : affichée jusqu'au 31 octobre 2026 inclus (heure de Paris).
-  const octobreRose = new Date() < new Date("2026-11-01T00:00:00+01:00");
+export function Nav() {
 
   return (
     <>
-    {octobreRose && (
-      <div
-        className="flex items-center justify-center gap-2 px-4 py-2 text-center text-sm"
-        style={{ background: "#F9D5E2", color: "#7A1F45" }}
-      >
-        <svg
-          aria-hidden="true"
-          width="16"
-          height="20"
-          viewBox="0 0 16 20"
-          className="flex-shrink-0"
-          fill="#D6336C"
-        >
-          <path d="M8 0c3 0 5.2 2 5.2 4.6 0 2.4-1.6 4-3.3 5.9L14.5 18c.3.9-.6 1.6-1.4 1.1L8 15.7 2.9 19.1c-.8.5-1.7-.2-1.4-1.1l4.6-7.5C4.4 8.6 2.8 7 2.8 4.6 2.8 2 5 0 8 0Zm0 2.2c-1.4 0-2.6.9-2.6 2.4 0 1.2.8 2.3 2.6 4.3 1.8-2 2.6-3.1 2.6-4.3 0-1.5-1.2-2.4-2.6-2.4Z" />
-        </svg>
-        <span>
-          Octobre rose : JurisPrép a une pensée pour toutes les femmes qui se battent contre le cancer du
-          sein, et pour leurs proches. Courage à elles.
-        </span>
-      </div>
-    )}
-    {!user && WELCOME_ACCESS_DAYS > 0 && (
-      <div
-        className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-3 text-center"
-        style={{ background: "#E07B39", color: "white" }}
-      >
-        <span className="text-base font-extrabold sm:text-lg" style={{ letterSpacing: "-0.01em" }}>
-          Offre de lancement : crée gratuitement un compte pour tout voir pendant {WELCOME_ACCESS_DAYS} jours, sans carte bancaire ni engagement
-        </span>
-        <Link
-          href="/auth/signup"
-          className="rounded-full px-5 py-1.5 text-sm font-extrabold transition hover:opacity-90"
-          style={{ background: "#2C1810", color: "white" }}
-        >
-          Créer mon compte
-        </Link>
-      </div>
-    )}
+    <WelcomeBanner days={WELCOME_ACCESS_DAYS} />
     <header className="sticky top-0 z-50" style={{ background: "rgba(255,248,238,0.9)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1.5px solid #EDE0CC" }}>
       <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
@@ -84,47 +37,7 @@ export async function Nav() {
           ))}
         </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-2 text-sm">
-          {!user && (
-            <Link
-              href="/auth/signup"
-              className="rounded-full px-3 py-1.5 text-xs font-bold text-white md:hidden"
-              style={{ background: "#E07B39" }}
-            >
-              Créer un compte
-            </Link>
-          )}
-          <MobileMenu isLoggedIn={!!user} />
-          <Link href="/assistant"
-            className="hidden items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition md:flex"
-            style={{ background: "#FFF0E6", color: "#E07B39" }}>
-            <MessageSquare className="h-4 w-4" /> Assistant IA
-          </Link>
-          {user ? (
-            <>
-              <Link href="/compte"
-                className="hidden rounded-lg px-3 py-1.5 font-medium transition hover:bg-[#EDE0CC] md:block"
-                style={{ color: "#2C1810" }}>
-                Mon compte
-              </Link>
-              <LogoutButton />
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login"
-                className="hidden rounded-lg px-3 py-1.5 font-medium transition hover:bg-[#EDE0CC] md:block"
-                style={{ color: "#2C1810" }}>
-                Connexion
-              </Link>
-              <Link href="/auth/signup"
-                className="hidden rounded-full px-4 py-1.5 font-bold text-white transition hover:opacity-90 md:block"
-                style={{ background: "#2C1810" }}>
-                Inscription
-              </Link>
-            </>
-          )}
-        </div>
+        <NavRight />
       </nav>
     </header>
     </>

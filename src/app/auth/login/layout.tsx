@@ -1,0 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Connexion",
+  description: "Connecte-toi à ton compte JurisPrép.",
+};
+
+export default function LoginLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}

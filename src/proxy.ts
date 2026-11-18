@@ -7,6 +7,20 @@ const PROTECTED_ROUTES = ["/assistant", "/compte", "/suivi", "/admin"];
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  const isProtected = PROTECTED_ROUTES.some((r) =>
+    request.nextUrl.pathname.startsWith(r)
+  );
+  // Visiteur sans cookie de session Supabase : inutile d'interroger Supabase.
+  const hasSession = request.cookies.getAll().some((c) => c.name.startsWith("sb-"));
+  if (!hasSession) {
+    if (isProtected) {
+      const redirectUrl = new URL("/auth/login", request.url);
+      redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+    return withReferral(request, response);
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -31,10 +45,6 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const isProtected = PROTECTED_ROUTES.some((r) =>
-    request.nextUrl.pathname.startsWith(r)
-  );
 
   if (isProtected && !user) {
     const redirectUrl = new URL("/auth/login", request.url);
@@ -73,7 +83,11 @@ export async function proxy(request: NextRequest) {
     });
   }
 
-  // Lien de parrainage : on garde le code 30 jours (format vérifié, valeur sans effet seule).
+  return withReferral(request, response);
+}
+
+// Lien de parrainage : on garde le code 30 jours (format vérifié, valeur sans effet seule).
+function withReferral(request: NextRequest, response: NextResponse) {
   const ref = request.nextUrl.searchParams.get("ref");
   if (ref && REF_CODE_RE.test(ref)) {
     response.cookies.set(REF_COOKIE, ref, {
@@ -84,7 +98,6 @@ export async function proxy(request: NextRequest) {
       path: "/",
     });
   }
-
   return response;
 }
 
