@@ -3,5 +3,10 @@ Allow: /
 
 Disallow: /api/
 Disallow: /auth/callback
+Disallow: /auth/reinitialiser
+Disallow: /auth/mot-de-passe-oublie
+Disallow: /admin/
+Disallow: /compte
+Disallow: /suivi
 
 Sitemap: https://www.jurisprep.fr/sitemap.xml
