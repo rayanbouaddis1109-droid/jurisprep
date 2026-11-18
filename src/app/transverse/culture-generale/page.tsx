@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ArrowLeft, Brain, BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
